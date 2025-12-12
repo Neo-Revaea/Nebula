@@ -42,7 +42,7 @@ jobs:
           node-version: '20'
           cache: 'pnpm' # 加速 pnpm 缓存（可选）
 
-      - name: Ensure pnpm (preferred: pnpm action) 
+      - name: Ensure pnpm
         uses: pnpm/action-setup@v2
         with:
           version: '8'
