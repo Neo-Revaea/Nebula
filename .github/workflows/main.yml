@@ -2,76 +2,107 @@ name: Sync Upstream
 
 on:
   schedule:
-    - cron: '0 * * * *' # 每小时
+    - cron: '0 * * * *' # 每小时运行一次（按需修改）
   workflow_dispatch:
+    inputs:
+      force_sync_master:
+        description: '是否直接强制把下游 master 覆盖为上游 master（危险）'
+        required: false
+        default: 'false'
+      create_pr:
+        description: '如果有差异，是否创建 PR（true/false）'
+        required: false
+        default: 'true'
+
+env:
+  UPSTREAM_REPO: 'astrbotdevs/astrbot'  # 上游仓库 (owner/repo)
+  UPSTREAM_BRANCH: 'master'             # 上游分支
+  TARGET_BRANCH: 'master'               # 你的仓库目标分支
+
+permissions:
+  contents: read
 
 jobs:
-  sync_and_pr:
+  sync:
     runs-on: ubuntu-latest
-    name: Sync latest commits from upstream repo
-    env:
-      UPSTREAM_REPO: 'astrbotdevs/astrbot'
-      UPSTREAM_BRANCH: 'master'    # 如果上游用 main，请改成 main
-      TARGET_BRANCH: 'master'      # 目标仓库的默认分支（可能是 main）
-
     steps:
       - name: Checkout target repository (full history, allow pushes)
         uses: actions/checkout@v6
         with:
           ref: ${{ env.TARGET_BRANCH }}
           fetch-depth: 0
-          token: ${{ secrets.PAT }}    # 确保 secrets.PAT 已创建并有 repo 权限（写权限）
+          token: ${{ secrets.PAT }}   # 使用 PAT 以确保有写权限 push / create PR
 
-      - name: Configure git
+      - name: Configure git user
         run: |
-          git config user.name "IGCrystal-Ghost"
-          git config user.email "cacheigcrystal@gmail.com"
+          git config user.name "sync-bot"
+          git config user.email "sync-bot@example.com"
 
       - name: Add upstream remote and fetch branches
         run: |
-          echo "Adding upstream ${UPSTREAM_REPO} and fetching ${UPSTREAM_BRANCH}..."
-          git remote add upstream "https://github.com/${UPSTREAM_REPO}" || true
-          git fetch upstream ${UPSTREAM_BRANCH}
-          git fetch origin ${TARGET_BRANCH}
+          UPSTREAM_URL="https://github.com/${UPSTREAM_REPO}.git"
+          git remote add upstream "${UPSTREAM_URL}" || true
+          git fetch --no-tags --prune upstream ${UPSTREAM_BRANCH}
+          git fetch --no-tags --prune origin ${TARGET_BRANCH}
+
+      - name: Debug: show remotes and SHAs
+        run: |
+          echo "Remotes:"
+          git remote -v
+          echo "origin/${TARGET_BRANCH}: $(git rev-parse origin/${TARGET_BRANCH} || echo 'missing')"
+          echo "upstream/${UPSTREAM_BRANCH}: $(git rev-parse upstream/${UPSTREAM_BRANCH} || echo 'missing')"
+          echo "Commits upstream not in origin (count):"
+          git rev-list --count origin/${TARGET_BRANCH}..upstream/${UPSTREAM_BRANCH} || echo "rev-list failed"
 
       - name: Check if upstream has new commits
         id: check_commits
         run: |
-          # 统计上游相对于当前 origin/${TARGET_BRANCH} 的新增提交数
           NEW_COMMITS_COUNT=$(git rev-list --count origin/${TARGET_BRANCH}..upstream/${UPSTREAM_BRANCH} || echo 0)
           echo "new_commits=${NEW_COMMITS_COUNT}" >> $GITHUB_OUTPUT
           echo "Upstream -> origin diff commits: ${NEW_COMMITS_COUNT}"
 
-      - name: Exit if no new commits
-        if: steps.check_commits.outputs.new_commits == '0'
-        run: |
-          echo "No new commits in upstream/${UPSTREAM_BRANCH} compared to origin/${TARGET_BRANCH}. Exiting."
-      
-      - name: Create branch from upstream and push to origin
-        if: steps.check_commits.outputs.new_commits != '0'
+      - name: Create branch from upstream and push (if commits found & create_pr=true)
+        if: ${{ steps.check_commits.outputs.new_commits != '0' && fromJson('["true","True","TRUE"]').includes(github.event.inputs.create_pr || 'true') }}
         run: |
           BRANCH_NAME="sync-upstream-${{ github.run_id }}"
+          echo "Creating branch ${BRANCH_NAME} from upstream/${UPSTREAM_BRANCH}"
           git checkout -b "${BRANCH_NAME}" upstream/${UPSTREAM_BRANCH}
-          # 推送本地临时分支到 origin（需要 PAT 有写权限）
+          # push new branch to your origin
           git push --set-upstream origin "${BRANCH_NAME}"
+          echo "pushed branch ${BRANCH_NAME}"
 
-      - name: Create Pull Request
-        if: steps.check_commits.outputs.new_commits != '0'
+      - name: Create Pull Request (if branch created)
+        if: ${{ steps.check_commits.outputs.new_commits != '0' && fromJson('["true","True","TRUE"]').includes(github.event.inputs.create_pr || 'true') }}
         uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.PAT }}
-          # 与上一步推送的分支名一致
           branch: sync-upstream-${{ github.run_id }}
           base: ${{ env.TARGET_BRANCH }}
           delete-branch: true
-          title: 'chore: 同步上游仓库更新 (自动 PR)'
+          title: 'chore: 自动同步上游更新'
           body: |
-            检测到上游仓库 `${{ env.UPSTREAM_REPO }}` 有新更新。
-            
-            这个 PR 是自动生成的。
-            
-            ### ⚠️ 合并前检查清单：
-            1. 查看 **Files changed**，确认上游的修改没有破坏你的自定义逻辑。
-            2. 如果有文件冲突，GitHub 会提示无法合并，请在本地拉取解决。
+            检测到上游仓库 `${{ env.UPSTREAM_REPO }}` 有新更新，自动创建此 PR 以便人工审查与合并。
+            ### 合并前检查：
+            1. 确认 Files changed 中的修改是否安全。
+            2. 若有冲突，请在本地解决后再合并。
           labels: automated pr
           maintainer-can-modify: true
+
+      - name: Force-sync master (dangerous) - optional
+        if: ${{ github.event.inputs.force_sync_master == 'true' }}
+        run: |
+          echo "⚠️ FORCE SYNC: Resetting origin/${TARGET_BRANCH} to upstream/${UPSTREAM_BRANCH}"
+          git checkout ${TARGET_BRANCH}
+          git reset --hard upstream/${UPSTREAM_BRANCH}
+          # 强制推送覆盖 origin master（请确认你真的要这么做）
+          git push origin ${TARGET_BRANCH} --force
+          echo "Force-pushed ${TARGET_BRANCH} -> origin"
+
+      - name: No changes - report
+        if: ${{ steps.check_commits.outputs.new_commits == '0' }}
+        run: |
+          echo "No new commits to sync from upstream/${UPSTREAM_BRANCH} -> origin/${TARGET_BRANCH}. Nothing to do."
+
+      - name: Final status
+        run: |
+          echo "Sync job finished. new_commits=${{ steps.check_commits.outputs.new_commits }}"
