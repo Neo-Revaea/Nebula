@@ -5,6 +5,10 @@ on:
     - cron: '0 * * * *'   # 每小时运行一次
   workflow_dispatch:
 
+concurrency:
+  group: dashboard-ci-${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: true
+
 permissions:
   contents: write
   pull-requests: write
@@ -17,6 +21,7 @@ env:
 jobs:
   sync:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout downstream (use PAT so pushes succeed)
         uses: actions/checkout@v6
@@ -64,7 +69,19 @@ jobs:
           PAT: ${{ secrets.PAT }}
         run: |
           set -e
-          # Check for existing open PR from OWNER:BRANCH -> BASE
+          git fetch --no-tags --prune origin "${BASE}" || true
+          if ! git show-ref --verify --quiet "refs/remotes/origin/${BASE}"; then
+            echo "警告：无法获取 origin/${BASE}，将继续尝试创建 PR（但这可能失败）"
+          fi
+
+          AHEAD_COUNT=$(git rev-list --count "origin/${BASE}..${BRANCH}" 2>/dev/null || echo "0")
+          echo "ahead_count=${AHEAD_COUNT}"
+          if [ "${AHEAD_COUNT}" -eq 0 ]; then
+            echo "No commits between ${BASE} and ${BRANCH} -> skip creating PR."
+            echo "pr_created=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
           PRS_JSON=$(curl -s -H "Authorization: token ${PAT}" \
             "${GITHUB_API}/repos/${REPO}/pulls?head=${OWNER}:${BRANCH}&state=open")
 
@@ -77,7 +94,7 @@ jobs:
 
           # Create the PR
           TITLE="chore: 同步上游 ${UPSTREAM_REPO} 更新 (${BRANCH})"
-          BODY="自动同步上游仓库 \`${UPSTREAM_REPO}\` 的更新。<br><br> 请人工检查并合并（如果合并安全）。"
+          BODY="已自动同步上游仓库 \`${UPSTREAM_REPO}\` 的更新并新建了分支。<br><br> 请人工检查并合并。"
           CREATE_RESPONSE=$(curl -s -X POST -H "Authorization: token ${PAT}" \
             -H "Content-Type: application/json" \
             -d "$(jq -n --arg t "$TITLE" --arg h "${OWNER}:${BRANCH}" --arg b "$BASE" --arg body "$BODY" '{title:$t, head:$h, base:$b, body:$body, maintainer_can_modify:true}')" \
