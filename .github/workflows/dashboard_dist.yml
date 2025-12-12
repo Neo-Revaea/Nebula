@@ -27,21 +27,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Debug runner & env
-        run: |
-          echo "Runner: $RUNNER_OS"
-          echo "GITHUB_REF: $GITHUB_REF"
-          echo "GITHUB_SHA: $GITHUB_SHA"
-          echo "GITHUB_REF_NAME: $GITHUB_REF_NAME"
-          echo "PATH: $PATH"
-          echo "Node tool cache:"
-          ls -la /opt/hostedtoolcache || true
-
       - name: Setup Node.js 20
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          # remove cache: 'pnpm' to avoid requiring pnpm before it's installed
 
       - name: Ensure pnpm
         uses: pnpm/action-setup@v2
@@ -49,28 +38,21 @@ jobs:
           version: '8'
           run_install: false
 
-      - name: Get pnpm store directory
-        id: pnpm-store-path
-        run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
-
-      - name: Cache pnpm store
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.pnpm-store-path.outputs.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
       - name: Install dependencies and build
+        id: build_step
         working-directory: dashboard
         run: |
           set -eux
-          echo "pwd: $(pwd)"
-          echo "ls:"
-          ls -la
           pnpm --version
           pnpm install --frozen-lockfile
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
           pnpm run build
+
+      - name: Cache pnpm store
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ steps.build_step.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
 
       - name: Inject commit SHA, clean markdown and zip dist
         run: |
@@ -110,9 +92,3 @@ jobs:
           name: dashboard-dist-latest
           path: dashboard/dist/assets/version
           retention-days: 3
-
-      - name: Final debug (list dist)
-        if: always()
-        run: |
-          set -eux
-          echo "dist exists?"; ls -la dashboard/dist || true
