@@ -1,111 +1,99 @@
-name: Sync Upstream
+name: Sync Upstream (Method A)
 
 on:
   schedule:
-    - cron: '0 * * * *'
+    - cron: '0 * * * *'   # 每小时运行一次（按需修改）
   workflow_dispatch:
-    inputs:
-      force_sync_master:
-        description: '是否直接强制把下游 master 覆盖为上游 master（危险）'
-        required: false
-        default: 'false'
-      create_pr:
-        description: '如果有差异，是否创建 PR（true/false）'
-        required: false
-        default: 'true'
-
-env:
-  UPSTREAM_REPO: 'astrbotdevs/astrbot'
-  UPSTREAM_BRANCH: 'master'
-  TARGET_BRANCH: 'master'
 
 permissions:
-  contents: read
+  contents: write
+  pull-requests: write
+
+env:
+  UPSTREAM_REPO: 'astrbotdevs/astrbot'   # <- 改成上游 repo（owner/repo）
+  UPSTREAM_BRANCH: 'master'              # <- 改成上游分支（如 master/main）
+  TARGET_BRANCH: 'master'                # <- 下游默认分支（目标合并分支）
 
 jobs:
   sync:
     runs-on: ubuntu-latest
-
-    # 把调度/dispatch 参数在 job 级别设为 env（便于在 if 中引用）
-    env:
-      CREATE_PR: ${{ github.event.inputs.create_pr || 'true' }}
-      FORCE_SYNC: ${{ github.event.inputs.force_sync_master || 'false' }}
-
     steps:
-      - name: Checkout target repository (full history, allow pushes)
+      - name: Checkout downstream (use PAT so pushes succeed)
         uses: actions/checkout@v6
         with:
-          ref: ${{ env.TARGET_BRANCH }}
           fetch-depth: 0
           token: ${{ secrets.PAT }}
 
-      - name: Configure git user
+      - name: Ensure jq present (used for JSON parsing)
         run: |
-          git config user.name "sync-bot"
-          git config user.email "sync-bot@example.com"
+          sudo apt-get update
+          sudo apt-get install -y jq
 
-      - name: Add upstream remote and fetch branches
+      - name: Add upstream remote and fetch
         run: |
-          UPSTREAM_URL="https://github.com/${UPSTREAM_REPO}.git"
-          git remote add upstream "${UPSTREAM_URL}" || true
-          git fetch --no-tags --prune upstream ${UPSTREAM_BRANCH}
-          git fetch --no-tags --prune origin ${TARGET_BRANCH}
+          set -e
+          UPSTREAM_URL="https://github.com/${{ env.UPSTREAM_REPO }}.git"
+          git remote remove upstream 2>/dev/null || true
+          git remote add upstream "${UPSTREAM_URL}"
+          git fetch --no-tags --prune upstream "${{ env.UPSTREAM_BRANCH }}"
 
-      - name: Show remotes and SHAs
+      - name: Create branch from upstream and push to origin
+        id: create_branch
         run: |
-          echo "Remotes:"
-          git remote -v
-          echo "origin/${TARGET_BRANCH}: $(git rev-parse origin/${TARGET_BRANCH} || echo 'missing')"
-          echo "upstream/${UPSTREAM_BRANCH}: $(git rev-parse upstream/${UPSTREAM_BRANCH} || echo 'missing')"
-          echo "Commits upstream not in origin (count):"
-          git rev-list --count origin/${TARGET_BRANCH}..upstream/${UPSTREAM_BRANCH} || echo "rev-list failed"
+          set -e
+          TIMESTAMP=$(date -u +%Y%m%d%H%M%S)
+          BRANCH_NAME="sync-upstream-${TIMESTAMP}"
+          echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_OUTPUT
 
-      - name: Check if upstream has new commits
-        id: check_commits
-        run: |
-          NEW_COMMITS_COUNT=$(git rev-list --count origin/${TARGET_BRANCH}..upstream/${UPSTREAM_BRANCH} || echo 0)
-          echo "new_commits=${NEW_COMMITS_COUNT}" >> $GITHUB_OUTPUT
-          echo "Upstream -> origin diff commits: ${NEW_COMMITS_COUNT}"
+          # Create a local branch that points to upstream/<branch>
+          git checkout -b "${BRANCH_NAME}" "upstream/${{ env.UPSTREAM_BRANCH }}"
 
-      # 当发现有新提交且用户希望创建 PR 时创建分支并 push
-      - name: Create branch from upstream and push
-        if: ${{ steps.check_commits.outputs.new_commits != '0' && env.CREATE_PR == 'true' }}
-        run: |
-          BRANCH_NAME="sync-upstream-${{ github.run_id }}"
-          echo "Creating branch ${BRANCH_NAME} from upstream/${UPSTREAM_BRANCH}"
-          git checkout -b "${BRANCH_NAME}" upstream/${UPSTREAM_BRANCH}
+          # Push branch to downstream origin using the token provided to checkout
           git push --set-upstream origin "${BRANCH_NAME}"
-          echo "pushed branch ${BRANCH_NAME}"
 
-      - name: Create Pull Request (if branch created)
-        if: ${{ steps.check_commits.outputs.new_commits != '0' && env.CREATE_PR == 'true' }}
-        uses: peter-evans/create-pull-request@v8
-        with:
-          token: ${{ secrets.PAT }}
-          branch: sync-upstream-${{ github.run_id }}
-          base: ${{ env.TARGET_BRANCH }}
-          delete-branch: true   # 调试时可先设 false
-          title: 'chore: 自动同步上游更新'
-          body: |
-            检测到上游仓库 `${{ env.UPSTREAM_REPO }}` 有新更新，自动创建此 PR 以便人工审查与合并。
-          labels: automated pr
-          maintainer-can-modify: true
+          echo "Pushed ${BRANCH_NAME} to origin"
 
-      # 强制覆盖 master（仅在 dispatch 时设置 force_sync_master=true 才会执行）
-      - name: Force-sync master (dangerous) - optional
-        if: ${{ env.FORCE_SYNC == 'true' }}
+      - name: Create PR via GitHub API if not exists
+        id: create_pr
+        env:
+          GITHUB_API: https://api.github.com
+          REPO: ${{ github.repository }}
+          OWNER: ${{ github.repository_owner }}
+          BRANCH: ${{ steps.create_branch.outputs.BRANCH_NAME }}
+          BASE: ${{ env.TARGET_BRANCH }}
+          PAT: ${{ secrets.PAT }}
         run: |
-          echo "⚠️ FORCE SYNC: Resetting origin/${TARGET_BRANCH} to upstream/${UPSTREAM_BRANCH}"
-          git checkout ${TARGET_BRANCH}
-          git reset --hard upstream/${UPSTREAM_BRANCH}
-          git push origin ${TARGET_BRANCH} --force
-          echo "Force-pushed ${TARGET_BRANCH} -> origin"
+          set -e
+          # Check for existing open PR from OWNER:BRANCH -> BASE
+          PRS_JSON=$(curl -s -H "Authorization: token ${PAT}" \
+            "${GITHUB_API}/repos/${REPO}/pulls?head=${OWNER}:${BRANCH}&state=open")
 
-      - name: No changes - report
-        if: ${{ steps.check_commits.outputs.new_commits == '0' }}
-        run: |
-          echo "No new commits to sync from upstream/${UPSTREAM_BRANCH} -> origin/${TARGET_BRANCH}. Nothing to do."
+          LEN=$(echo "$PRS_JSON" | jq 'length')
+          if [ "$LEN" -gt 0 ]; then
+            echo "Found an existing open PR for ${OWNER}:${BRANCH}, skip creating."
+            echo "pr_created=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
 
-      - name: Final status
-        run: |
-          echo "Sync job finished. new_commits=${{ steps.check_commits.outputs.new_commits }}"
+          # Create the PR
+          TITLE="chore: 同步上游 ${UPSTREAM_REPO} 更新 (${BRANCH})"
+          BODY="自动同步上游仓库 \`${UPSTREAM_REPO}\` 的更新。\n\n请人工检查并合并（如果合并安全）。"
+          CREATE_RESPONSE=$(curl -s -X POST -H "Authorization: token ${PAT}" \
+            -H "Content-Type: application/json" \
+            -d "$(jq -n --arg t "$TITLE" --arg h "${OWNER}:${BRANCH}" --arg b "$BASE" --arg body "$BODY" '{title:$t, head:$h, base:$b, body:$body, maintainer_can_modify:true}')" \
+            "${GITHUB_API}/repos/${REPO}/pulls")
+
+          PR_URL=$(echo "$CREATE_RESPONSE" | jq -r '.html_url // empty')
+          PR_NUMBER=$(echo "$CREATE_RESPONSE" | jq -r '.number // empty')
+
+          if [ -n "$PR_URL" ]; then
+            echo "PR created: $PR_URL"
+            echo "pr_created=true" >> $GITHUB_OUTPUT
+            echo "pr_url=$PR_URL" >> $GITHUB_OUTPUT
+            echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
+          else
+            echo "Failed to create PR. Response:"
+            echo "$CREATE_RESPONSE"
+            echo "pr_created=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
