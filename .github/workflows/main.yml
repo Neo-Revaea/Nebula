@@ -2,7 +2,7 @@ name: Sync Upstream
 
 on:
   schedule:
-    - cron: '0 * * * *' # 每小时运行一次（按需修改）
+    - cron: '0 * * * *'
   workflow_dispatch:
     inputs:
       force_sync_master:
@@ -15,9 +15,9 @@ on:
         default: 'true'
 
 env:
-  UPSTREAM_REPO: 'astrbotdevs/astrbot'  # 上游仓库 (owner/repo)
-  UPSTREAM_BRANCH: 'master'             # 上游分支
-  TARGET_BRANCH: 'master'               # 你的仓库目标分支
+  UPSTREAM_REPO: 'astrbotdevs/astrbot'
+  UPSTREAM_BRANCH: 'master'
+  TARGET_BRANCH: 'master'
 
 permissions:
   contents: read
@@ -25,13 +25,19 @@ permissions:
 jobs:
   sync:
     runs-on: ubuntu-latest
+
+    # 把调度/dispatch 参数在 job 级别设为 env（便于在 if 中引用）
+    env:
+      CREATE_PR: ${{ github.event.inputs.create_pr || 'true' }}
+      FORCE_SYNC: ${{ github.event.inputs.force_sync_master || 'false' }}
+
     steps:
       - name: Checkout target repository (full history, allow pushes)
         uses: actions/checkout@v6
         with:
           ref: ${{ env.TARGET_BRANCH }}
           fetch-depth: 0
-          token: ${{ secrets.PAT }}   # 使用 PAT 以确保有写权限 push / create PR
+          token: ${{ secrets.PAT }}
 
       - name: Configure git user
         run: |
@@ -45,7 +51,7 @@ jobs:
           git fetch --no-tags --prune upstream ${UPSTREAM_BRANCH}
           git fetch --no-tags --prune origin ${TARGET_BRANCH}
 
-      - name: Debug - show remotes and SHAs
+      - name: Show remotes and SHAs
         run: |
           echo "Remotes:"
           git remote -v
@@ -61,40 +67,37 @@ jobs:
           echo "new_commits=${NEW_COMMITS_COUNT}" >> $GITHUB_OUTPUT
           echo "Upstream -> origin diff commits: ${NEW_COMMITS_COUNT}"
 
-      - name: Create branch from upstream and push (if commits found & create_pr=true)
-        if: ${{ steps.check_commits.outputs.new_commits != '0' && fromJson('["true","True","TRUE"]').includes(github.event.inputs.create_pr || 'true') }}
+      # 当发现有新提交且用户希望创建 PR 时创建分支并 push
+      - name: Create branch from upstream and push
+        if: ${{ steps.check_commits.outputs.new_commits != '0' && env.CREATE_PR == 'true' }}
         run: |
           BRANCH_NAME="sync-upstream-${{ github.run_id }}"
           echo "Creating branch ${BRANCH_NAME} from upstream/${UPSTREAM_BRANCH}"
           git checkout -b "${BRANCH_NAME}" upstream/${UPSTREAM_BRANCH}
-          # push new branch to your origin
           git push --set-upstream origin "${BRANCH_NAME}"
           echo "pushed branch ${BRANCH_NAME}"
 
       - name: Create Pull Request (if branch created)
-        if: ${{ steps.check_commits.outputs.new_commits != '0' && fromJson('["true","True","TRUE"]').includes(github.event.inputs.create_pr || 'true') }}
+        if: ${{ steps.check_commits.outputs.new_commits != '0' && env.CREATE_PR == 'true' }}
         uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.PAT }}
           branch: sync-upstream-${{ github.run_id }}
           base: ${{ env.TARGET_BRANCH }}
-          delete-branch: true
+          delete-branch: true   # 调试时可先设 false
           title: 'chore: 自动同步上游更新'
           body: |
             检测到上游仓库 `${{ env.UPSTREAM_REPO }}` 有新更新，自动创建此 PR 以便人工审查与合并。
-            ### 合并前检查：
-            1. 确认 Files changed 中的修改是否安全。
-            2. 若有冲突，请在本地解决后再合并。
           labels: automated pr
           maintainer-can-modify: true
 
+      # 强制覆盖 master（仅在 dispatch 时设置 force_sync_master=true 才会执行）
       - name: Force-sync master (dangerous) - optional
-        if: ${{ github.event.inputs.force_sync_master == 'true' }}
+        if: ${{ env.FORCE_SYNC == 'true' }}
         run: |
           echo "⚠️ FORCE SYNC: Resetting origin/${TARGET_BRANCH} to upstream/${UPSTREAM_BRANCH}"
           git checkout ${TARGET_BRANCH}
           git reset --hard upstream/${UPSTREAM_BRANCH}
-          # 强制推送覆盖 origin master（请确认你真的要这么做）
           git push origin ${TARGET_BRANCH} --force
           echo "Force-pushed ${TARGET_BRANCH} -> origin"
 
