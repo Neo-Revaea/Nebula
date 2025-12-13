@@ -93,11 +93,50 @@
         <v-toolbar-title>{{ tm('codeEditor.title') }}</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-toolbar-items style="display: flex; align-items: center;">
-          <v-btn style="margin-left: 16px;" size="small" @click="configToString()">{{
-            tm('editor.revertCode') }}</v-btn>
-          <v-btn v-if="config_data_has_changed" style="margin-left: 16px;" size="small" @click="applyStrConfig()">{{
-            tm('editor.applyConfig') }}</v-btn>
-          <small style="margin-left: 16px;">💡 {{ tm('editor.applyTip') }}</small>
+          <v-tooltip :text="tm('editor.revertCode')" location="bottom">
+            <template #activator="{ props }">
+              <v-btn
+                v-bind="props"
+                prepend-icon="mdi-history"
+                variant="text"
+                size="small"
+                style="margin-left: 16px;"
+                :aria-label="tm('editor.revertCode')"
+                @click="configToString()"
+              >
+                {{ tm('editor.revertShort') }}
+              </v-btn>
+            </template>
+          </v-tooltip>
+          <v-tooltip v-if="config_data_has_changed" :text="tm('editor.applyConfig')" location="bottom">
+            <template #activator="{ props }">
+              <v-btn
+                v-bind="props"
+                prepend-icon="mdi-check-circle-outline"
+                variant="text"
+                size="small"
+                style="margin-left: 16px;"
+                :aria-label="tm('editor.applyConfig')"
+                @click="applyStrConfig()"
+              >
+                {{ tm('editor.applyShort') }}
+              </v-btn>
+            </template>
+          </v-tooltip>
+          <v-tooltip :text="tm('editor.applyTip')" location="bottom">
+            <template #activator="{ props }">
+              <v-btn
+                v-bind="props"
+                prepend-icon="mdi-information-outline"
+                variant="text"
+                size="small"
+                style="margin-left: 16px;"
+                :aria-label="tm('editor.applyTip')"
+              >
+                {{ tm('editor.tipShort') }}
+              </v-btn>
+            </template>
+          </v-tooltip>
         </v-toolbar-items>
       </v-toolbar>
       <v-card-text class="pa-0">
