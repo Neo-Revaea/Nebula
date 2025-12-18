@@ -592,6 +592,10 @@ onBeforeUnmount(() => {
     .chat-page-container {
         padding: 0 !important;
     }
+
+    .conversation-header {
+        padding: 2px;
+    }
 }
 
 @keyframes gradientShift {
