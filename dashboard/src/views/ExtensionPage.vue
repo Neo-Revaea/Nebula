@@ -232,7 +232,9 @@ const paginatedPlugins = computed(() => {
 });
 
 const updatableExtensions = computed(() => {
-  return extension_data?.data?.filter(ext => ext.has_update) || [];
+  return Array.isArray(extension_data?.data)
+    ? extension_data.data.filter(ext => ext.has_update)
+    : [];
 });
 
 const toggleShowReserved = () => {
@@ -263,6 +265,10 @@ const getExtensions = async () => {
   loading_.value = true;
   try {
     const res = await axios.get('/api/plugin/get');
+    if (!Array.isArray(res.data.data)) {
+      console.error('Invalid data format:', res.data);
+      throw new Error('Invalid data format');
+    }
     Object.assign(extension_data, res.data);
     checkUpdate();
   } catch (err) {
