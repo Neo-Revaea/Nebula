@@ -84,7 +84,7 @@
         
 <v-menu 
         :open-on-hover="!$vuetify.display.mobile"
-        :open-on-click="$vuetify.display.mobile"
+        :open-on-click="true"
         :location="$vuetify.display.mobile ? 'bottom center' : 'end center'"
         offset="10" 
         :close-on-content-click="true"

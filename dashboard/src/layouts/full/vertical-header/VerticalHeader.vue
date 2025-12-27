@@ -395,20 +395,26 @@ const changeLanguage = async (langCode: string) => {
       <!-- 语言切换（分组，悬停展开二级菜单） -->
       <v-menu 
         :open-on-hover="!$vuetify.display.mobile"
-        :open-on-click="$vuetify.display.mobile"
-        :location="$vuetify.display.mobile ? 'bottom center' : 'end center'"
+        :open-on-click="true"
+        :location="$vuetify.display.mobile ? 'bottom center' : 'start top'"
+        :origin="$vuetify.display.mobile ? 'top center' : 'end top'"
         offset="12" 
-        origin="start" 
         :close-on-content-click="true"
+        transition="scale-transition"
       >
         <template v-slot:activator="{ props: activatorProps }">
-          <v-list-item v-bind="activatorProps" class="styled-menu-item" rounded="md">
+          <v-list-item 
+             v-bind="activatorProps" 
+             class="styled-menu-item" 
+             rounded="md"
+             @click.stop
+          >
             <template v-slot:prepend>
               <v-icon>mdi-translate</v-icon>
             </template>
             <v-list-item-title>{{ t('core.header.buttons.language') || 'Language' }}</v-list-item-title>
             <template v-slot:append>
-              <v-icon>
+              <v-icon size="small" color="medium-emphasis">
                 {{ $vuetify.display.mobile ? 'mdi-chevron-down' : 'mdi-chevron-right' }}
               </v-icon>
             </template>
@@ -417,24 +423,23 @@ const changeLanguage = async (langCode: string) => {
 
         <v-card class="language-dropdown" elevation="8" rounded="lg">
           <v-list density="compact" class="pa-1">
-            <v-list-item
-              v-for="lang in languages"
-              :key="lang.code"
-              :value="lang.code"
-              @click="changeLanguage(lang.code)"
-              :class="{ 'styled-menu-item-active': currentLocale === lang.code }"
-              class="language-item"
-              rounded="md"
-            >
-              <template v-slot:prepend>
-                <span class="language-flag">{{ lang.flag }}</span>
-              </template>
-              <v-list-item-title>{{ lang.name }}</v-list-item-title>
-              
-              <template v-slot:append v-if="currentLocale === lang.code">
-                 <v-icon color="primary" size="small">mdi-check</v-icon>
-              </template>
-            </v-list-item>
+             <v-list-item
+               v-for="lang in languages"
+               :key="lang.code"
+               :value="lang.code"
+               @click="changeLanguage(lang.code)"
+               :class="{ 'styled-menu-item-active': currentLocale === lang.code }"
+               class="language-item"
+               rounded="md"
+             >
+               <template v-slot:prepend>
+                 <span class="language-flag">{{ lang.flag }}</span>
+               </template>
+               <v-list-item-title>{{ lang.name }}</v-list-item-title>
+               <template v-slot:append v-if="currentLocale === lang.code">
+                  <v-icon color="primary" size="small">mdi-check</v-icon>
+               </template>
+             </v-list-item>
           </v-list>
         </v-card>
       </v-menu>
