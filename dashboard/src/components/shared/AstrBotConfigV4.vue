@@ -175,8 +175,7 @@ function getSpecialSubtype(value) {
 </script>
 
 <template>
-
-
+  <div class="astrbot-config-v4">
   <v-card v-if="shouldShowSection()" style="margin-bottom: 16px; padding-bottom: 8px; background-color: rgb(var(--v-theme-background));"
     rounded="md" variant="outlined">
     <v-card-text class="config-section" v-if="metadata[metadataKey]?.type === 'object'" style="padding-bottom: 8px;">
@@ -272,11 +271,16 @@ function getSpecialSubtype(value) {
       </v-card-text>
     </v-card>
   </v-dialog>
+  </div>
 </template>
 
 
 
 <style scoped>
+.astrbot-config-v4 {
+  display: contents;
+}
+
 .config-section {
   margin-bottom: 4px;
 }

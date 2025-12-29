@@ -120,7 +120,8 @@ function hasVisibleItemsAfter(items, currentIndex) {
 </script>
 
 <template>
-  <div class="config-section" v-if="iterable && metadata[metadataKey]?.type === 'object'">
+  <div class="astrbot-config">
+    <div class="config-section" v-if="iterable && metadata[metadataKey]?.type === 'object'">
     <v-list-item-title class="config-title">
       {{ metadata[metadataKey]?.description }} <span class="metadata-key">({{ metadataKey }})</span>
     </v-list-item-title>
@@ -128,9 +129,9 @@ function hasVisibleItemsAfter(items, currentIndex) {
       <span v-if="metadata[metadataKey]?.obvious_hint && metadata[metadataKey]?.hint" class="important-hint">‼️</span>
       {{ metadata[metadataKey]?.hint }}
     </v-list-item-subtitle>
-  </div>
+    </div>
 
-  <v-card-text class="px-0 py-1">
+    <v-card-text class="px-0 py-1">
     <!-- Object Type Configuration -->
     <div v-if="metadata[metadataKey]?.type === 'object' || metadata[metadataKey]?.config_template" class="object-config">
       <!-- Provider-level hint -->
@@ -282,11 +283,16 @@ function hasVisibleItemsAfter(items, currentIndex) {
       </v-card-text>
     </v-card>
   </v-dialog>
+  </div>
 </template>
 
 
 
 <style scoped>
+.astrbot-config {
+  display: contents;
+}
+
 .config-section {
   margin-bottom: 12px;
 }
