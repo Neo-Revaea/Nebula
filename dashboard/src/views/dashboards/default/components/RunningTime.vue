@@ -140,9 +140,9 @@ export default {
   opacity: 0.7;
   color: var(--card-text);
 }
-
-.uptime-card ::v-deep .v-card-title,
-.uptime-card ::v-deep .v-card-actions {
+  
+.uptime-card :deep(.v-card-title),
+.uptime-card :deep(.v-card-actions) {
   display: none;
 }
 </style>
