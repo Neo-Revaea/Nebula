@@ -23,7 +23,10 @@
       </v-tooltip>
     </v-card-title>
 
-    <v-card-text :class="{'pa-0': noPadding}">
+    <v-card-text 
+      :class="[{'pa-0': noPadding}, 'flex-grow-1']"
+      style="overflow: hidden; min-height: 0;"
+    >
       <slot name="item-details" :item="item"></slot>
     </v-card-text>
 
@@ -141,6 +144,7 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  height: 100%;
 }
 
 .hover-elevation:hover {
