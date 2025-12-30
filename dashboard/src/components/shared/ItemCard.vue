@@ -1,5 +1,9 @@
 <template>
-  <v-card class="item-card hover-elevation" style="padding: 4px;" elevation="0">
+  <v-card 
+    class="item-card hover-elevation" 
+    elevation="0"
+    v-bind="$attrs" 
+  >
     <v-card-title v-if="!hideHeader" class="d-flex justify-space-between align-center pb-1 pt-3">
       <span class="text-h2 text-truncate" :title="getItemTitle()">{{ getItemTitle() }}</span>
       <v-tooltip location="top">
@@ -19,7 +23,7 @@
       </v-tooltip>
     </v-card-title>
 
-    <v-card-text>
+    <v-card-text :class="{'pa-0': noPadding}">
       <slot name="item-details" :item="item"></slot>
     </v-card-text>
 
@@ -59,7 +63,7 @@
       <v-spacer></v-spacer>
     </v-card-actions>
 
-    <div class="d-flex justify-end align-center" style="position: absolute; bottom: 16px; right: 16px; opacity: 0.2;" v-if="bglogo">
+    <div class="d-flex justify-end align-center" style="position: absolute; bottom: 16px; right: 16px; opacity: 0.2; pointer-events: none;" v-if="bglogo">
       <v-img
         :src="bglogo"
         contain
@@ -103,9 +107,12 @@ export default {
     showCopyButton: {
       type: Boolean,
       default: false
-    }
-    ,
+    },
     hideHeader: {
+      type: Boolean,
+      default: false
+    },
+    noPadding: {
       type: Boolean,
       default: false
     }
@@ -128,10 +135,9 @@ export default {
 <style scoped>
 .item-card {
   position: relative;
-  border-radius: 18px;
+  border-radius: 16px; 
   transition: all 0.3s ease;
   overflow: hidden;
-  min-height: 220px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
