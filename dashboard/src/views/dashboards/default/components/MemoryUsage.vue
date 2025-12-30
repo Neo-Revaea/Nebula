@@ -107,7 +107,7 @@ export default {
   transform: translateY(-2px);
   border-color: var(--hover-border) !important;
   box-shadow: 0 4px 16px var(--hover-shadow) !important;
-  background: rgba(255, 152, 0, 0.02) !important;
+  background: rgba(255, 152, 0, 0.08) !important;
 }
 
 .content-wrapper {
