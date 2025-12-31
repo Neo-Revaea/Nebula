@@ -290,11 +290,12 @@ watch(() => customizer.viewMode, (newMode, oldMode) => {
 // Merry Christmas! 🎄
 const isChristmas = computed(() => {
   const today = new Date();
-  const month = today.getMonth() + 1; 
+  const month = today.getMonth() + 1; // getMonth() 返回 0-11
   const day = today.getDate();
   return month === 12 && day === 25;
 });
 
+// 语言切换相关
 const { languageOptions, currentLanguage, switchLanguage, locale } = useLanguageSwitcher();
 const currentLocale = computed(() => locale.value);
 const changeLanguage = async (langCode: string) => {
@@ -414,7 +415,7 @@ const changeLanguage = async (langCode: string) => {
                :key="lang.value"
                :value="lang.value"
                @click="changeLanguage(lang.value)"
-               :class="{ 'styled-menu-item-active': currentLocale === lang.value }"
+               :class="{ 'language-item-selected': currentLocale === lang.value }"
                class="language-item"
                rounded="md"
              >
@@ -675,14 +676,12 @@ const changeLanguage = async (langCode: string) => {
 
 .markdown-content ol {
   padding-left: 24px;
-  /* Adds indentation to ordered lists */
   margin-top: 8px;
   margin-bottom: 8px;
 }
 
 .markdown-content ul {
   padding-left: 24px;
-  /* Adds indentation to unordered lists */
   margin-top: 8px;
   margin-bottom: 8px;
 }
@@ -794,6 +793,52 @@ const changeLanguage = async (langCode: string) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.language-dropdown {
+  min-width: 100px;
+  width: fit-content;
+  border: 1px solid rgba(var(--v-theme-on-surface),0.01) !important;
+  background: rgb(var(--v-theme-surface)) !important;
+  backdrop-filter: blur(10px);
+}
+
+.v-theme--PurpleThemeDark .language-dropdown {
+  background: rgb(var(--v-theme-surface)) !important;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.15) !important;
+}
+
+.language-item {
+  margin: 2px 0;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.language-item:hover {
+  background: rgba(var(--v-theme-primary), 0.12) !important;
+}
+
+.language-item-selected {
+  background: rgba(var(--v-theme-primary), 0.16) !important;
+  color: rgb(var(--v-theme-primary)) !important;
+  font-weight: 600;
+}
+
+.language-item-selected:hover {
+  background: rgba(var(--v-theme-primary), 0.24) !important;
+}
+
+.v-theme--PurpleThemeDark .language-item:hover {
+  background: rgba(var(--v-theme-primary), 0.18) !important;
+}
+
+.v-theme--PurpleThemeDark .language-item-selected {
+  background: rgba(var(--v-theme-primary), 0.24) !important;
+  color: rgb(var(--v-theme-primary)) !important;
+}
+
+.v-theme--PurpleThemeDark .language-item-selected:hover {
+  background: rgba(var(--v-theme-primary), 0.32) !important;
 }
 
 /* 移动端样式优化 */

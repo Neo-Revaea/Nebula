@@ -76,27 +76,24 @@ const changeLanguage = async (langCode: string) => {
   background: rgba(var(--v-theme-primary), 0.16) !important;
 }
 
-/* 深色模式适配 */
 :deep(.v-theme--PurpleThemeDark) .language-switcher--default:hover,
 :deep(.v-theme--PurpleThemeDark) .language-switcher--default:focus-visible {
   background: rgba(var(--v-theme-primary), 0.24) !important;
 }
 
-/* 下拉菜单样式 */
 .language-dropdown {
   min-width: 100px;
   width: fit-content;
-  border: 1px solid rgba(var(--v-theme-primary), 0.15) !important;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.15) !important; 
   background: rgb(var(--v-theme-surface)) !important;
   backdrop-filter: blur(10px);
 }
 
 :deep(.v-theme--PurpleThemeDark) .language-dropdown {
   background: rgb(var(--v-theme-surface)) !important;
-  border: 1px solid rgba(var(--v-theme-primary), 0.32) !important;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.12) !important;
 }
 
-/* 列表项样式 */
 .language-item {
   margin: 2px 0;
   transition: all 0.2s ease;
@@ -107,8 +104,9 @@ const changeLanguage = async (langCode: string) => {
 }
 
 .language-item-selected {
-  background: rgba(var(--v-theme-primary), 0.18) !important;
-  font-weight: 500;
+  background: rgba(var(--v-theme-primary), 0.16) !important;
+  color: rgb(var(--v-theme-primary)) !important;
+  font-weight: 600;
 }
 
 .language-item-selected:hover {
@@ -120,7 +118,8 @@ const changeLanguage = async (langCode: string) => {
 }
 
 :deep(.v-theme--PurpleThemeDark) .language-item-selected {
-  background: rgba(var(--v-theme-primary), 0.26) !important;
+  background: rgba(var(--v-theme-primary), 0.24) !important;
+  color: rgb(var(--v-theme-primary)) !important;
 }
 
 :deep(.v-theme--PurpleThemeDark) .language-item-selected:hover {

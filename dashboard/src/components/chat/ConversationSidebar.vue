@@ -254,7 +254,6 @@ function handleDeleteConversation(session: Session) {
   min-width: 280px !important;
   transform: translateX(-100%);
   transition: transform 0.3s ease;
-  
   z-index: 1000;
 }
 
@@ -323,7 +322,6 @@ function handleDeleteConversation(session: Session) {
   font-size: 14px;
   line-height: 1.3;
   margin-bottom: 2px;
-  /* 标题需要 opacity 过渡来处理折叠时的隐藏 */
   transition: opacity 0.25s ease;
 }
 
