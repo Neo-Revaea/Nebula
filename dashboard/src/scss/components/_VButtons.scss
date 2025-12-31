@@ -22,6 +22,41 @@
   height: calc(var(--v-btn-height) + 6px);
 }
 
+// 移动端按钮适配
+@media (max-width: 600px) {
+  .v-btn {
+    min-width: 40px;
+    min-height: 36px;
+    font-size: 15px;
+    padding: 0 10px !important;
+    border-radius: 8px !important;
+  }
+  .v-btn--icon.v-btn--density-default {
+    width: calc(var(--v-btn-height) + 2px);
+    height: calc(var(--v-btn-height) + 2px);
+    min-width: 36px;
+    min-height: 36px;
+    font-size: 18px;
+  }
+  .config-floating-btn {
+    right: 16px;
+    bottom: 16px;
+    width: 48px;
+    min-width: 48px;
+    height: 48px;
+    min-height: 48px;
+    border-radius: 50% !important;
+    box-shadow: 0 3px 8px rgba(25, 47, 126, 0.25);
+    padding: 0 !important;
+  }
+  .config-floating-btn--editor {
+    bottom: 76px;
+  }
+  .config-floating-btn--test {
+    bottom: 132px;
+  }
+}
+
 // Config floating action buttons
 .config-floating-btn {
   position: fixed;
