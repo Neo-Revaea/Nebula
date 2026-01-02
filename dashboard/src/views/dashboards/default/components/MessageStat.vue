@@ -67,7 +67,7 @@
   </v-card>
 </template>
 
-<script>
+<script lang="ts">
 import axios from 'axios';
 import { useTheme } from 'vuetify'; 
 import { useModuleI18n } from '@/i18n/composables';
@@ -103,7 +103,7 @@ export default {
   computed: {
     chartOptions() {
       const currentTheme = this.theme.current.value;
-      const themeColors = currentTheme.colors || {};
+      const themeColors: any = currentTheme.colors || {};
       const isDark = currentTheme.dark;
       
       return {

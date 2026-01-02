@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { VueMonacoEditor } from '@guolao/vue-monaco-editor'
 import { ref, computed } from 'vue'
 import ConfigItemRenderer from './ConfigItemRenderer.vue'
@@ -151,7 +151,7 @@ function hasVisibleItemsAfter(items, currentIndex) {
         <div v-if="metadata[metadataKey].items[key]?.type === 'object'" class="nested-object">
           <div v-if="metadata[metadataKey].items[key] && !metadata[metadataKey].items[key]?.invisible && shouldShowItem(metadata[metadataKey].items[key], key)" class="nested-container">
             <v-expand-transition>
-              <AstrBotConfig :metadata="metadata[metadataKey].items" :iterable="iterable[key]" :metadataKey="key">
+              <AstrBotConfig :metadata="metadata[metadataKey].items" :iterable="iterable[key]" :metadataKey="String(key)">
               </AstrBotConfig>
             </v-expand-transition>
           </div>

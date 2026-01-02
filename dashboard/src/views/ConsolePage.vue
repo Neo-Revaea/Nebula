@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import ConsoleDisplayer from '@/components/shared/ConsoleDisplayer.vue';
 import { useModuleI18n } from '@/i18n/composables';
 import axios from 'axios';
@@ -50,7 +50,7 @@ const { tm } = useModuleI18n('features/console');
     <ConsoleDisplayer ref="consoleDisplayer" style="height: calc(100vh - 220px); " />
   </div>
 </template>
-<script>
+<script lang="ts">
 export default {
   name: 'ConsolePage',
   components: {
@@ -71,7 +71,7 @@ export default {
   watch: {
     autoScrollEnabled(val) {
       if (this.$refs.consoleDisplayer) {
-        this.$refs.consoleDisplayer.autoScroll = val;
+        (this.$refs.consoleDisplayer as any).autoScroll = val;
       }
     }
   },

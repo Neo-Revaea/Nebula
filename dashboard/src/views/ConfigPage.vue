@@ -236,7 +236,7 @@
 </template>
 
 
-<script>
+<script lang="ts">
 import axios from 'axios';
 import AstrBotCoreConfigWrapper from '@/components/config/AstrBotCoreConfigWrapper.vue';
 import WaitingForRestart from '@/components/shared/WaitingForRestart.vue';
@@ -282,10 +282,10 @@ export default {
       return this.configInfoList.map(info => info.name);
     },
     selectedConfigInfo() {
-      return this.configInfoList.find(info => info.id === this.selectedConfigID) || {};
+      return (this.configInfoList as any[]).find((info: any) => info.id === this.selectedConfigID) || ({} as any);
     },
     configSelectItems() {
-      const items = [...this.configInfoList];
+      const items = [...(this.configInfoList as any[])];
       items.push({
         id: '_%manage%_',
         name: this.tm('configManagement.manageConfigs'),
@@ -351,7 +351,7 @@ export default {
     this.configType = this.isSystemConfig ? 'system' : 'normal';
   },
   methods: {
-    getConfigInfoList(abconf_id) {
+    getConfigInfoList(abconf_id?: string) {
       // 获取配置列表
       axios.get('/api/config/abconfs').then((res) => {
         this.configInfoList = res.data.data.info_list;
@@ -379,9 +379,9 @@ export default {
         this.save_message_success = "error";
       });
     },
-    getConfig(abconf_id) {
+    getConfig(abconf_id?: string) {
       this.fetched = false
-      const params = {};
+      const params: any = {};
 
       if (this.isSystemConfig) {
         params.system_config = '1';
@@ -405,7 +405,7 @@ export default {
     updateConfig() {
       if (!this.fetched) return;
 
-      const postData = {
+      const postData: any = {
         config: JSON.parse(JSON.stringify(this.config_data)),
       };
 
@@ -423,7 +423,7 @@ export default {
 
           if (this.isSystemConfig) {
             axios.post('/api/stat/restart-core').then(() => {
-              this.$refs.wfr.check();
+              (this.$refs.wfr as any)?.check?.();
             })
           }
         } else {

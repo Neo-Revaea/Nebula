@@ -277,7 +277,8 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
+import type { PropType } from 'vue'
 import { useI18n, useModuleI18n } from '@/i18n/composables';
 import { MarkdownRender, enableKatex, enableMermaid } from 'markstream-vue'
 import 'markstream-vue/index.css'
@@ -295,7 +296,7 @@ export default {
     },
     props: {
         messages: {
-            type: Array,
+            type: Array as PropType<any[]>,
             required: true
         },
         isDark: {
@@ -326,11 +327,11 @@ export default {
             copiedMessages: new Set(),
             isUserNearBottom: true,
             scrollThreshold: 1,
-            scrollTimer: null,
+            scrollTimer: null as any,
             expandedReasoning: new Set(), // Track which reasoning blocks are expanded
             downloadingFiles: new Set(), // Track which files are being downloaded
             expandedToolCalls: new Set(), // Track which tool call cards are expanded
-            elapsedTimeTimer: null, // Timer for updating elapsed time
+            elapsedTimeTimer: null as any, // Timer for updating elapsed time
             currentTime: Date.now() / 1000, // Current time for elapsed time calculation
         };
     },
@@ -349,6 +350,11 @@ export default {
         }
     },
     methods: {
+        getMessageContainerEl(): HTMLElement | null {
+            const containerRef: any = this.$refs.messageContainer;
+            return (containerRef?.$el ?? containerRef) as HTMLElement | null;
+        },
+
         // 检查 message 中是否有音频
         hasAudio(messageParts) {
             if (!Array.isArray(messageParts)) return false;
@@ -380,8 +386,8 @@ export default {
             const msgIndex = this.messages.findIndex(m => m.id === messageId);
             if (msgIndex === -1) return;
 
-            const container = this.$refs.messageContainer;
-            const messageItems = container?.querySelectorAll('.message-item');
+            const container = this.getMessageContainerEl();
+            const messageItems = container?.querySelectorAll<HTMLElement>('.message-item');
             if (messageItems && messageItems[msgIndex]) {
                 messageItems[msgIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
                 // 高亮一下
@@ -543,16 +549,17 @@ export default {
         // 初始化代码块复制按钮
         initCodeCopyButtons() {
             this.$nextTick(() => {
-                const codeBlocks = this.$refs.messageContainer?.querySelectorAll('pre code') || [];
+                const container = this.getMessageContainerEl();
+                const codeBlocks = container?.querySelectorAll<HTMLElement>('pre code') || [];
                 codeBlocks.forEach((codeBlock, index) => {
-                    const pre = codeBlock.parentElement;
+                    const pre = codeBlock.parentElement as HTMLElement | null;
                     if (pre && !pre.querySelector('.copy-code-btn')) {
                         const button = document.createElement('button');
                         button.className = 'copy-code-btn';
                         button.innerHTML = this.getCopyIconSvg();
                         button.title = '复制代码';
                         button.addEventListener('click', () => {
-                            this.copyCodeToClipboard(codeBlock.textContent);
+                            this.copyCodeToClipboard(codeBlock.textContent || '');
                             // 显示复制成功提示
                             button.innerHTML = this.getSuccessIconSvg();
                             button.style.color = '#4caf50';
@@ -571,7 +578,7 @@ export default {
         initImageClickEvents() {
             this.$nextTick(() => {
                 // 查找所有动态生成的图片（在markdown-content中）
-                const images = document.querySelectorAll('.markdown-content img');
+                const images = document.querySelectorAll<HTMLImageElement>('.markdown-content img');
                 images.forEach((img) => {
                     if (!img.hasAttribute('data-click-enabled')) {
                         img.style.cursor = 'pointer';
@@ -584,7 +591,7 @@ export default {
 
         scrollToBottom() {
             this.$nextTick(() => {
-                const container = this.$refs.messageContainer;
+                const container = this.getMessageContainerEl();
                 if (container) {
                     container.scrollTop = container.scrollHeight;
                     this.isUserNearBottom = true; // 程序滚动到底部后标记用户在底部
@@ -594,9 +601,9 @@ export default {
 
         // 添加滚动事件监听器
         addScrollListener() {
-            const container = this.$refs.messageContainer;
+            const container = this.getMessageContainerEl();
             if (container) {
-                container.addEventListener('scroll', this.throttledHandleScroll);
+                container.addEventListener('scroll', this.throttledHandleScroll as any);
             }
         },
 
@@ -612,9 +619,10 @@ export default {
 
         // 处理滚动事件
         handleScroll() {
-            const container = this.$refs.messageContainer;
+            const containerRef: any = this.$refs.messageContainer;
+            const container: any = containerRef?.$el || containerRef;
             if (container) {
-                const { scrollTop, scrollHeight, clientHeight } = container;
+                const { scrollTop, scrollHeight, clientHeight } = container as any;
                 const distanceFromBottom = scrollHeight - (scrollTop + clientHeight);
 
                 // 判断用户是否在底部附近
@@ -624,8 +632,9 @@ export default {
 
         // 组件销毁时移除监听器
         beforeUnmount() {
-            const container = this.$refs.messageContainer;
-            if (container) {
+            const containerRef: any = this.$refs.messageContainer;
+            const container: any = containerRef?.$el || containerRef;
+            if (container && typeof container.removeEventListener === 'function') {
                 container.removeEventListener('scroll', this.throttledHandleScroll);
             }
             // 清理定时器
@@ -698,17 +707,17 @@ export default {
                 this.currentTime = Date.now() / 1000;
 
                 // Check if there are any running tool calls
-                const hasRunningToolCalls = this.messages.some(msg =>
-                    Array.isArray(msg.content.message) && msg.content.message.some(part =>
-                        part.type === 'tool_call' && part.tool_calls?.some(tc => !tc.finished_ts)
+                const hasRunningToolCalls = (this.messages as any[]).some((msg: any) =>
+                    Array.isArray(msg?.content?.message) && msg.content.message.some((part: any) =>
+                        part?.type === 'tool_call' && part.tool_calls?.some((tc: any) => !tc.finished_ts)
                     )
                 );
 
                 if (hasRunningToolCalls) {
                     // Check if any running tool call is under 1 second
-                    const hasSubSecondToolCall = this.messages.some(msg =>
-                        Array.isArray(msg.content.message) && msg.content.message.some(part =>
-                            part.type === 'tool_call' && part.tool_calls?.some(tc =>
+                    const hasSubSecondToolCall = (this.messages as any[]).some((msg: any) =>
+                        Array.isArray(msg?.content?.message) && msg.content.message.some((part: any) =>
+                            part?.type === 'tool_call' && part.tool_calls?.some((tc: any) =>
                                 !tc.finished_ts && (this.currentTime - tc.ts) < 1
                             )
                         )

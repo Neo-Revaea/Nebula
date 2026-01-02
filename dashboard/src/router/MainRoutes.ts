@@ -1,4 +1,6 @@
-const MainRoutes = {
+import type { RouteRecordRaw } from 'vue-router'
+
+const MainRoutes: RouteRecordRaw = {
   path: '/main',
   meta: {
     requiresAuth: true

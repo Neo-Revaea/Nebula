@@ -186,7 +186,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import axios from 'axios';
 import AstrBotConfig from '@/components/shared/AstrBotConfig.vue';
 import WaitingForRestart from '@/components/shared/WaitingForRestart.vue';
@@ -217,9 +217,9 @@ export default {
   },
   data() {
     return {
-      config_data: {},
+      config_data: {} as any,
       fetched: false,
-      metadata: {},
+      metadata: {} as any,
       showAddPlatformDialog: false,
 
       updatingPlatformConfig: {},
@@ -234,8 +234,13 @@ export default {
       showWebhookDialog: false,
       currentWebhookUuid: '',
 
-      platformStats: {},
-      statsRefreshInterval: null,
+      platformStats: {} as any,
+      statsRefreshInterval: null as any,
+
+      showIdConflictDialog: false,
+      idConflictResolve: null as any,
+      showOneBotEmptyTokenWarnDialog: false,
+      oneBotEmptyTokenWarningResolve: null as any,
 
       showErrorDialog: false,
       currentErrorPlatform: null,
@@ -348,7 +353,7 @@ export default {
       this.updatingMode = true;
       this.showAddPlatformDialog = true;
       this.$nextTick(() => {
-        this.$refs.addPlatformDialog.toggleShowConfigSection();
+        (this.$refs.addPlatformDialog as any)?.toggleShowConfigSection?.();
       });
     },
 

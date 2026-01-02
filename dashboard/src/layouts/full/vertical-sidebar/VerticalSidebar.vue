@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref, shallowRef, onMounted, onUnmounted, watch } from 'vue';
 import { useCustomizerStore } from '../../../stores/customizer';
 import { useI18n } from '@/i18n/composables';

@@ -38,6 +38,7 @@ export default defineConfig(async () => {
       __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: false
     },
     build: {
+      target: 'es2022',
       chunkSizeWarningLimit: 1024 * 1024 // Set the limit to 1 MB
     },
     optimizeDeps: {

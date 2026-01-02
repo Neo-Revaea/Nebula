@@ -8,7 +8,7 @@
             <v-card-text>
                 <v-form ref="personaForm" v-model="formValid">
                     <v-text-field v-model="personaForm.persona_id" :label="tm('form.personaId')"
-                        :rules="personaIdRules" :disabled="editingPersona" variant="outlined" density="comfortable"
+                        :rules="personaIdRules" :disabled="!!editingPersona" variant="outlined" density="comfortable"
                         class="mb-4" />
 
                     <v-textarea v-model="personaForm.system_prompt" :label="tm('form.systemPrompt')"
@@ -33,7 +33,7 @@
                                     </p>
                                 </div>
 
-                                <v-radio-group class="mt-2" v-model="toolSelectValue" hide-details="true">
+                                <v-radio-group class="mt-2" v-model="toolSelectValue" :hide-details="true">
                                     <v-radio label="默认使用全部函数工具" value="0"></v-radio>
                                     <v-radio label="选择指定函数工具" value="1">
                                     </v-radio>
@@ -195,7 +195,7 @@
     </v-dialog>
 </template>
 
-<script>
+<script lang="ts">
 import axios from 'axios';
 import { useModuleI18n } from '@/i18n/composables';
 

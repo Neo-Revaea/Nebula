@@ -27,7 +27,7 @@
   </item-card>
 </template>
 
-<script>
+<script lang="ts">
 import { computed } from 'vue';
 import { useTheme } from 'vuetify';
 import { useModuleI18n } from '@/i18n/composables';

@@ -147,7 +147,7 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
 import axios from 'axios';
 import { useI18n, useModuleI18n } from '@/i18n/composables';
 import PersonaForm from '@/components/shared/PersonaForm.vue';

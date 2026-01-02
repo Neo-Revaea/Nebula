@@ -1,6 +1,6 @@
 // To Do: 这个文件该解耦了。
 
-<script setup>
+<script setup lang="ts">
 import InstalledExtensionsSection from '@/components/extension/InstalledExtensionsSection.vue';
 import MarketExtensionsSection from '@/components/extension/MarketExtensionsSection.vue';
 import AstrBotConfig from '@/components/shared/AstrBotConfig.vue';
@@ -42,7 +42,7 @@ const handleConflictConfirm = () => {
   activeTab.value = 'commands';
 };
 
-const fileInput = ref(null);
+const fileInput = ref<any>(null);
 const activeTab = ref('installed');
 const extension_data = reactive({
   data: [],
@@ -65,7 +65,7 @@ const loadingDialog = reactive({
   result: ''
 });
 const showPluginInfoDialog = ref(false);
-const selectedPlugin = ref({});
+const selectedPlugin = ref<any>({ name: '', handlers: [] });
 const curr_namespace = ref('');
 const updatingAll = ref(false);
 
@@ -246,10 +246,21 @@ const toggleShowReserved = () => {
   showReserved.value = !showReserved.value;
 };
 
-const toast = (message, success) => {
-  snack_message.value = message;
+const toast = (message: any, success: any, timeToClose?: number) => {
+  const normalized =
+    typeof message === 'string'
+      ? message
+      : (message?.message ?? message?.toString?.() ?? JSON.stringify(message));
+
+  snack_message.value = normalized;
   snack_show.value = true;
   snack_success.value = success;
+
+  if (typeof timeToClose === 'number' && timeToClose >= 0) {
+    setTimeout(() => {
+      snack_show.value = false;
+    }, timeToClose);
+  }
 };
 
 const resetLoadingDialog = () => {
@@ -311,7 +322,10 @@ const checkUpdate = () => {
   });
 };
 
-const uninstallExtension = async (extension_name, optionsOrSkipConfirm = false) => {
+const uninstallExtension = async (
+  extension_name: string,
+  optionsOrSkipConfirm: boolean | { deleteConfig?: boolean; deleteData?: boolean } = false
+) => {
   let deleteConfig = false;
   let deleteData = false;
   let skipConfirm = false;
@@ -1084,26 +1098,26 @@ watch(marketSearch, (newVal) => {
   <!-- 插件信息对话框 -->
   <v-dialog v-model="showPluginInfoDialog" width="1200">
     <v-card>
-      <v-card-title class="text-h5">{{ selectedPlugin.name }} {{ tm('buttons.viewInfo') }}</v-card-title>
+      <v-card-title class="text-h5">{{ selectedPlugin?.name }} {{ tm('buttons.viewInfo') }}</v-card-title>
       <v-card-text>
-        <v-data-table style="font-size: 17px;" :headers="plugin_handler_info_headers" :items="selectedPlugin.handlers"
+        <v-data-table style="font-size: 17px;" :headers="plugin_handler_info_headers" :items="selectedPlugin?.handlers || []"
           item-key="name">
           <template v-slot:header.id="{ column }">
             <p style="font-weight: bold;">{{ column.title }}</p>
           </template>
           <template v-slot:item.event_type="{ item }">
-            {{ item.event_type }}
+            {{ (item as any).event_type }}
           </template>
           <template v-slot:item.desc="{ item }">
-            {{ item.desc }}
+            {{ (item as any).desc }}
           </template>
           <template v-slot:item.type="{ item }">
             <v-chip color="success">
-              {{ item.type }}
+              {{ (item as any).type }}
             </v-chip>
           </template>
           <template v-slot:item.cmd="{ item }">
-            <span style="font-weight: bold;">{{ item.cmd }}</span>
+            <span style="font-weight: bold;">{{ (item as any).cmd }}</span>
           </template>
         </v-data-table>
       </v-card-text>
@@ -1197,7 +1211,7 @@ watch(marketSearch, (newVal) => {
               <v-file-input ref="fileInput" v-model="upload_file" :label="tm('upload.selectFile')" accept=".zip"
                 hide-details hide-input class="d-none"></v-file-input>
 
-              <v-btn color="primary" size="large" prepend-icon="mdi-upload" @click="$refs.fileInput.click()" elevation="2">
+              <v-btn color="primary" size="large" prepend-icon="mdi-upload" @click="fileInput?.click?.()" elevation="2">
                 {{ tm('buttons.selectFile') }}
               </v-btn>
 

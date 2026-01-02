@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref, watch, onMounted, computed } from 'vue';
 import axios from 'axios';
 import { MarkdownRender, enableKatex, enableMermaid } from 'markstream-vue';
@@ -281,7 +281,7 @@ const _show = computed({
 }
 </style>
 
-<script>
+<script lang="ts">
 export default {
   name: 'ReadmeDialog',
   components: {

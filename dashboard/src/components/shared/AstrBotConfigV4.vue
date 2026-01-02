@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { VueMonacoEditor } from '@guolao/vue-monaco-editor'
 import { ref, computed } from 'vue'
 import ConfigItemRenderer from './ConfigItemRenderer.vue'
@@ -190,7 +190,7 @@ function getSpecialSubtype(value) {
 
     <!-- Object Type Configuration with JSON Selector Support -->
     <div v-if="metadata[metadataKey]?.type === 'object'" class="object-config">
-      <div v-for="(itemMeta, itemKey, index) in metadata[metadataKey].items" :key="itemKey" class="config-item">
+      <div v-for="(itemMeta, itemKey, index) in (metadata[metadataKey].items as Record<string, any>)" :key="itemKey" class="config-item">
         <!-- Check if itemKey is a JSON selector -->
         <template v-if="shouldShowItem(itemMeta, itemKey)">
           <!-- JSON Selector Property -->

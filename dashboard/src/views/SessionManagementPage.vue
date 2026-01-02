@@ -365,7 +365,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import axios from 'axios'
 import { useI18n, useModuleI18n } from '@/i18n/composables'
 
@@ -411,7 +411,7 @@ export default {
       // 规则编辑
       ruleDialog: false,
       selectedUmo: null,
-      editingRules: {},
+      editingRules: {} as any,
 
       // 服务配置
       serviceConfig: {
@@ -636,7 +636,7 @@ export default {
       if (!this.selectedNewUmo) return
 
       // 创建一个新的规则项并打开编辑器
-      const newItem = {
+      const newItem: any = {
         umo: this.selectedNewUmo,
         rules: {},
       }
