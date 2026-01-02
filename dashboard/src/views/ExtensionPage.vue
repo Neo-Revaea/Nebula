@@ -39,7 +39,7 @@ const checkAndPromptConflicts = async () => {
   }
 };
 const handleConflictConfirm = () => {
-  activeTab.value = 'commands';
+  activeTab.value = 'components';
 };
 
 const fileInput = ref<any>(null);
@@ -75,7 +75,13 @@ const readmeDialog = reactive({
   repoUrl: null
 });
 
-const isListView = ref(false);
+const getInitialListViewMode = () => {
+  if (typeof window !== 'undefined' && window.localStorage) {
+    return localStorage.getItem('pluginListViewMode') === 'true';
+  }
+  return false;
+};
+const isListView = ref(getInitialListViewMode());
 const pluginSearch = ref('');
 const loading_ = ref(false);
 
@@ -896,6 +902,11 @@ watch(marketSearch, (newVal) => {
   }, 300);
 });
 
+watch(isListView, (newVal) => {
+  if (typeof window !== 'undefined' && window.localStorage) {
+    localStorage.setItem('pluginListViewMode', String(newVal));
+  }
+});
 </script>
 
 <template>
@@ -969,7 +980,7 @@ watch(marketSearch, (newVal) => {
           <div v-if="activeTab === 'components'">
             <v-card class="rounded-lg" variant="flat" style="background-color: transparent;">
               <v-card-text class="pa-0">
-                <ComponentPanel :active="true" />
+                <ComponentPanel :active="activeTab === 'components'" />
               </v-card-text>
             </v-card>
           </div>
