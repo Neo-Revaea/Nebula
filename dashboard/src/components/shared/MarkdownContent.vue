@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, useAttrs } from 'vue';
 import { MarkdownRender, enableKatex, enableMermaid } from 'markstream-vue';
-import 'github-markdown-css/github-markdown.css';
 import 'katex/dist/katex.min.css';
 import 'highlight.js/styles/github.css';
 

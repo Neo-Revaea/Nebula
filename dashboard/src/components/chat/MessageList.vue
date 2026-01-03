@@ -170,7 +170,7 @@
 
                                     <!-- Text (Markdown / Plain multi-line logs) -->
                                     <template v-else-if="part.type === 'plain' && part.text && part.text.trim()">
-                                        <pre v-if="shouldRenderAsPlainPre(part.text)" class="bot-plain-pre">{{ part.text }}</pre>
+                                        <pre v-if="shouldRenderAsPlainPre(part.text)" class="bot-plain-pre">{{ formatPlainPreText(part.text) }}</pre>
                                         <MarkdownContent v-else
                                             :content="part.text" :typewriter="false" :preprocess-badges="false"
                                             :is-dark="isDark" />
@@ -347,8 +347,40 @@ export default {
         }
     },
     methods: {
+        formatPlainPreText(text: string): string {
+            const raw = (text ?? '').toString();
+            if (!raw) return raw;
+
+            // 1) If it's a single-line command tree (contains ├──/└──), insert newlines.
+            if (!raw.includes('\n') && (raw.includes('├──') || raw.includes('└──'))) {
+                let s = raw;
+
+                // Normalize spaces so the rules below work reliably.
+                s = s.replace(/\s+/g, ' ').trim();
+
+                // Put the root token (e.g. "gh") on its own line when followed by a tree branch.
+                // Example: "gh ├── help" => "gh\n├── help"
+                s = s.replace(/\b([\w-]+)\s+(?=(?:├──|└──))/g, '$1\n');
+
+                // Newline before each branch marker.
+                s = s.replace(/\s*(├──|└──)\s*/g, '\n$1 ');
+
+                // Also split some common Chinese hints into their own lines.
+                s = s.replace(/(参数不足。)\s*/g, '$1\n');
+                s = s.replace(/(指令组下有如下指令[，,:：]?\s*)/g, '$1\n');
+
+                return s.replace(/^\n+/, '').replace(/\n{3,}/g, '\n\n');
+            }
+
+            return raw;
+        },
+
         shouldRenderAsPlainPre(text: string): boolean {
             const trimmed = (text ?? '').trim();
+
+            // Command tree sometimes comes as a single line.
+            if (trimmed.includes('├──') || trimmed.includes('└──')) return true;
+
             if (!trimmed.includes('\n')) return false;
 
             const lines = trimmed
@@ -361,8 +393,10 @@ export default {
             const cmdLines = lines.filter(l => l.startsWith('/')).length;
             const logLines = lines.filter(l => /^\[\d{2}:\d{2}:\d{2}\]/.test(l) || /^\[\d{4}-\d{2}-\d{2}/.test(l)).length;
             const hasBuiltinHeader = lines.some(l => /内置指令|Built-?in\s+commands/i.test(l));
+            const hasCommandTreeHeader = lines.some(l => /指令组下有如下指令/i.test(l));
 
             if (hasBuiltinHeader && cmdLines >= 2) return true;
+            if (hasCommandTreeHeader) return true;
             if (cmdLines >= Math.max(5, Math.floor(lines.length * 0.5))) return true;
             if (logLines >= 1 && lines.length >= 3) return true;
             return false;

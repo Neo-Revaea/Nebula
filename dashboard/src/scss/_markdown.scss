@@ -4,13 +4,13 @@
 */
 
 .markdown-body {
-	--color-fg-default: var(--v-theme-secondaryText);
+	--color-fg-default: rgb(var(--v-theme-secondaryText));
 	--color-fg-muted: rgba(var(--v-theme-on-surface), 0.7);
 	--color-fg-subtle: rgba(var(--v-theme-on-surface), 0.55);
 
-	--color-canvas-default: var(--v-theme-background);
-	--color-canvas-subtle: var(--v-theme-surface);
-	--color-canvas-inset: var(--v-theme-containerBg);
+	--color-canvas-default: rgb(var(--v-theme-background));
+	--color-canvas-subtle: rgb(var(--v-theme-surface));
+	--color-canvas-inset: rgb(var(--v-theme-containerBg));
 
 	--color-border-default: rgba(var(--v-theme-borderLight), 0.36);
 	--color-border-muted: rgba(var(--v-theme-borderLight), 0.22);
@@ -25,10 +25,18 @@
 	--color-danger-emphasis: rgb(var(--v-theme-error));
 
 	color: var(--color-fg-default);
-	background: transparent;
+	background-color: transparent;
 	font-family: inherit;
 	font-size: inherit;
 	line-height: 1.6;
+}
+
+.v-theme--light .markdown-body {
+	color-scheme: light;
+}
+
+.v-theme--dark .markdown-body {
+	color-scheme: dark;
 }
 
 .markdown-body img.md-counter {
