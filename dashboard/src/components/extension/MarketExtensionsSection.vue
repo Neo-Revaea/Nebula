@@ -393,13 +393,19 @@
     </v-row>
 
     <div class="d-flex justify-center mt-4" v-if="totalPages > 1">
-      <v-pagination v-model="currentPageModel" :length="totalPages" :total-visible="7" size="small"></v-pagination>
+      <v-pagination
+        v-model="currentPageModel"
+        :length="totalPages"
+        :total-visible="paginationTotalVisible"
+        :size="paginationSize"
+      ></v-pagination>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useDisplay } from 'vuetify'
 import defaultPluginIcon from '@/assets/images/plugin_icon.png'
 import { useModuleI18n } from '@/i18n/composables'
 
@@ -441,9 +447,13 @@ const emit = defineEmits<{
 }>()
 
 const { tm } = useModuleI18n('features/extension')
+const display = useDisplay()
 const MAX_DESCRIPTION_LENGTH = 50
 const sourceDialog = ref(false)
 const cartDialog = ref(false)
+
+const paginationTotalVisible = computed(() => (display.smAndDown.value ? 3 : 7))
+const paginationSize = computed(() => (display.smAndDown.value ? 'x-small' : 'small'))
 
 const currentPageModel = computed({
   get: () => props.currentPage,
