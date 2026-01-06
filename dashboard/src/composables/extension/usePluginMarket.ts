@@ -58,6 +58,7 @@ export function usePluginMarket({
     const candidates = new Set<string>()
     if (value != null) candidates.add(String(value))
     if (item?.name) candidates.add(String(item.name))
+    if ((item as any)?.display_name) candidates.add(String((item as any).display_name))
     if (item?.trimmedName) candidates.add(String(item.trimmedName))
     if (item?.desc) candidates.add(String(item.desc))
     if (item?.author) candidates.add(String(item.author))
@@ -87,6 +88,11 @@ export function usePluginMarket({
       }
 
       const searchTexts: string[] = []
+      if ((plugin as any)?.display_name) {
+        searchTexts.push((plugin as any).display_name)
+        searchTexts.push(toPinyinText((plugin as any).display_name))
+        searchTexts.push(toInitials((plugin as any).display_name))
+      }
       if (plugin.name) {
         searchTexts.push(plugin.name)
         searchTexts.push(toPinyinText(plugin.name))

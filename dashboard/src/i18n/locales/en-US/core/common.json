@@ -46,6 +46,30 @@
     "waiting": "Waiting for AstrBot to restart...",
     "maxRetriesReached": "Maximum retry attempts reached, please check manually."
   },
+  "readme": {
+    "title": "Extension Documentation",
+    "buttons": {
+      "viewOnGithub": "View Repository on GitHub",
+      "refresh": "Refresh Documentation"
+    },
+    "loading": "Loading README documentation...",
+    "errors": {
+      "fetchFailed": "Failed to fetch README",
+      "fetchError": "Error occurred while fetching README"
+    },
+    "empty": {
+      "title": "This extension does not provide documentation link or GitHub repository address.",
+      "subtitle": "Please check the extension marketplace or contact the extension author for more information."
+    }
+  },
+  "changelog": {
+    "title": "Changelog",
+    "loading": "Loading changelog...",
+    "empty": {
+      "title": "No changelog available for this plugin",
+      "subtitle": "Developers can add a CHANGELOG.md file in the plugin directory to provide changelog"
+    }
+  },
   "editor": {
     "fullscreen": "Fullscreen Edit",
     "editingTitle": "Editing Content"

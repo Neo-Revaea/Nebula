@@ -23,6 +23,11 @@ export function useExtensionPage() {
 
   const activeTab = ref<ExtensionActiveTab>('installed')
 
+  const readmeDialog = ref(false)
+  const readmeDialogMode = ref<'readme' | 'changelog'>('readme')
+  const readmePluginName = ref('')
+  const readmeRepoUrl = ref<string | null>(null)
+
   const marketLoading = ref(false)
 
   const marketFetchedKey = ref<string | null>(null)
@@ -37,10 +42,27 @@ export function useExtensionPage() {
     }
   })
 
-  const viewReadme = (plugin: { name: string; repo?: string | null }) => {
-    const url = toReadmeUrl(plugin.repo ?? null)
-    if (!url) return
-    window.open(url, '_blank', 'noopener,noreferrer')
+  const openReadmeDialog = (plugin: { name: string; repo?: string | null }, mode: 'readme' | 'changelog') => {
+    readmePluginName.value = plugin.name
+    readmeRepoUrl.value = plugin.repo ?? null
+    readmeDialogMode.value = mode
+    readmeDialog.value = true
+  }
+
+  const viewReadme = (plugin: { name: string; repo?: string | null; installed?: boolean }) => {
+    // Marketplace items that are not installed don't have local README/CHANGELOG yet.
+    if ('installed' in plugin && plugin.installed === false) {
+      const url = toReadmeUrl(plugin.repo ?? null)
+      if (!url) return
+      window.open(url, '_blank', 'noopener,noreferrer')
+      return
+    }
+
+    openReadmeDialog(plugin, 'readme')
+  }
+
+  const viewChangelog = (plugin: { name: string; repo?: string | null }) => {
+    openReadmeDialog(plugin, 'changelog')
   }
 
   const setLoading = (title: string) => {
@@ -289,6 +311,12 @@ export function useExtensionPage() {
     fileInput: install.fileInput,
     activeTab,
 
+    // readme/changelog dialog
+    readmeDialog,
+    readmeDialogMode,
+    readmePluginName,
+    readmeRepoUrl,
+
     extension_data: installed.extension_data,
     showReserved: installed.showReserved,
     snack_message,
@@ -384,6 +412,7 @@ export function useExtensionPage() {
 
     toReadmeUrl,
     viewReadme,
+    viewChangelog,
 
     handleInstallPlugin: install.handleInstallPlugin,
     confirmDangerInstall: install.confirmDangerInstall,

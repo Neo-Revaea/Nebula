@@ -158,6 +158,11 @@
                   <v-tooltip activator="parent" location="top">{{ tm('tooltips.viewDocs') }}</v-tooltip>
                 </v-btn>
 
+                <v-btn icon size="small" @click="emit('view-changelog', resolveRow(item))">
+                  <v-icon>mdi-history</v-icon>
+                  <v-tooltip activator="parent" location="top">{{ tm('pluginChangelog.menuTitle') }}</v-tooltip>
+                </v-btn>
+
                 <v-btn icon size="small" color="warning" @click="emit('update-extension', resolveRow(item).name)">
                   <v-icon>mdi-update</v-icon>
                   <v-tooltip activator="parent" location="top">{{ tm('tooltips.update') }}</v-tooltip>
@@ -204,6 +209,7 @@
             @toggle-activation="extension.activated ? emit('plugin-off', extension) : emit('plugin-on', extension)"
             @view-handlers="emit('show-info', extension)"
             @view-readme="emit('view-readme', extension)"
+            @view-changelog="emit('view-changelog', extension)"
           />
         </v-col>
       </v-row>
@@ -241,6 +247,7 @@ const emit = defineEmits<{
   (e: 'open-config', name: string): void
   (e: 'show-info', extension: InstalledPlugin): void
   (e: 'view-readme', extension: InstalledPlugin): void
+  (e: 'view-changelog', extension: InstalledPlugin): void
   (e: 'update-extension', name: string): void
   (e: 'uninstall', payload: { extension: InstalledPlugin; options?: UninstallOptions }): void
 }>()

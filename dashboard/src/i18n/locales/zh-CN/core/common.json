@@ -46,6 +46,30 @@
     "waiting": "正在等待 AstrBot 重启...",
     "maxRetriesReached": "拉取状态达到最大次数，请手动检查。"
   },
+  "readme": {
+    "title": "插件说明文档",
+    "buttons": {
+      "viewOnGithub": "在GitHub中查看仓库",
+      "refresh": "刷新文档"
+    },
+    "loading": "正在加载README文档...",
+    "errors": {
+      "fetchFailed": "获取README失败",
+      "fetchError": "获取README时发生错误"
+    },
+    "empty": {
+      "title": "该插件未提供文档链接或GitHub仓库地址。",
+      "subtitle": "请查看插件市场或联系插件作者获取更多信息。"
+    }
+  },
+  "changelog": {
+    "title": "更新日志",
+    "loading": "正在加载更新日志...",
+    "empty": {
+      "title": "该插件未提供更新日志",
+      "subtitle": "开发者可在插件目录下添加 CHANGELOG.md 文件来提供更新日志"
+    }
+  },
   "editor": {
     "fullscreen": "全屏编辑",
     "editingTitle": "编辑内容"
