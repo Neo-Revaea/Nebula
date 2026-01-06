@@ -10,7 +10,6 @@ const McpServersSection = defineAsyncComponent(() => import('@/components/extens
 const ComponentPanel = defineAsyncComponent(() => import('@/components/extension/componentPanel/index.vue'));
 const AstrBotConfig = defineAsyncComponent(() => import('@/components/shared/AstrBotConfig.vue'));
 const ConsoleDisplayer = defineAsyncComponent(() => import('@/components/shared/ConsoleDisplayer.vue'));
-const ReadmeDialog = defineAsyncComponent(() => import('@/components/shared/ReadmeDialog.vue'));
 const ProxySelector = defineAsyncComponent(() => import('@/components/shared/ProxySelector.vue'));
 const UninstallConfirmDialog = defineAsyncComponent(() => import('@/components/shared/UninstallConfirmDialog.vue'));
 
@@ -77,10 +76,6 @@ const {
   showPluginInfo,
   viewReadme,
   viewChangelog,
-  readmeDialog,
-  readmeDialogMode,
-  readmePluginName,
-  readmeRepoUrl,
   updateExtension,
   confirmForceUpdate,
   cancelForceUpdate,
@@ -279,12 +274,6 @@ const {
     </v-card>
   </v-dialog>
 
-  <ReadmeDialog
-    v-model:show="readmeDialog"
-    :plugin-name="readmePluginName"
-    :repo-url="readmeRepoUrl"
-    :mode="readmeDialogMode"
-  />
 
   <!-- 加载对话框 -->
   <v-dialog v-model="loadingDialog.show" width="700" persistent>

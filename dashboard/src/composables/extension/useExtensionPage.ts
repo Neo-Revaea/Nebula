@@ -23,11 +23,6 @@ export function useExtensionPage() {
 
   const activeTab = ref<ExtensionActiveTab>('installed')
 
-  const readmeDialog = ref(false)
-  const readmeDialogMode = ref<'readme' | 'changelog'>('readme')
-  const readmePluginName = ref('')
-  const readmeRepoUrl = ref<string | null>(null)
-
   const marketLoading = ref(false)
 
   const marketFetchedKey = ref<string | null>(null)
@@ -42,27 +37,29 @@ export function useExtensionPage() {
     }
   })
 
-  const openReadmeDialog = (plugin: { name: string; repo?: string | null }, mode: 'readme' | 'changelog') => {
-    readmePluginName.value = plugin.name
-    readmeRepoUrl.value = plugin.repo ?? null
-    readmeDialogMode.value = mode
-    readmeDialog.value = true
+  const toChangelogUrl = (repo?: string | null) => {
+    const base = (repo ?? '').trim().replace(/\.git$/i, '').replace(/\/+$/g, '')
+    if (!base) return null
+    if (!/^https?:\/\//i.test(base) && !/^git@/i.test(base)) return null
+
+    // Reuse repo normalization logic via toReadmeUrl, then strip possible #readme.
+    const normalized = toReadmeUrl(base)
+    if (!normalized) return null
+    const repoUrl = normalized.replace(/#readme$/i, '')
+    // Best-effort: common GitHub/Gitea both support this style; if not, user still has repo link.
+    return `${repoUrl.replace(/\/+$/g, '')}/blob/master/CHANGELOG.md`
   }
 
-  const viewReadme = (plugin: { name: string; repo?: string | null; installed?: boolean }) => {
-    // Marketplace items that are not installed don't have local README/CHANGELOG yet.
-    if ('installed' in plugin && plugin.installed === false) {
-      const url = toReadmeUrl(plugin.repo ?? null)
-      if (!url) return
-      window.open(url, '_blank', 'noopener,noreferrer')
-      return
-    }
-
-    openReadmeDialog(plugin, 'readme')
+  const viewReadme = (plugin: { name: string; repo?: string | null }) => {
+    const url = toReadmeUrl(plugin.repo ?? null)
+    if (!url) return
+    window.open(url, '_blank', 'noopener,noreferrer')
   }
 
   const viewChangelog = (plugin: { name: string; repo?: string | null }) => {
-    openReadmeDialog(plugin, 'changelog')
+    const url = toChangelogUrl(plugin.repo ?? null) ?? toReadmeUrl(plugin.repo ?? null)
+    if (!url) return
+    window.open(url, '_blank', 'noopener,noreferrer')
   }
 
   const setLoading = (title: string) => {
@@ -310,12 +307,6 @@ export function useExtensionPage() {
 
     fileInput: install.fileInput,
     activeTab,
-
-    // readme/changelog dialog
-    readmeDialog,
-    readmeDialogMode,
-    readmePluginName,
-    readmeRepoUrl,
 
     extension_data: installed.extension_data,
     showReserved: installed.showReserved,
