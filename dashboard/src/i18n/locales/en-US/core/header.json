@@ -62,7 +62,7 @@
       "official": "Official channel (AstrBot)",
       "landfill": "LandfillBot channel (source)",
       "landfillTip": "This channel does not provide a releases list. It will update by downloading the latest source from the default branch.",
-      "updateLatest": "Update to latest source from this channel"
+      "updateLatest": "Update"
     }
   },
   "accountDialog": {

@@ -62,7 +62,7 @@
       "official": "官方渠道（AstrBot）",
       "landfill": "LandfillBot 渠道（源码）",
       "landfillTip": "该渠道没有 releases 版本列表，将直接拉取默认分支最新源码进行更新。",
-      "updateLatest": "从该渠道更新到最新源码"
+      "updateLatest": "更新"
     }
   },
   "accountDialog": {
