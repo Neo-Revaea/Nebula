@@ -22,7 +22,9 @@
       "updating": "Updating..."
     },
     "tabs": {
-      "release": "😊 Release"
+      "release": "😊 Release",
+      "source": "Source Update",
+      "dashboard": "Dashboard Update"
     },
     "updateToLatest": "Update to Latest Version",
     "preRelease": "Pre-release",
