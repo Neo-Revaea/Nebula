@@ -17,11 +17,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      GH_TOKEN: ${{ github.token }} 
+      GH_TOKEN: ${{ secrets.PAT }} 
     steps:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
+          token: ${{ secrets.PAT }}
 
       - name: Setup Environment
         uses: pnpm/action-setup@v4
@@ -46,7 +47,7 @@ jobs:
           pnpm install --frozen-lockfile
           pnpm run build
 
-      - name: Package Dist
+      - name: Package Dist & Generate Note
         run: |
           mkdir -p dashboard/dist/assets
           echo "${LATEST_TAG:-$GITHUB_SHA}" > dashboard/dist/assets/version
@@ -54,6 +55,29 @@ jobs:
           
           find dashboard/dist -name "*.md" -delete
           cd dashboard && zip -r ../dist.zip dist
+          cd ..
+
+          cat <<EOF > release_note.md
+          ## Nightly Dashboard Dist
+          
+          > [!WARNING]
+          > **仅包含前端产物 / Frontend Artifacts Only**
+          >
+          > **[CN]** 此版本适用于覆盖更新。这是一个自动构建的 Nightly 版本，**会随代码提交随时更新**，可能包含不稳定的功能。
+          >
+          > **[EN]** This release is for override updates. It is an automated nightly build that **updates frequently** and may contain unstable features.
+          
+          ### 版本信息 (Build Info)
+          
+          | 组件 (Component) | 版本/哈希 (Ref) |
+          | :--- | :--- |
+          | **AstrBot Core** | \`${LATEST_TAG}\` |
+          | **Dashboard** | \`${GITHUB_SHA:0:7}\` |
+          | **Build Time** | $(date -u '+%Y-%m-%d %H:%M:%S UTC') |
+          
+          ---
+          *Released by Github Actions Workflow*
+          EOF
 
       - name: Update Nightly Release
         run: |
@@ -62,5 +86,5 @@ jobs:
           gh release create nightly dist.zip \
             --target $GITHUB_SHA \
             --title "Nightly Dashboard Dist" \
-            --notes "Auto-generated nightly build. Ref: $GITHUB_SHA" \
-            --prerelease
+            --prerelease \
+            -F release_note.md
