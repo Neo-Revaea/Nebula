@@ -3,11 +3,8 @@ name: Nightly Dashboard Dist
 on:
   workflow_dispatch:
   push:
-    branches:
-      - master
-    paths:
-      - "dashboard/**"
-      - ".github/workflows/nightly_dashboard_dist.yml"
+    branches: ["master"]
+    paths: ["dashboard/**", ".github/workflows/nightly_dashboard_dist.yml"]
 
 concurrency:
   group: nightly-dashboard-dist
@@ -19,88 +16,51 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }} 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
-      - name: Fetch upstream latest tag
-        shell: bash
-        run: |
-          set -eux
-          git fetch --force --prune https://github.com/AstrBotDevs/AstrBot.git "refs/tags/*:refs/tags/upstream/*"
-          latest_tag="$(git for-each-ref 'refs/tags/upstream' --sort=-v:refname --format='%(refname:strip=3)' | head -n1)"
-          if [ -z "${latest_tag}" ]; then
-            latest_tag="unknown"
-          fi
-          echo "LATEST_TAG=${latest_tag}" >> "$GITHUB_ENV"
+      - name: Setup Environment
+        uses: pnpm/action-setup@v4
+        with: { version: 9 }
 
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
-      - uses: actions/setup-node@v6
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: pnpm
           cache-dependency-path: dashboard/pnpm-lock.yaml
 
-      - name: Install
-        working-directory: dashboard
-        run: pnpm install --frozen-lockfile
-
-      - name: Build
-        working-directory: dashboard
-        run: pnpm run build
-
-      - name: Inject version files and zip dist.zip
-        shell: bash
+      - name: Fetch Version Info
         run: |
-          set -eux
-          TARGET_DIST="dashboard/dist"
-          if [ ! -d "${TARGET_DIST}" ]; then
-            echo "ERROR: build output '${TARGET_DIST}' not found" >&2
-            ls -la dashboard || true
-            exit 1
-          fi
+          git fetch --force --prune https://github.com/AstrBotDevs/AstrBot.git "refs/tags/*:refs/tags/upstream/*"
+          LATEST=$(git for-each-ref 'refs/tags/upstream' --sort=-v:refname --format='%(refname:strip=3)' | head -n1)
+          echo "LATEST_TAG=${LATEST:-unknown}" >> "$GITHUB_ENV"
 
-          COMMIT_SHA="$(git rev-parse --verify HEAD)"
-
-          mkdir -p "${TARGET_DIST}/assets"
-          version_value="${LATEST_TAG}"
-          if [ "${version_value}" = "unknown" ]; then
-            version_value="${COMMIT_SHA}"
-          fi
-          echo "${version_value}" > "${TARGET_DIST}/assets/version"
-          echo "${COMMIT_SHA}" > "${TARGET_DIST}/assets/version.sha"
-
-          find "${TARGET_DIST}" -type f -name "*.md" -print -delete || true
-
-          ZIP_NAME="dist.zip"
-          cd dashboard
-          zip -r "../${ZIP_NAME}" dist
-          cd -
-
-      - name: Move nightly tag to this commit
-        shell: bash
+      - name: Install & Build
+        working-directory: dashboard
         run: |
-          set -eux
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git tag -f nightly "$GITHUB_SHA"
-          git push origin refs/tags/nightly --force
+          pnpm install --frozen-lockfile
+          pnpm run build
 
-      - name: Publish nightly release asset
-        uses: ncipollo/release-action@v1
-        with:
-          tag: nightly
-          name: Nightly Dashboard Dist
-          prerelease: false
-          allowUpdates: true
-          omitBodyDuringUpdate: true
-          omitNameDuringUpdate: true
-          omitPrereleaseDuringUpdate: true
-          replacesArtifacts: true
-          artifacts: dist.zip
-          artifactContentType: application/zip
+      - name: Package Dist
+        run: |
+          mkdir -p dashboard/dist/assets
+          echo "${LATEST_TAG:-$GITHUB_SHA}" > dashboard/dist/assets/version
+          echo "$GITHUB_SHA" > dashboard/dist/assets/version.sha
+          
+          find dashboard/dist -name "*.md" -delete
+          cd dashboard && zip -r ../dist.zip dist
+
+      - name: Update Nightly Release
+        run: |
+          gh release delete nightly --cleanup-tag -y || true
+          
+          gh release create nightly dist.zip \
+            --target $GITHUB_SHA \
+            --title "Nightly Dashboard Dist" \
+            --notes "Auto-generated nightly build. Ref: $GITHUB_SHA" \
+            --prerelease
