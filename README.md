@@ -1,6 +1,4 @@
-<img src="https://raw.githubusercontent.com/LandfillLand/.github/refs/heads/main/img/IMG_20260114_010119.png" width="2520">
-
-# LandfillBot (Based on [AstrBot](https://github.com/AstrBotDevs/AstrBot)) 
+# WastelandBot (Based on [AstrBot](https://github.com/AstrBotDevs/AstrBot)) 
 
 ## ⚖️ Fork Disclaimer & License Agreement
 > [!Note]
