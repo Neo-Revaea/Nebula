@@ -2,11 +2,10 @@ import type { RouteRecordRaw } from 'vue-router'
 
 const MainRoutes: RouteRecordRaw = {
   name: 'main',
-  path: '/main',
+  path: '/',
   meta: {
     requiresAuth: true
   },
-  redirect: '/main/platforms',
   component: () => import('@/layouts/full/FullLayout.vue'),
   children: [
     {
