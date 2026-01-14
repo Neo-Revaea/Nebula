@@ -3,7 +3,7 @@ from astrbot.api.event import AstrMessageEvent, MessageChain, MessageEventResult
 from astrbot.core.config.default import VERSION
 from astrbot.core.utils.io import (
     download_dashboard,
-    download_landfill_dashboard_nightly,
+    download_nebula_dashboard_nightly,
     get_dashboard_channel,
 )
 
@@ -78,8 +78,8 @@ class AdminCommands:
         """更新管理面板"""
         await event.send(MessageChain().message("正在尝试更新管理面板..."))
         channel = get_dashboard_channel()
-        if channel == "landfill":
-            await download_landfill_dashboard_nightly()
+        if channel == "nebula":
+            await download_nebula_dashboard_nightly()
         else:
             await download_dashboard(version=f"v{VERSION}", latest=False)
         await event.send(MessageChain().message("管理面板更新完成。"))

@@ -501,10 +501,10 @@
       "dashboard": {
         "channel": {
           "description": "WebUI Download Channel",
-          "hint": "Used for automatically downloading/updating WebUI on startup. official is the official release; landfill is the LandfillBot version.",
+          "hint": "Used for automatically downloading/updating WebUI on startup. official is the official release; nebula is the Nebula version.",
           "labels": [
             "AstrBot Official Channel",
-            "LandfillBot Channel"
+            "Nebula Channel"
           ]
         }
       },

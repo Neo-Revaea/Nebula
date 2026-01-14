@@ -11,7 +11,7 @@ from astrbot.core.initial_loader import InitialLoader
 from astrbot.core.utils.astrbot_path import get_astrbot_data_path
 from astrbot.core.utils.io import (
     download_dashboard,
-    download_landfill_dashboard_nightly,
+    download_nebula_dashboard_nightly,
     get_dashboard_channel,
     get_dashboard_version,
 )
@@ -71,9 +71,9 @@ async def check_dashboard_files(webui_dir: str | None = None):
         return data_dist_path
 
     channel = get_dashboard_channel()
-    if channel == "landfill":
+    if channel == "nebula":
         logger.info(
-            "开始下载管理面板文件（Landfill Nightly）...如多次下载失败，请前往 https://github.com/LandfillLand/LandfillBot/releases/tag/nightly 下载 dist.zip，并将其中的 dist 文件夹解压至 data 目录下。",
+            "开始下载管理面板文件（Nebula Nightly）...如多次下载失败，请前往 release tag nightly 下载 dist.zip，并将其中的 dist 文件夹解压至 data 目录下。",
         )
     else:
         logger.info(
@@ -81,8 +81,8 @@ async def check_dashboard_files(webui_dir: str | None = None):
         )
 
     try:
-        if channel == "landfill":
-            await download_landfill_dashboard_nightly()
+        if channel == "nebula":
+            await download_nebula_dashboard_nightly()
         else:
             await download_dashboard(version=f"v{VERSION}", latest=False)
     except Exception as e:

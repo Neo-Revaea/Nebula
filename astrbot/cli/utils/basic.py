@@ -24,7 +24,7 @@ async def check_dashboard(astrbot_root: Path) -> None:
     from astrbot.core.config.default import VERSION
     from astrbot.core.utils.io import (
         download_dashboard,
-        download_landfill_dashboard_nightly,
+        download_nebula_dashboard_nightly,
         get_dashboard_channel,
         get_dashboard_version,
     )
@@ -43,8 +43,8 @@ async def check_dashboard(astrbot_root: Path) -> None:
                     abort=True,
                 ):
                     click.echo("正在安装管理面板...")
-                    if channel == "landfill":
-                        await download_landfill_dashboard_nightly(
+                    if channel == "nebula":
+                        await download_nebula_dashboard_nightly(
                             path="data/dashboard.zip",
                             extract_path=str(astrbot_root),
                         )
@@ -64,8 +64,8 @@ async def check_dashboard(astrbot_root: Path) -> None:
                 try:
                     version = dashboard_version.split("v")[1]
                     click.echo(f"管理面板版本: {version}")
-                    if channel == "landfill":
-                        await download_landfill_dashboard_nightly(
+                    if channel == "nebula":
+                        await download_nebula_dashboard_nightly(
                             path="data/dashboard.zip",
                             extract_path=str(astrbot_root),
                         )
@@ -83,8 +83,8 @@ async def check_dashboard(astrbot_root: Path) -> None:
         click.echo("初始化管理面板目录...")
         channel = get_dashboard_channel()
         try:
-            if channel == "landfill":
-                await download_landfill_dashboard_nightly(
+            if channel == "nebula":
+                await download_nebula_dashboard_nightly(
                     path=str(astrbot_root / "dashboard.zip"),
                     extract_path=str(astrbot_root),
                 )

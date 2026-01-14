@@ -499,10 +499,10 @@
       "dashboard": {
         "channel": {
           "description": "WebUI 下载渠道",
-          "hint": "用于启动时自动下载/更新 WebUI。official 为官方发布版；landfill 为 LandfillBot 版本。",
+          "hint": "用于启动时自动下载/更新 WebUI。official 为官方发布版；nebula 为 Nebula 版本。",
           "labels": [
             "AstrBot 官方渠道",
-            "LandfillBot 渠道"
+            "Nebula 渠道"
           ]
         }
       },

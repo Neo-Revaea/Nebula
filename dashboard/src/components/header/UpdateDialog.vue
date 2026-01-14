@@ -6,7 +6,7 @@ import { useI18n } from '@/i18n/composables'
 import { useAuthStore } from '@/stores/auth'
 import { useDisplay } from 'vuetify'
 
-type UpdateChannel = 'official' | 'landfill'
+type UpdateChannel = 'official' | 'nebula'
 
 type UpdateTab = 'source' | 'dashboard'
 
@@ -45,7 +45,7 @@ const dashboardUpdateChannel = ref<UpdateChannel>('official')
 
 const updateChannelOptions = computed(() => [
   { title: t('core.header.updateDialog.channel.official'), value: 'official' as const },
-  { title: t('core.header.updateDialog.channel.landfill'), value: 'landfill' as const }
+  { title: t('core.header.updateDialog.channel.nebula'), value: 'nebula' as const }
 ])
 
 const updateStatusKey = ref<string | null>(null)
@@ -512,8 +512,8 @@ const dialogModel = computed({
                 <template v-else>
                   <div class="d-flex align-center justify-space-between mb-6" style="gap: 12px">
                     <div>
-                      <h3 class="text-h4 font-weight-bold mb-1">{{ t('core.header.updateDialog.channel.landfill') }}</h3>
-                      <div class="text-body-2 text-medium-emphasis">{{ t('core.header.updateDialog.channel.landfillTip') }}</div>
+                      <h3 class="text-h4 font-weight-bold mb-1">{{ t('core.header.updateDialog.channel.nebula') }}</h3>
+                      <div class="text-body-2 text-medium-emphasis">{{ t('core.header.updateDialog.channel.nebulaTip') }}</div>
                     </div>
                     <v-select
                       v-if="isPhoneLayout"
@@ -536,7 +536,7 @@ const dialogModel = computed({
                     <div class="flex-grow-1 mr-4">
                       <div class="text-h4 font-weight-bold mb-1">{{ t('core.header.updateDialog.channel.updateLatest') }}</div>
                       <div class="text-body-1 text-medium-emphasis mb-2">
-                        {{ t('core.header.updateDialog.channel.landfillTip') }}
+                        {{ t('core.header.updateDialog.channel.nebulaTip') }}
                       </div>
                       <div v-if="lastCheckedAt" class="text-caption text-medium-emphasis">
                         {{ lastCheckedAt.toLocaleString() }}

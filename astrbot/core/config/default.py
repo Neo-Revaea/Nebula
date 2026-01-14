@@ -153,7 +153,7 @@ DEFAULT_CONFIG = {
     "no_proxy": ["localhost", "127.0.0.1", "::1"],
     "dashboard": {
         "enable": True,
-        "channel": "landfill",
+        "channel": "nebula",
         "username": "astrbot",
         "password": "77b90590a8945a7d36c963981a307dc9",
         "jwt_secret": "",
@@ -3078,9 +3078,9 @@ CONFIG_METADATA_3_SYSTEM = {
                     "dashboard.channel": {
                         "description": "WebUI 下载渠道",
                         "type": "string",
-                        "hint": "用于启动时自动下载/更新 WebUI。official 为官方发布版；landfill 为 LandfillBot nightly。",
-                        "options": ["official", "landfill"],
-                        "labels": ["官方", "Landfill Nightly"],
+                        "hint": "用于启动时自动下载/更新 WebUI。official 为官方发布版；nebula 为 Nebula nightly。",
+                        "options": ["official", "nebula"],
+                        "labels": ["官方", "Nebula Nightly"],
                     },
                     "t2i_strategy": {
                         "description": "文本转图像策略",

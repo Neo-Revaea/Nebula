@@ -22,10 +22,10 @@ class AstrBotUpdator(RepoZipUpdator):
         super().__init__(repo_mirror)
         self.MAIN_PATH = get_astrbot_path()
         self.ASTRBOT_RELEASE_API = "https://api.soulter.top/releases"
-        self.LANDFILL_REPO_URL = "https://github.com/LandfillLand/LandfillBot"
+        self.NEBULA_REPO_URL = "https://github.com/LandfillLand/Nebula"
 
-    async def update_from_landfill_source(self, proxy: str = "") -> None:
-        repo_url = self.LANDFILL_REPO_URL
+    async def update_from_nebula_source(self, proxy: str = "") -> None:
+        repo_url = self.NEBULA_REPO_URL
         await self.download_from_repo_url(
             target_path="temp",
             repo_url=repo_url,
@@ -112,10 +112,10 @@ class AstrBotUpdator(RepoZipUpdator):
         if proxy:
             proxy = proxy.removesuffix("/")
 
-        if channel == "landfill":
-            logger.info("准备从 LandfillBot 源码渠道更新 AstrBot Core")
+        if channel == "nebula":
+            logger.info("准备从 Nebula 源码渠道更新 AstrBot Core")
             try:
-                await self.update_from_landfill_source(proxy=proxy)
+                await self.update_from_nebula_source(proxy=proxy)
             except BaseException as e:
                 raise e
 

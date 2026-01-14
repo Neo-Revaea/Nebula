@@ -9,7 +9,7 @@ from astrbot.core.db.migration.helper import check_migration_needed_v4, do_migra
 from astrbot.core.updator import AstrBotUpdator
 from astrbot.core.utils.io import (
     download_dashboard,
-    download_landfill_dashboard_nightly,
+    download_nebula_dashboard_nightly,
     get_dashboard_version,
 )
 
@@ -68,7 +68,7 @@ class UpdateRoute(Route):
                     .__dict__
                 )
 
-            if channel == "landfill":
+            if channel == "nebula":
                 return Response(
                     status="success",
                     message="该更新渠道不提供 releases 版本列表，将直接拉取默认分支最新源码。",
@@ -99,7 +99,7 @@ class UpdateRoute(Route):
 
     async def get_releases(self):
         channel = request.args.get("channel", "official")
-        if channel == "landfill":
+        if channel == "nebula":
             # 该渠道通常没有 releases；面板侧会提供“更新到最新源码”按钮。
             return Response().ok([]).__dict__
         try:
@@ -133,8 +133,8 @@ class UpdateRoute(Route):
             )
 
             try:
-                if channel == "landfill":
-                    await download_landfill_dashboard_nightly(proxy=proxy)
+                if channel == "nebula":
+                    await download_nebula_dashboard_nightly(proxy=proxy)
                 else:
                     await download_dashboard(
                         latest=latest, version=version, proxy=proxy
@@ -176,8 +176,8 @@ class UpdateRoute(Route):
                 if proxy:
                     proxy = proxy.removesuffix("/")
 
-                if channel == "landfill":
-                    await download_landfill_dashboard_nightly(proxy=proxy)
+                if channel == "nebula":
+                    await download_nebula_dashboard_nightly(proxy=proxy)
                 else:
                     await download_dashboard(
                         version=f"v{VERSION}", latest=False, proxy=proxy

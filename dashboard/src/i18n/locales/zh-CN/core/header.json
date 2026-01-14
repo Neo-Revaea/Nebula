@@ -60,8 +60,8 @@
     "channel": {
       "label": "更新渠道",
       "official": "官方渠道（AstrBot）",
-      "landfill": "LandfillBot 渠道",
-      "landfillTip": "该渠道没有 releases 版本列表，将直接拉取默认分支最新源码进行更新。",
+      "nebula": "Nebula 渠道",
+      "nebulaTip": "该渠道没有 releases 版本列表，将直接拉取默认分支最新源码进行更新。",
       "updateLatest": "更新"
     }
   },
