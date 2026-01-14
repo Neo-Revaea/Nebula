@@ -42,7 +42,7 @@
                                     @click="selectProviderTemplate(name)">
                                     <div class="provider-card-content">
                                         <div class="provider-card-text">
-                                            <v-card-title class="provider-card-title text-primary">
+                                            <v-card-title class="provider-card-title">
                                                 {{ name }}
                                             </v-card-title>
                                             <v-card-text class="provider-card-description text-body-2 text-medium-emphasis">
@@ -159,7 +159,9 @@ export default {
 
 .provider-card {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 2px solid rgba(var(--v-border-color), var(--v-border-opacity));
+    border: 2px solid rgba(var(--v-theme-border), var(--v-theme-border-opacity, 1));
+    color: rgba(var(--v-theme-primaryText));
+    opacity: 0.7;
     border-radius: 12px;
     height: 100%;
     cursor: pointer;
@@ -171,6 +173,8 @@ export default {
 .provider-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 12px 20px -8px rgba(var(--v-theme-primary), 0.15);
+    color: rgba(var(--v-theme-primary));
+    opacity: 1;
     border-color: rgb(var(--v-theme-primary));
 }
 
