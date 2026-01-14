@@ -159,9 +159,9 @@ export default {
 
 .provider-card {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 2px solid rgba(var(--v-theme-border), var(--v-theme-border-opacity, 1));
+    border: 3px solid rgba(var(--v-theme-border), var(--v-theme-border-opacity, 1));
     color: rgba(var(--v-theme-primaryText));
-    opacity: 0.7;
+    opacity: 0.8;
     border-radius: 12px;
     height: 100%;
     cursor: pointer;

@@ -134,9 +134,16 @@ export default {
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
+  border: 3px solid rgba(var(--v-theme-border), var(--v-theme-border-opacity, 1));
+  color: rgba(var(--v-theme-primaryText));
+  opacity: 0.8;
 }
 
 .hover-elevation:hover {
   transform: translateY(-2px);
+  box-shadow: 0 12px 20px -8px rgba(var(--v-theme-primary), 0.15);
+  color: rgba(var(--v-theme-primary));
+  opacity: 1;
+  border-color: rgb(var(--v-theme-primary));
 }
 </style>
