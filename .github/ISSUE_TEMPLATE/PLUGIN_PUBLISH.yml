@@ -7,8 +7,9 @@ body:
   - type: markdown
     attributes:
       value: |
+      
         ### 1. 前往 AstrBot 官方仓库 [Issues](https://github.com/AstrBotDevs/AstrBot/issues)
-        ### 2. 或者使用便捷方式 [提交插件](https://pa.i0c.cc/submit)
+        ### 2. 使用便捷方式在 AstrBot 仓库 [提交插件](https://pa.i0c.cc/submit)
         
         此处不处理插件收录请求。
         This repository does not handle plugin submissions.
