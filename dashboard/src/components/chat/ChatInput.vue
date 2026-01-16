@@ -36,7 +36,7 @@
                                 v-bind="activatorProps"
                                 icon="mdi-plus"
                                 variant="text"
-                                color="deep-purple"
+                                class="input-action-btn"
                             />
                         </template>
                         
@@ -87,9 +87,9 @@
                     <v-progress-circular v-if="disabled" indeterminate size="16" class="mr-1" width="1.5" />
                     <v-btn @click="handleRecordClick"
                         :icon="isRecording ? 'mdi-stop-circle' : 'mdi-microphone'" variant="text"
-                        :color="isRecording ? 'error' : 'deep-purple'" class="record-btn" size="small" />
-                    <v-btn @click="$emit('send')" icon="mdi-send" variant="text" color="deep-purple"
-                        :disabled="!canSend" class="send-btn" size="small" />
+                        :color="isRecording ? 'error' : undefined" :class="['record-btn', { 'input-action-btn': !isRecording }]" size="small" />
+                    <v-btn @click="$emit('send')" icon="mdi-send" variant="text"
+                        :disabled="!canSend" class="send-btn input-action-btn" size="small" />
                 </div>
             </div>
         </div>
@@ -102,7 +102,7 @@
             </div>
 
             <div v-if="stagedAudioUrl" class="audio-preview">
-                <v-chip color="deep-purple-lighten-4" class="audio-chip">
+                <v-chip color="lightsecondary" class="audio-chip">
                     <v-icon start icon="mdi-microphone" size="small"></v-icon>
                     {{ tm('voice.recording') }}
                 </v-chip>
@@ -459,6 +459,14 @@ defineExpose({
 
 .remove-attachment-btn:hover {
     opacity: 1;
+}
+
+.input-action-btn {
+    color: rgba(var(--v-theme-secondaryText), 0.9);
+}
+
+.input-action-btn.v-btn--variant-text:hover {
+    background-color: rgba(var(--v-theme-secondaryText), 0.10);
 }
 
 .fade-in {

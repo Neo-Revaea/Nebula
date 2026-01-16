@@ -92,7 +92,7 @@
                                 <!-- Reasoning Block (Collapsible) - 放在最前面 -->
                                 <div v-if="msg.content.reasoning && msg.content.reasoning.trim()"
                                     class="reasoning-container" :class="{ 'is-dark': isDark }"
-                                    :style="isDark ? { backgroundColor: 'rgba(103, 58, 183, 0.08)' } : {}">
+                                    :style="isDark ? { backgroundColor: 'rgba(var(--v-theme-secondary), 0.08)' } : {}">
                                     <div class="reasoning-header" :class="{ 'is-dark': isDark }"
                                         @click="toggleReasoning(index)">
                                         <v-icon size="small" class="reasoning-icon">
@@ -1209,7 +1209,7 @@ export default {
 
 .copy-message-btn:hover {
     opacity: 1;
-    background-color: rgba(103, 58, 183, 0.1);
+    background-color: rgba(var(--v-theme-secondary), 0.1);
 }
 
 .copy-message-btn.copy-success {
@@ -1230,7 +1230,7 @@ export default {
 
 .reply-message-btn:hover {
     opacity: 1;
-    background-color: rgba(103, 58, 183, 0.1);
+    background-color: rgba(var(--v-theme-secondary), 0.1);
 }
 
 /* 引用消息显示样式 */
@@ -1240,7 +1240,7 @@ export default {
     gap: 6px;
     padding: 6px 10px;
     margin-bottom: 8px;
-    background-color: rgba(103, 58, 183, 0.08);
+    background-color: rgba(var(--v-theme-secondary), 0.08);
     border-left: 3px solid var(--v-theme-secondary);
     border-radius: 4px;
     cursor: pointer;
@@ -1248,7 +1248,7 @@ export default {
 }
 
 .reply-quote:hover {
-    background-color: rgba(103, 58, 183, 0.15);
+    background-color: rgba(var(--v-theme-secondary), 0.15);
 }
 
 .reply-quote-icon {
@@ -1271,7 +1271,7 @@ export default {
 
 @keyframes highlightPulse {
     0% {
-        background-color: rgba(103, 58, 183, 0.3);
+        background-color: rgba(var(--v-theme-secondary), 0.3);
     }
 
     100% {

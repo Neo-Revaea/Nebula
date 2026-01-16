@@ -8,14 +8,14 @@
     :style="{ 'background-color': isDark ? sidebarCollapsed ? '#1e1e1e' : '#2d2d2d' : sidebarCollapsed ? '#ffffff' : '#f1f4f9' }">
 
     <div class="sidebar-collapse-btn-container" v-if="!isMobile">
-      <v-btn icon class="sidebar-collapse-btn" @click="toggleSidebar" variant="text" color="deep-purple">
+      <v-btn icon class="sidebar-collapse-btn" @click="toggleSidebar" variant="text" color="secondary">
         <v-icon>{{ sidebarCollapsed ? 'mdi-chevron-right' : 'mdi-chevron-left' }}</v-icon>
       </v-btn>
     </div>
 
     <div class="sidebar-collapse-btn-container" v-if="isMobile">
       <v-btn icon class="sidebar-collapse-btn" @click="$emit('closeMobileSidebar')" variant="text"
-        color="deep-purple">
+        color="secondary">
         <v-icon>mdi-close</v-icon>
       </v-btn>
     </div>
