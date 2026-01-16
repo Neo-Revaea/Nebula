@@ -710,6 +710,12 @@ function goToConfigPage() {
   animation: none !important;
 }
 
+/* Keep VProgressCircular indeterminate spinner animated even when transitions are disabled */
+.provider-no-transition :deep(.v-progress-circular--indeterminate .v-progress-circular__overlay) {
+  animation: progress-circular-dash 1.4s ease-in-out infinite, progress-circular-rotate 1.4s linear infinite !important;
+  transform-origin: center center;
+}
+
 .provider-config-card {
   min-height: 280px;
 }
