@@ -707,7 +707,7 @@ export default {
       }))
     },
     batchScopeOptions() {
-      const options = [
+      const options: Array<{ label: string; value: string; disabled?: boolean }> = [
         { label: this.tm('batchOperations.scopeSelected'), value: 'selected' },
         { label: this.tm('batchOperations.scopeAll'), value: 'all' },
         { label: this.tm('batchOperations.scopeGroup'), value: 'group' },
@@ -1334,7 +1334,13 @@ export default {
         const tasks = []
 
         if (this.batchLlmStatus !== null || this.batchTtsStatus !== null) {
-          const serviceData = { scope, umos, group_id: groupId }
+          const serviceData: {
+            scope: string
+            umos: any[]
+            group_id: any
+            llm_enabled?: boolean
+            tts_enabled?: boolean
+          } = { scope, umos, group_id: groupId }
           if (this.batchLlmStatus !== null) {
             serviceData.llm_enabled = this.batchLlmStatus
           }

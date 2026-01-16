@@ -13,7 +13,7 @@
         </div>
         <div v-if="isExpanded" class="px-3 border-t border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 animate-fade-in italic">
             <MarkdownRender :content="reasoning" class="reasoning-text markdown-content text-sm leading-relaxed"
-                :typewriter="false" :is-dark="isDark" :style="isDark ? { opacity: '0.85' } : {}" />
+                :typewriter="false" :is-dark="isDark" :class="{ dark: isDark }" :style="isDark ? { opacity: '0.85' } : {}" />
         </div>
     </div>
 </template>
@@ -22,6 +22,8 @@
 import { ref } from 'vue';
 import { useModuleI18n } from '@/i18n/composables';
 import { MarkdownRender } from 'markstream-vue';
+import 'markstream-vue/index.css';
+import 'katex/dist/katex.min.css';
 
 const props = defineProps({
     reasoning: {
