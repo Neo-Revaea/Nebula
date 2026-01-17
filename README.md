@@ -1,3 +1,7 @@
+<p align="left">
+  <img src="https://github.com/Neo-Life/.github/blob/main/img/nebula-sm.jpg?raw=true" alt="Nebula" width="100%">
+</p>
+
 # Nebula (Based on [AstrBot](https://github.com/AstrBotDevs/AstrBot)) 
 
 ## ⚖️ Fork Disclaimer & License Agreement
