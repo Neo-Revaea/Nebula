@@ -9,7 +9,7 @@ from datetime import datetime
 
 import aiohttp
 import certifi
-from quart import request
+from quart import abort, request, send_file
 
 from astrbot.api import sp
 from astrbot.core import DEMO_MODE, file_token_service, logger
@@ -63,6 +63,14 @@ class PluginRoute(Route):
         self.core_lifecycle = core_lifecycle
         self.plugin_manager = plugin_manager
         self.register_routes()
+
+        # 为插件前端资源提供“按路径访问”的接口，使浏览器 ESM 相对 import 生效。
+        # 注意：Route.register_routes 不支持动态参数，因此这里手动注册。
+        self.app.add_url_rule(
+            "/api/plugin/frontend-asset/<plugin_name>/<path:asset_path>",
+            view_func=self.serve_frontend_asset,
+            methods=["GET"],
+        )
 
         self.translated_event_type = {
             EventType.AdapterMessageEvent: "平台消息下发时",
@@ -358,7 +366,7 @@ class PluginRoute(Route):
         约定：最终访问路径固定为 /plugins/<插件名>。
         插件通过 metadata.yaml 的 frontend.entry 声明入口：
         - 以 http(s) 开头：直接作为远程 ESM 模块 URL
-        - 否则：视为相对插件目录的文件路径，通过 /api/file/<token> 提供
+        - 否则：视为相对插件目录的文件路径，通过 /api/plugin/frontend-asset/<plugin>/<path> 提供（支持相对 import）
         """
 
         routes = []
@@ -411,9 +419,9 @@ class PluginRoute(Route):
                     )
                     continue
 
-                token = await self.get_frontend_entry_token(abs_entry)
-                if token:
-                    component_url = f"/api/file/{token}"
+                # 使用“按路径访问”的方式，确保入口模块内部的相对 import 能正确解析。
+                safe_entry_url = safe_entry.replace("\\\\", "/")
+                component_url = f"/api/plugin/frontend-asset/{plugin.name}/{safe_entry_url}"
 
             if not component_url:
                 continue
@@ -428,6 +436,86 @@ class PluginRoute(Route):
             )
 
         return Response().ok(routes).__dict__
+
+    async def serve_frontend_asset(self, plugin_name: str, asset_path: str):
+        """按路径提供插件前端资源（JS/CSS/图片等）。
+
+        该接口用于本地 frontend.entry 的模块加载与相对 import。
+        出于安全考虑：
+        - 仅允许访问“入口文件所在目录”及其子目录
+        - 仅允许常见静态资源后缀
+        - 插件必须存在且已激活
+        """
+
+        plugin = self.plugin_manager.context.get_registered_star(plugin_name)
+        if not plugin or not plugin.activated:
+            return abort(404)
+
+        entry = getattr(plugin, "frontend_entry", None)
+        if not entry or (
+            isinstance(entry, str)
+            and entry.startswith(("http://", "https://"))
+        ):
+            return abort(404)
+
+        if not plugin.root_dir_name:
+            return abort(404)
+
+        base_dir = (
+            os.path.join(
+                self.plugin_manager.reserved_plugin_path,
+                plugin.root_dir_name,
+            )
+            if plugin.reserved
+            else os.path.join(
+                self.plugin_manager.plugin_store_path,
+                plugin.root_dir_name,
+            )
+        )
+
+        # 归一化输入路径
+        safe_asset = str(asset_path).replace("\\\\", "/").lstrip("/")
+        safe_entry = str(entry).replace("\\\\", "/").lstrip("/")
+
+        abs_base = os.path.abspath(base_dir)
+        abs_entry = os.path.abspath(os.path.join(abs_base, safe_entry))
+        abs_allowed_root = os.path.dirname(abs_entry)
+        abs_file = os.path.abspath(os.path.join(abs_base, safe_asset))
+
+        try:
+            if os.path.commonpath([abs_base, abs_entry]) != abs_base:
+                return abort(404)
+            if os.path.commonpath([abs_base, abs_file]) != abs_base:
+                return abort(404)
+            if os.path.commonpath([abs_allowed_root, abs_file]) != abs_allowed_root:
+                return abort(404)
+        except ValueError:
+            return abort(404)
+
+        allowed_exts = {
+            ".js",
+            ".mjs",
+            ".css",
+            ".json",
+            ".svg",
+            ".png",
+            ".jpg",
+            ".jpeg",
+            ".gif",
+            ".webp",
+            ".txt",
+            ".map",
+            ".wasm",
+            ".html",
+        }
+        ext = os.path.splitext(abs_file)[1].lower()
+        if ext not in allowed_exts:
+            return abort(404)
+
+        if not os.path.isfile(abs_file):
+            return abort(404)
+
+        return await send_file(abs_file)
 
     async def get_plugin_handlers_info(self, handler_full_names: list[str]):
         """解析插件行为"""

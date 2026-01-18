@@ -114,6 +114,7 @@ class AstrBotDashboard:
         allowed_endpoints = [
             "/api/auth/login",
             "/api/file",
+            "/api/plugin/frontend-asset",
             "/api/platform/webhook",
             "/api/stat/start-time",
             "/api/backup/download",  # 备份下载使用 URL 参数传递 token
