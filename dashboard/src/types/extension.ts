@@ -42,6 +42,10 @@ export type InstalledPlugin = {
   activated?: boolean
   reserved?: boolean
 
+  // plugin frontend page
+  has_page?: boolean
+  page_path?: string | null
+
   // update related
   online_version?: string
   has_update?: boolean

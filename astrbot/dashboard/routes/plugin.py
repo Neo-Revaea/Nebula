@@ -45,6 +45,7 @@ class PluginRoute(Route):
         super().__init__(context)
         self.routes = {
             "/plugin/get": ("GET", self.get_plugins),
+            "/plugin/frontend-routes": ("GET", self.get_frontend_routes),
             "/plugin/install": ("POST", self.install_plugin),
             "/plugin/install-upload": ("POST", self.install_plugin_upload),
             "/plugin/update": ("POST", self.update_plugin),
@@ -73,6 +74,23 @@ class PluginRoute(Route):
         }
 
         self._logo_cache = {}
+        self._frontend_entry_cache = {}
+
+    async def get_frontend_entry_token(self, entry_path: str):
+        try:
+            if token := self._frontend_entry_cache.get(entry_path):
+                if not await file_token_service.check_token_expired(token):
+                    return token
+            token = await file_token_service.register_file(
+                entry_path,
+                timeout=300,
+                consume_on_read=False,
+            )
+            self._frontend_entry_cache[entry_path] = token
+            return token
+        except Exception as e:
+            logger.warning(f"获取插件前端入口失败: {e}")
+            return None
 
     async def reload_plugins(self):
         if DEMO_MODE:
@@ -318,6 +336,12 @@ class PluginRoute(Route):
                 ),
                 "display_name": plugin.display_name,
                 "logo": f"/api/file/{logo_url}" if logo_url else None,
+                "has_page": bool(getattr(plugin, "frontend_entry", None)),
+                "page_path": (
+                    f"/plugins/{plugin.name}"
+                    if getattr(plugin, "frontend_entry", None)
+                    else None
+                ),
             }
             _plugin_resp.append(_t)
         return (
@@ -325,6 +349,76 @@ class PluginRoute(Route):
             .ok(_plugin_resp, message=self.plugin_manager.failed_plugin_info)
             .__dict__
         )
+
+    async def get_frontend_routes(self):
+        """返回插件前端页面路由配置，供 Dashboard 动态注册路由。
+
+        约定：最终访问路径固定为 /plugins/<插件名>。
+        插件通过 metadata.yaml 的 frontend.entry 声明入口：
+        - 以 http(s) 开头：直接作为远程 ESM 模块 URL
+        - 否则：视为相对插件目录的文件路径，通过 /api/file/<token> 提供
+        """
+
+        routes = []
+
+        for plugin in self.plugin_manager.context.get_all_stars():
+            if not plugin.activated:
+                continue
+
+            entry = getattr(plugin, "frontend_entry", None)
+            if not entry:
+                continue
+
+            component_url = None
+            if isinstance(entry, str) and entry.startswith(("http://", "https://")):
+                component_url = entry
+            else:
+                if not plugin.root_dir_name:
+                    continue
+
+                base_dir = (
+                    os.path.join(
+                        self.plugin_manager.reserved_plugin_path,
+                        plugin.root_dir_name,
+                    )
+                    if plugin.reserved
+                    else os.path.join(
+                        self.plugin_manager.plugin_store_path,
+                        plugin.root_dir_name,
+                    )
+                )
+
+                safe_entry = str(entry).lstrip("/\\")
+                abs_base = os.path.abspath(base_dir)
+                abs_entry = os.path.abspath(os.path.join(abs_base, safe_entry))
+                if not abs_entry.startswith(abs_base + os.sep):
+                    logger.warning(
+                        f"插件 {plugin.name} frontend.entry 越界，已拒绝: {entry}"
+                    )
+                    continue
+                if not os.path.exists(abs_entry):
+                    logger.warning(
+                        f"插件 {plugin.name} frontend.entry 文件不存在: {abs_entry}"
+                    )
+                    continue
+
+                token = await self.get_frontend_entry_token(abs_entry)
+                if token:
+                    component_url = f"/api/file/{token}"
+
+            if not component_url:
+                continue
+
+            routes.append(
+                {
+                    "name": f"plugin-{plugin.name}",
+                    "plugin": plugin.name,
+                    "componentUrl": component_url,
+                    "meta": getattr(plugin, "frontend_meta", None) or {},
+                }
+            )
+
+        return Response().ok(routes).__dict__
 
     async def get_plugin_handlers_info(self, handler_full_names: list[str]):
         """解析插件行为"""

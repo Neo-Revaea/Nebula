@@ -130,6 +130,17 @@
             <template v-slot:item.actions="{ item }">
               <div class="d-flex align-center">
                 <v-btn-group density="comfortable" variant="text" color="primary">
+                  <v-btn
+                    v-if="resolveRow(item).has_page && resolveRow(item).activated"
+                    icon
+                    size="small"
+                    color="primary"
+                    @click="openPluginPage(resolveRow(item))"
+                  >
+                    <v-icon>mdi-open-in-new</v-icon>
+                    <v-tooltip activator="parent" location="top">{{ tm('tooltips.openPage') }}</v-tooltip>
+                  </v-btn>
+
                   <v-btn v-if="!resolveRow(item).activated" icon size="small" color="success" @click="emit('plugin-on', resolveRow(item))">
                     <v-icon>mdi-play</v-icon>
                     <v-tooltip activator="parent" location="top">{{ tm('tooltips.enable') }}</v-tooltip>
@@ -273,6 +284,18 @@
                   </v-list>
                 </v-menu>
 
+                <v-btn
+                  v-if="extension.has_page && extension.activated"
+                  icon
+                  size="small"
+                  color="primary"
+                  variant="text"
+                  @click.stop="openPluginPage(extension)"
+                >
+                  <v-icon>mdi-open-in-new</v-icon>
+                  <v-tooltip activator="parent" location="top">{{ tm('tooltips.openPage') }}</v-tooltip>
+                </v-btn>
+
                 <v-btn icon size="small" color="primary" variant="text" @click.stop="emit('reload', extension.name)">
                   <v-icon>mdi-refresh</v-icon>
                   <v-tooltip activator="parent" location="top">{{ tm('tooltips.reload') }}</v-tooltip>
@@ -322,6 +345,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue' 
+import { useRouter } from 'vue-router'
 import defaultPluginIcon from '@/assets/images/plugin_icon.png'
 import { useModuleI18n } from '@/i18n/composables'
 import ItemCard from '@/components/shared/ItemCard.vue' 
@@ -357,6 +381,7 @@ const emit = defineEmits<{
 }>()
 
 const { tm } = useModuleI18n('features/extension')
+const router = useRouter()
 
 const updateIsListView = (value: boolean) => {
   emit('update:isListView', value)
@@ -408,6 +433,13 @@ const handleUninstallConfirm = (options: UninstallOptions) => {
 const handleUninstallCancel = () => {
   uninstallingExtension.value = null
   showUninstallDialog.value = false
+}
+
+const openPluginPage = (plugin: InstalledPlugin) => {
+  const target = plugin.page_path || `/plugins/${plugin.name}`
+  router.push(target).catch((err) => {
+    console.error('跳转插件页面失败', err)
+  })
 }
 </script>
 

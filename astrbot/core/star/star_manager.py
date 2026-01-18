@@ -214,6 +214,22 @@ class PluginManager:
             if "desc" not in metadata and "description" in metadata:
                 metadata["desc"] = metadata["description"]
 
+            frontend_entry = None
+            frontend_meta = None
+            frontend = metadata.get("frontend")
+            if isinstance(frontend, dict):
+                frontend_entry = (
+                    frontend.get("entry")
+                    or frontend.get("component_url")
+                    or frontend.get("componentUrl")
+                )
+                maybe_meta = frontend.get("meta")
+                if isinstance(maybe_meta, dict):
+                    frontend_meta = maybe_meta
+            else:
+                # 兼容一些旧/自定义字段
+                frontend_entry = metadata.get("frontend_entry")
+
             if (
                 "name" not in metadata
                 or "desc" not in metadata
@@ -230,6 +246,8 @@ class PluginManager:
                 version=metadata["version"],
                 repo=metadata["repo"] if "repo" in metadata else None,
                 display_name=metadata.get("display_name", None),
+                frontend_entry=frontend_entry,
+                frontend_meta=frontend_meta,
             )
 
         return metadata
@@ -445,6 +463,8 @@ class PluginManager:
                             metadata.version = metadata_yaml.version
                             metadata.repo = metadata_yaml.repo
                             metadata.display_name = metadata_yaml.display_name
+                            metadata.frontend_entry = metadata_yaml.frontend_entry
+                            metadata.frontend_meta = metadata_yaml.frontend_meta
                     except Exception as e:
                         logger.warning(
                             f"插件 {root_dir_name} 元数据载入失败: {e!s}。使用默认元数据。",

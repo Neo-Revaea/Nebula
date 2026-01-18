@@ -51,6 +51,7 @@
   "tooltips": {
     "enable": "点击启用",
     "disable": "点击禁用",
+    "openPage": "打开界面",
     "reload": "重载",
     "configure": "配置",
     "viewInfo": "行为",

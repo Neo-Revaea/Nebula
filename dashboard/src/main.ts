@@ -13,12 +13,14 @@ import { loader } from '@guolao/vue-monaco-editor'
 import axios from 'axios';
 import { initShikiWasm } from '@/composables/shikiWasm';
 import { MarkdownCodeBlockNode, setCustomComponents } from 'markstream-vue';
+import { initPluginFrontendRoutes } from '@/utils/pluginFrontendRoutes';
 
 // 初始化i18n系统，等待完成后再挂载应用
 setupI18n().then(async () => {
   console.log('🌍 i18n系统初始化完成');
 
   await initShikiWasm();
+  await initPluginFrontendRoutes(router);
 
   // Prefer Shiki-based code blocks over plain <pre> / Monaco.
   setCustomComponents({ code_block: MarkdownCodeBlockNode });
@@ -42,8 +44,11 @@ setupI18n().then(async () => {
   console.error('❌ i18n系统初始化失败:', error);
 
   await initShikiWasm();
+
+  // i18n 初始化失败也尽量注册插件路由
+  await initPluginFrontendRoutes(router);
   
-  // 即使i18n初始化失败，也要挂载应用（使用回退机制）
+  // 即使i18n初始化失败，也要挂载应用
   const app = createApp(App);
   app.use(router);
   const pinia = createPinia();

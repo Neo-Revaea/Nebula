@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from types import ModuleType
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from astrbot.core.config import AstrBotConfig
 
@@ -60,6 +60,12 @@ class StarMetadata:
 
     logo_path: str | None = None
     """插件 Logo 的路径"""
+
+    frontend_entry: str | None = None
+    """插件前端入口（ESM 模块 URL 或相对插件目录的文件路径）"""
+
+    frontend_meta: dict[str, Any] | None = None
+    """插件前端路由 meta（会透传给前端 router 的 meta 字段）"""
 
     def __str__(self) -> str:
         return f"Plugin {self.name} ({self.version}) by {self.author}: {self.desc}"

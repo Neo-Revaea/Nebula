@@ -51,6 +51,7 @@
   "tooltips": {
     "enable": "Click to Enable",
     "disable": "Click to Disable",
+    "openPage": "Open UI",
     "reload": "Reload",
     "configure": "Configure",
     "viewInfo": "Handlers",
