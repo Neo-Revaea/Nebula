@@ -9,10 +9,31 @@
             <div class="message-item fade-in" v-for="(msg, index) in messages" :key="index">
                 <!-- 用户消息 -->
                 <div v-if="msg.content.type == 'user'" class="user-message">
-                    <div class="message-bubble user-bubble" :class="{ 'has-audio': hasAudio(msg.content.message) }"
-                        :style="{ backgroundColor: isDark ? '#2d2e30' : '#e7ebf4' }">
-                        <!-- 遍历 message parts -->
-                        <template v-for="(part, partIndex) in msg.content.message" :key="partIndex">
+                    <div class="user-message-content">
+                        <div class="message-bubble user-bubble" :class="{ 'has-audio': hasAudio(msg.content.message) }"
+                            :style="{ backgroundColor: isDark ? '#2d2e30' : '#e7ebf4' }">
+                            <!-- 右上角展开/收起按钮（仅当需要折叠时显示） -->
+                            <v-btn
+                                v-if="shouldCollapseUserMsg(msg)"
+                                icon
+                                variant="text"
+                                class="corner-expand-btn"
+                                @click.stop="toggleUserMessage(index)"
+                                :title="isUserMessageExpanded(index)
+                                    ? (t('core.common.collapse') || '收起')
+                                    : (t('core.common.expand') || '展开')"
+                            >
+                                <v-icon size="small">
+                                    {{ isUserMessageExpanded(index) ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
+                                </v-icon>
+                            </v-btn>
+
+                            <div
+                                class="collapsible-content"
+                                :class="{ 'is-collapsed': shouldCollapseUserMsg(msg) && !isUserMessageExpanded(index) }"
+                            >
+                            <!-- 遍历 message parts -->
+                            <template v-for="(part, partIndex) in msg.content.message" :key="partIndex">
                             <!-- 引用消息 -->
                             <div v-if="part.type === 'reply'" class="reply-quote"
                                 @click="scrollToMessage(part.message_id)">
@@ -69,7 +90,22 @@
                                     </a>
                                 </div>
                             </div>
-                        </template>
+                            </template>
+                            </div>
+                        </div>
+
+                        <!-- 用户消息：气泡外（底部）复制按钮 -->
+                        <div class="user-message-actions">
+                            <v-btn
+                                :icon="getCopyIcon(index)"
+                                size="x-small"
+                                variant="text"
+                                class="copy-message-btn"
+                                :class="{ 'copy-success': isCopySuccess(index) }"
+                                @click="copyBotMessage(msg.content.message, index)"
+                                :title="t('core.common.copy')"
+                            />
+                        </div>
                     </div>
                 </div>
 
@@ -388,6 +424,7 @@ export default {
             expandedToolCalls: new Set(), // Track which tool call cards are expanded
             elapsedTimeTimer: null as any, // Timer for updating elapsed time
             currentTime: Date.now() / 1000, // Current time for elapsed time calculation
+            expandedUserMessages: new Set<number>(), // Track which user messages are expanded
             // 选中文本相关状态
             selectedText: {
                 content: '',
@@ -415,6 +452,44 @@ export default {
         this.extractWebSearchResults();
     },
     methods: {
+        shouldCollapseUserMsg(msg: any): boolean {
+            if (!msg || msg?.content?.type !== 'user') return false;
+            const parts = msg?.content?.message;
+            if (!Array.isArray(parts) || parts.length === 0) return false;
+
+            const hasAttachment = parts.some((p: any) =>
+                (p?.type === 'image' && p?.embedded_url) ||
+                (p?.type === 'record' && p?.embedded_url) ||
+                (p?.type === 'file' && p?.embedded_file)
+            );
+            if (hasAttachment) return false;
+
+            const text = parts
+                .filter((p: any) => (p?.type === 'plain' && p?.text) || p?.type === 'reply')
+                .map((p: any) => (p?.type === 'reply' ? this.getReplyContent(p.message_id) : String(p.text ?? '')))
+                .join('\n');
+
+            const trimmed = text.trim();
+            if (!trimmed) return false;
+
+            const lineCount = trimmed.split(/\r?\n/).length;
+            const charCount = trimmed.length;
+            return lineCount >= 6 || charCount >= 220;
+        },
+
+        toggleUserMessage(messageIndex: number) {
+            if (this.expandedUserMessages.has(messageIndex)) {
+                this.expandedUserMessages.delete(messageIndex);
+            } else {
+                this.expandedUserMessages.add(messageIndex);
+            }
+            // Force reactivity
+            this.expandedUserMessages = new Set(this.expandedUserMessages);
+        },
+
+        isUserMessageExpanded(messageIndex: number) {
+            return this.expandedUserMessages.has(messageIndex);
+        },
         // 从消息中提取 web_search_tavily 的搜索结果
         extractWebSearchResults() {
             const results: Record<string, { url?: string; title?: string; snippet?: string }> = {};
@@ -1234,6 +1309,29 @@ export default {
     gap: 12px;
 }
 
+.user-message-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    width: fit-content;
+    max-width: 80%;
+}
+
+@media (max-width: 768px) {
+    .user-message-content {
+        max-width: 100%;
+    }
+}
+
+/* 用户气泡外的底部操作区（目前仅复制） */
+.user-message-actions {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    margin-right: 6px;
+}
+
 .bot-message {
     display: flex;
     justify-content: flex-start;
@@ -1367,11 +1465,98 @@ export default {
 
 
 .user-bubble {
+    position: relative;
     color: var(--v-theme-primaryText);
     padding: 12px 18px;
     font-size: 15px;
-    max-width: 60%;
+    line-height: 1.6;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: fit-content;
+    max-width: 100%;
+    min-width: 0;
     border-radius: 1.5rem;
+    border-top-right-radius: 5px;
+}
+
+/* 清除 pre 默认样式，避免短文本视觉不协调 */
+.user-bubble pre {
+    margin: 0;
+}
+
+/* 允许内容在 flex 容器内正常收缩/换行 */
+.user-bubble .collapsible-content {
+    min-width: 0;
+}
+
+.corner-expand-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    min-height: 28px !important;
+    max-width: 28px !important;
+    max-height: 28px !important;
+    padding: 0 !important;
+    aspect-ratio: 1 / 1;
+    z-index: 2;
+    border-radius: 50% !important;
+    color: var(--v-theme-secondary);
+    background-color: rgba(var(--v-theme-secondary), 0.08) !important;
+}
+
+/* Vuetify v-btn 内部元素没有 scoped 标记，需用 :deep 强制成正圆，避免移动端密度/触控样式把按钮撑成椭圆 */
+:deep(.corner-expand-btn .v-btn__content) {
+    width: 28px;
+    height: 28px;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+:deep(.corner-expand-btn .v-btn__overlay),
+:deep(.corner-expand-btn .v-btn__underlay) {
+    border-radius: 50% !important;
+}
+
+.corner-expand-btn:hover {
+    background-color: rgba(var(--v-theme-secondary), 0.14) !important;
+}
+
+/* 折叠容器：默认不限制，折叠时限制约 5 行高度 */
+.collapsible-content {
+    overflow: visible;
+    max-height: none;
+    transition: max-height 0.25s ease-out;
+}
+
+.collapsible-content.is-collapsed {
+    overflow: hidden;
+    max-height: calc(5 * 1.6em);
+    -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+    mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+}
+
+/* Shiki/代码块横向滚动：避免长行在展开后被裁剪且无法左右滑动 */
+:deep(.code-block-container) {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+:deep(pre.shiki) {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* 让 code 保持不换行并产生可滚动宽度（Shiki 通常自带 white-space，但这里做兜底） */
+:deep(pre.shiki code) {
+    white-space: pre;
+    display: block;
+    min-width: max-content;
 }
 
 .bot-bubble {
@@ -1577,6 +1762,14 @@ export default {
     border-radius: 20px;
     overflow: hidden;
     width: fit-content;
+    max-width: 100%;
+}
+
+@media (max-width: 768px) {
+    /* 移动端限制容器宽度，避免 fit-content 让代码块撑开导致“没有滚动条但溢出屏幕” */
+    .reasoning-container {
+        width: 100%;
+    }
 }
 
 .reasoning-header {

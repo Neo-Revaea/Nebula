@@ -18,6 +18,8 @@
   "author": "作者",
   "status": "状态",
   "actions": "操作",
+  "expand": "展开",
+  "collapse": "收起",
   "enable": "启用",
   "disable": "禁用",
   "enabled": "已启用",
