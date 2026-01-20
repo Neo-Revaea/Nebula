@@ -67,26 +67,28 @@
   <PersonaForm 
     v-model="showCreateDialog"
     :editing-persona="null"
-    :mcp-servers="mcpServers"
-    :available-tools="availableTools"
-    :loading-tools="loadingTools"
     @saved="handlePersonaCreated"
     @error="handleError" />
 </template>
 
-<script setup>
-import { ref, watch } from 'vue'
+<script setup lang="ts">
+import { ref, watch, type PropType } from 'vue'
 import axios from 'axios'
 import PersonaForm from './PersonaForm.vue'
 import { useI18n, useModuleI18n } from '@/i18n/composables'
 
+type Persona = {
+  persona_id: string
+  system_prompt: string
+}
+
 const props = defineProps({
   modelValue: {
-    type: String,
+    type: String as PropType<string>,
     default: ''
   },
   buttonText: {
-    type: String,
+    type: String as PropType<string>,
     default: ''
   }
 })
@@ -96,7 +98,7 @@ const { t } = useI18n()
 const { tm } = useModuleI18n('core.shared')
 
 const dialog = ref(false)
-const personaList = ref([])
+const personaList = ref<Persona[]>([])
 const loading = ref(false)
 const selectedPersona = ref('')
 const showCreateDialog = ref(false)
@@ -117,7 +119,15 @@ async function loadPersonas() {
   try {
     const response = await axios.get('/api/persona/list')
     if (response.data.status === 'ok') {
-      const personas = response.data.data || []
+      const rawPersonas = (response.data.data || []) as unknown[]
+      const personas: Persona[] = rawPersonas
+        .map((p) => {
+          const maybe = p as { persona_id?: unknown; system_prompt?: unknown }
+          const persona_id = typeof maybe.persona_id === 'string' ? maybe.persona_id : ''
+          const system_prompt = typeof maybe.system_prompt === 'string' ? maybe.system_prompt : ''
+          return { persona_id, system_prompt }
+        })
+        .filter((p) => p.persona_id.length > 0)
       // 添加默认人格选项
       personaList.value = [
         {
@@ -140,7 +150,7 @@ async function loadPersonas() {
   }
 }
 
-function selectPersona(persona) {
+function selectPersona(persona: Persona) {
   selectedPersona.value = persona.persona_id
 }
 
@@ -158,14 +168,14 @@ function openCreatePersona() {
   showCreateDialog.value = true
 }
 
-async function handlePersonaCreated(message) {
+async function handlePersonaCreated(message: unknown) {
   console.log('人格创建成功:', message)
   showCreateDialog.value = false
   // 刷新人格列表
   await loadPersonas()
 }
 
-function handleError(error) {
+function handleError(error: unknown) {
   console.error('创建人格失败:', error)
 }
 </script>

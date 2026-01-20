@@ -15,18 +15,38 @@
                 <div class="reply-preview" v-if="props.replyTo && !isReplyClosing">
                     <div class="reply-content">
                         <v-icon size="small" class="reply-icon">mdi-reply</v-icon>
-                        "<span class="reply-text">{{ props.replyTo.selectedText }}</span>"
+                        "<span class="reply-text">{{ props.replyTo.selectedText || props.replyTo.messageContent }}</span>"
                     </div>
                     <v-btn @click="handleClearReply" class="remove-reply-btn" icon="mdi-close" size="x-small" color="grey" variant="text" />
                 </div>
             </transition>
-            <textarea 
-                ref="inputField"
-                v-model="localPrompt" 
-                @keydown="handleKeyDown"
-                :disabled="disabled" 
-                placeholder="Ask AstrBot..."
-                style="width: 100%; resize: none; outline: none; border: 1px solid var(--v-theme-border); border-radius: 12px; padding: 12px 16px; min-height: 40px; font-family: inherit; font-size: 16px; background-color: var(--v-theme-surface);"></textarea>
+
+            <div class="textarea-wrapper">
+                <v-btn
+                    v-if="showExpandButton"
+                    class="expand-input-btn"
+                    icon
+                    variant="text"
+                    size="x-small"
+                    :title="isInputExpanded
+                        ? (t('core.common.collapse') || '收起')
+                        : (t('core.common.expand') || '展开')"
+                    @click="toggleInputExpanded"
+                >
+                    <v-icon size="small">{{ isInputExpanded ? 'mdi-arrow-collapse' : 'mdi-arrow-expand' }}</v-icon>
+                </v-btn>
+
+                <textarea
+                    ref="inputField"
+                    v-model="localPrompt"
+                    @input="handleInput"
+                    @keydown="handleKeyDown"
+                    :disabled="disabled"
+                    placeholder="Ask Nebula..."
+                    class="chat-input-textarea"
+                    :style="textareaStyle"
+                ></textarea>
+            </div>
             <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 14px;">
                 <div style="display: flex; justify-content: flex-start; margin-top: 4px; align-items: center; gap: 8px;">
                     <!-- Settings Menu -->
@@ -36,7 +56,7 @@
                                 v-bind="activatorProps"
                                 icon="mdi-plus"
                                 variant="text"
-                                color="deep-purple"
+                                class="input-action-btn"
                             />
                         </template>
                         
@@ -87,14 +107,13 @@
                     <v-progress-circular v-if="disabled" indeterminate size="16" class="mr-1" width="1.5" />
                     <v-btn @click="handleRecordClick"
                         :icon="isRecording ? 'mdi-stop-circle' : 'mdi-microphone'" variant="text"
-                        :color="isRecording ? 'error' : 'deep-purple'" class="record-btn" size="small" />
-                    <v-btn @click="$emit('send')" icon="mdi-send" variant="text" color="deep-purple"
-                        :disabled="!canSend" class="send-btn" size="small" />
+                        :color="isRecording ? 'error' : undefined" :class="['record-btn', { 'input-action-btn': !isRecording }]" size="small" />
+                    <v-btn @click="$emit('send')" icon="mdi-send" variant="text"
+                        :disabled="!canSend" class="send-btn input-action-btn" size="small" />
                 </div>
             </div>
         </div>
 
-        <!-- 附件预览区 -->
         <div class="attachments-preview" v-if="stagedImagesUrl.length > 0 || stagedAudioUrl || (stagedFiles && stagedFiles.length > 0)">
             <div v-for="(img, index) in stagedImagesUrl" :key="'img-' + index" class="image-preview">
                 <img :src="img" class="preview-image" />
@@ -103,7 +122,7 @@
             </div>
 
             <div v-if="stagedAudioUrl" class="audio-preview">
-                <v-chip color="deep-purple-lighten-4" class="audio-chip">
+                <v-chip color="lightsecondary" class="audio-chip">
                     <v-icon start icon="mdi-microphone" size="small"></v-icon>
                     {{ tm('voice.recording') }}
                 </v-chip>
@@ -124,14 +143,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
-import { useModuleI18n } from '@/i18n/composables';
+import { ref, computed, onMounted, onBeforeUnmount, watch, nextTick } from 'vue';
+import { useI18n, useModuleI18n } from '@/i18n/composables';
 import { useCustomizerStore } from '@/stores/customizer';
 import ConfigSelector from './ConfigSelector.vue';
 import ProviderModelMenu from './ProviderModelMenu.vue';
 import StyledMenu from '@/components/shared/StyledMenu.vue';
 import type { Session } from '@/composables/useSessions';
 
+// ... (Script 逻辑部分完全保持不变) ...
 interface StagedFileInfo {
     attachment_id: string;
     filename: string;
@@ -143,6 +163,7 @@ interface StagedFileInfo {
 interface ReplyInfo {
     messageId: number;
     selectedText?: string;
+    messageContent?: string;
 }
 
 interface Props {
@@ -182,6 +203,7 @@ const emit = defineEmits<{
 }>();
 
 const { tm } = useModuleI18n('features/chat');
+const { t } = useI18n();
 const isDark = computed(() => useCustomizerStore().uiTheme === 'PurpleThemeDark');
 
 const inputField = ref<HTMLTextAreaElement | null>(null);
@@ -202,6 +224,106 @@ const canSend = computed(() => {
     return (props.prompt && props.prompt.trim()) || props.stagedImagesUrl.length > 0 || props.stagedAudioUrl || (props.stagedFiles && props.stagedFiles.length > 0);
 });
 
+// 输入区展开/收起（内容较多时显示按钮）
+const isInputExpanded = ref(false);
+const showExpandButton = computed(() => {
+    const text = (props.prompt ?? '').toString();
+    if (isInputExpanded.value) return true;
+    const lineCount = text.split(/\r?\n/).length;
+    return lineCount >= 5 || text.length >= 180;
+});
+
+// 未展开时自动高度（随内容增长/缩回）
+const COLLAPSED_MIN_HEIGHT = 40;
+const COLLAPSED_MAX_HEIGHT = 200;
+const collapsedHeightPx = ref<number>(COLLAPSED_MIN_HEIGHT);
+const collapsedOverflowY = ref<'hidden' | 'auto'>('hidden');
+
+function syncCollapsedTextareaHeight() {
+    const el = inputField.value;
+    if (!el) return;
+    if (isInputExpanded.value) return;
+
+    // 关键：先重置为 auto，才能在删除内容时正确“缩回”
+    el.style.height = 'auto';
+
+    const scrollHeight = el.scrollHeight;
+    const nextHeight = Math.max(COLLAPSED_MIN_HEIGHT, Math.min(scrollHeight, COLLAPSED_MAX_HEIGHT));
+
+    collapsedHeightPx.value = nextHeight;
+    collapsedOverflowY.value = scrollHeight > COLLAPSED_MAX_HEIGHT ? 'auto' : 'hidden';
+
+    // 直接写回 DOM，避免在“值未变化”时 Vue 不更新导致看起来失效
+    el.style.height = `${nextHeight}px`;
+    el.style.overflowY = collapsedOverflowY.value;
+}
+
+async function toggleInputExpanded() {
+    isInputExpanded.value = !isInputExpanded.value;
+    await nextTick();
+
+    const el = inputField.value;
+    if (!el) return;
+
+    if (isInputExpanded.value) {
+        // 展开态：释放收起态写入的固定高度
+        el.style.height = 'auto';
+        el.style.overflowY = 'auto';
+    } else {
+        syncCollapsedTextareaHeight();
+    }
+}
+
+function handleInput() {
+    // v-model 已经更新 prompt，这里只负责同步高度
+    // 用 nextTick 确保文本渲染后再测量 scrollHeight
+    nextTick(() => syncCollapsedTextareaHeight());
+}
+
+const textareaStyle = computed(() => {
+    return {
+        width: '100%',
+        resize: 'none',
+        outline: 'none',
+        border: 'none',
+        borderRadius: '0',
+        padding: '0 32px',
+        height: isInputExpanded.value ? 'auto' : `${collapsedHeightPx.value}px`,
+        minHeight: isInputExpanded.value ? '560px' : `${COLLAPSED_MIN_HEIGHT}px`,
+        maxHeight: isInputExpanded.value ? '50vh' : `${COLLAPSED_MAX_HEIGHT}px`,
+        overflowY: isInputExpanded.value ? 'auto' : collapsedOverflowY.value,
+        fontFamily: 'inherit',
+        fontSize: '16px',
+        backgroundColor: 'var(--v-theme-surface)'
+    } as Record<string, string>;
+});
+
+watch(
+    () => props.prompt,
+    async () => {
+        if (isInputExpanded.value) return;
+        await nextTick();
+        syncCollapsedTextareaHeight();
+    }
+);
+
+watch(
+    () => isInputExpanded.value,
+    async (expanded) => {
+        await nextTick();
+        const el = inputField.value;
+        if (!el) return;
+
+        // 收起时：重新接管自动高度；展开时：释放固定高度
+        if (!expanded) {
+            syncCollapsedTextareaHeight();
+        } else {
+            el.style.height = 'auto';
+            el.style.overflowY = 'auto';
+        }
+    }
+);
+
 // Ctrl+B 长按录音相关
 const ctrlKeyDown = ref(false);
 const ctrlKeyTimer = ref<number | null>(null);
@@ -219,7 +341,6 @@ function handleReplyAfterLeave() {
 }
 
 function handleKeyDown(e: KeyboardEvent) {
-    // Enter 发送消息
     if (e.keyCode === 13 && !e.shiftKey) {
         e.preventDefault();
         if (canSend.value) {
@@ -227,7 +348,6 @@ function handleKeyDown(e: KeyboardEvent) {
         }
     }
 
-    // Ctrl+B 录音
     if (e.ctrlKey && e.keyCode === 66) {
         e.preventDefault();
         if (ctrlKeyDown.value) return;
@@ -299,6 +419,7 @@ onMounted(() => {
         inputField.value.addEventListener('paste', handlePaste);
     }
     document.addEventListener('keyup', handleKeyUp);
+    nextTick(() => syncCollapsedTextareaHeight());
 });
 
 onBeforeUnmount(() => {
@@ -316,10 +437,48 @@ defineExpose({
 <style scoped>
 .input-area {
     padding: 16px;
-    background-color: transparent;
+    padding-top: 0; 
+    background-color: rgb(var(--v-theme-surface));
+    border-top: none;
     position: relative;
-    border-top: 1px solid var(--v-theme-border);
     flex-shrink: 0;
+    z-index: 20;
+}
+
+.input-container {
+    border-radius: 24px;
+    position: relative;
+}
+
+.textarea-wrapper {
+    position: relative;
+    border: 1px solid var(--v-theme-border);
+    border-radius: 12px;
+    overflow: hidden;
+    -webkit-clip-path: inset(0 round 12px);
+    clip-path: inset(0 round 12px);
+    background-color: none !important;
+    padding: 20px 0;
+}
+
+.expand-input-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 2;
+    color: rgba(var(--v-theme-secondaryText), 0.9);
+}
+
+.expand-input-btn.v-btn--variant-text:hover {
+    background-color: rgba(var(--v-theme-secondaryText), 0.10);
+}
+
+/* 预留右上角按钮空间，避免覆盖输入文字（仅在按钮出现时更明显） */
+.chat-input-textarea {
+    padding-right: 40px;
+    box-sizing: border-box;
+    display: block;
+    margin: 0;
 }
 
 .reply-preview {
@@ -328,7 +487,7 @@ defineExpose({
     justify-content: space-between;
     padding: 8px 16px;
     margin: 8px 8px 0 8px;
-    background-color: rgba(103, 58, 183, 0.06);
+    background-color: rgba(var(--v-theme-primary), 0.08); 
     border-radius: 12px;
     gap: 8px;
     max-height: 500px;
@@ -388,13 +547,13 @@ defineExpose({
 }
 
 .reply-icon {
-    color: var(--v-theme-secondary);
+    color: rgb(var(--v-theme-secondary));
     flex-shrink: 0;
 }
 
 .reply-text {
     font-size: 13px;
-    color: var(--v-theme-secondaryText);
+    color: rgba(var(--v-theme-on-surface), 0.7);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -431,6 +590,18 @@ defineExpose({
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+@media (max-width: 768px) {
+    .preview-image {
+        object-fit: contain;
+    }
+}
+
+@media (hover: none) and (pointer: coarse) {
+    .preview-image {
+        object-fit: contain;
+    }
+}
+
 .audio-chip,
 .file-chip {
     height: 36px;
@@ -456,8 +627,16 @@ defineExpose({
     opacity: 1;
 }
 
+.input-action-btn {
+    color: rgba(var(--v-theme-secondaryText), 0.9);
+}
+
+.input-action-btn.v-btn--variant-text:hover {
+    background-color: rgba(var(--v-theme-secondaryText), 0.10);
+}
+
 .fade-in {
-    animation: fadeIn 0.3s ease-in-out;
+    animation: fadeIn 0.2s ease-in-out;
 }
 
 @keyframes fadeIn {
@@ -479,6 +658,11 @@ defineExpose({
     .input-container {
         width: 100% !important;
         max-width: 100% !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+        border-left: none !important;
+        border-right: none !important;
+        border-bottom: none !important;
     }
 }
 </style>
