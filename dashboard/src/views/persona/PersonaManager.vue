@@ -398,7 +398,7 @@ export default defineComponent({
             // 额外延迟一小段时间，让布局稳定，避免“从下到上”闪动
             setTimeout(() => {
                 this.skeletonAnimating = false;
-            }, 80);
+            }, 100);
         },
 
         async initialize() {
