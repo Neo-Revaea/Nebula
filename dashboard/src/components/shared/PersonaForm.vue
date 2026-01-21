@@ -226,7 +226,7 @@ type McpServer = {
 type Persona = {
     persona_id: string;
     system_prompt: string;
-    begin_dialogs?: string[];
+    begin_dialogs?: string[] | null;
     tools?: string[] | null;
     folder_id?: string | null;
 }
@@ -273,7 +273,7 @@ export default defineComponent({
             mcpServers: [] as McpServer[],
             availableTools: [] as ToolInfo[],
             loadingTools: false,
-            existingPersonaIds: [], // 已存在的人格ID列表
+            existingPersonaIds: [] as string[], // 已存在的人格ID列表
             personaForm: {
                 persona_id: '',
                 system_prompt: '',
@@ -284,7 +284,7 @@ export default defineComponent({
             personaIdRules: [
                 (v: unknown) => !!String(v ?? '') || this.tm('validation.required'),
                 (v: unknown) => (String(v ?? '').length >= 1) || this.tm('validation.minLength', { min: 1 }),
-                (v: unknown) => !this.existingPersonaIds.includes(String(v ?? '')) || this.tm('validation.personaIdExists')
+                (v: unknown) => !(this.existingPersonaIds as unknown as string[]).includes(String(v ?? '')) || this.tm('validation.personaIdExists')
             ],
             systemPromptRules: [
                 (v: unknown) => !!String(v ?? '') || this.tm('validation.required'),
@@ -388,7 +388,7 @@ export default defineComponent({
                 system_prompt: persona.system_prompt,
                 begin_dialogs: [...(persona.begin_dialogs || [])],
                 tools: persona.tools === null ? null : [...(persona.tools || [])],
-                folder_id: persona.folder_id
+                folder_id: persona.folder_id ?? null
             };
             // 根据 tools 的值设置 toolSelectValue
             this.toolSelectValue = persona.tools === null ? '0' : '1';
@@ -436,7 +436,10 @@ export default defineComponent({
             try {
                 const response = await axios.get('/api/persona/list');
                 if (response.data.status === 'ok') {
-                    this.existingPersonaIds = (response.data.data || []).map(p => p.persona_id);
+                    const list = (response.data.data || []) as Array<{ persona_id?: unknown }>;
+                    this.existingPersonaIds = list
+                        .map((p) => (typeof p.persona_id === 'string' ? p.persona_id : ''))
+                        .filter((id) => id.length > 0);
                 }
             } catch (error) {
                 // 加载失败不影响表单使用，只是无法进行前端重名校验
