@@ -104,9 +104,9 @@ export default defineComponent({
 
 <style scoped>
 .folder-card-fixed {
-    height: 240px !important;
-    max-height: 240px !important;
-    min-height: 240px !important;
+    height: 160px !important;
+    max-height: 160px !important;
+    min-height: 160px !important;
     cursor: pointer;
 }
 
@@ -131,8 +131,8 @@ export default defineComponent({
     white-space: normal;
     overflow: hidden;
     display: -webkit-box;
-    -webkit-line-clamp: 6;
-    line-clamp: 6;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
 }
 
