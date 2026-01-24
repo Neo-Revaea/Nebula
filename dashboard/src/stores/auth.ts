@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia';
-import { router } from '@/router';
 import axios from 'axios';
 
 export const useAuthStore = defineStore({
@@ -24,16 +23,18 @@ export const useAuthStore = defineStore({
         localStorage.setItem('user', this.username);
         localStorage.setItem('token', res.data.data.token);
         localStorage.setItem('change_pwd_hint', res.data.data?.change_pwd_hint);
-        router.push(this.returnUrl || '/');
+        const { router } = await import('@/router');
+        await router.push(this.returnUrl || '/');
       } catch (error: unknown) {
         return Promise.reject(error);
       }
     },
-    logout() {
+    async logout() {
       this.username = '';
       localStorage.removeItem('user');
       localStorage.removeItem('token');
-      router.push('/auth/login');
+      const { router } = await import('@/router');
+      await router.push('/auth/login');
     },
     has_token(): boolean {
       return !!localStorage.getItem('token');
