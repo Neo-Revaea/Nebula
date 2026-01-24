@@ -328,7 +328,7 @@ async def download_nebula_dashboard_nightly(
 ) -> None:
     """下载 Nebula nightly WebUI(dist.zip) 并解压到 data/dist。
 
-    下载源：Neo-Life/Nebula release tag `nightly` 的 dist.zip。
+    下载源：Nebula release tag `nightly` 的 dist.zip。
     """
 
     if path is None:
