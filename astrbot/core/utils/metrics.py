@@ -51,7 +51,7 @@ class Metric:
 
         kwargs["v"] = VERSION
         kwargs["os"] = sys.platform
-        kwargs["hn"] = "Nebula - Based on AstrBot(https://github.com/Neo-Life/Nebula)"
+        kwargs["hn"] = "Nebula - Based on AstrBot(https://github.com/Neo-Revaea/Nebula)"
 
         payload = {"metrics_data": kwargs}
 
@@ -62,13 +62,13 @@ class Metric:
 
         try:
             if "repo" in kwargs:
-                kwargs["repo"] = "https://github.com/Neo-Life/Nebula"
+                kwargs["repo"] = "https://github.com/Neo-Revaea/Nebula"
         except Exception:
             pass
 
         try:
             if "adapter_name" in kwargs:
-                kwargs["adapter_name"] = kwargs["adapter_name"] + " - Nebula: Based on AstrBot(https://github.com/Neo-Life/Nebula)"
+                kwargs["adapter_name"] = kwargs["adapter_name"] + " - Nebula: Based on AstrBot(https://github.com/Neo-Revaea/Nebula)"
                 await db_helper.insert_platform_stats(
                     platform_id=kwargs["adapter_name"],
                     platform_type=kwargs.get("adapter_type", "unknown"),

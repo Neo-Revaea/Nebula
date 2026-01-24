@@ -336,7 +336,7 @@ async def download_nebula_dashboard_nightly(
     else:
         zip_path = Path(path).absolute()
 
-    url = "https://github.com/Neo-Life/Nebula/releases/download/nightly/dist.zip"
+    url = "https://github.com/Neo-Revaea/Nebula/releases/download/nightly/dist.zip"
     if proxy:
         proxy = proxy.removesuffix("/")
         url = f"{proxy}/{url}"
