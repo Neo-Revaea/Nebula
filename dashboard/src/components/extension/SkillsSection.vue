@@ -143,6 +143,8 @@ export default defineComponent({
     };
 
     const fetchSkills = async () => {
+      const startedAt = Date.now();
+      const minLoadingMs = 800;
       loading.value = true;
       try {
         const res = await axios.get<ApiResponse<SkillItem[]>>("/api/skills");
@@ -150,9 +152,15 @@ export default defineComponent({
         skills.value = data.data || [];
       } catch (err) {
         showMessage((err as any)?.message || tm("skills.loadFailed"), "error");
-      } finally {
-        loading.value = false;
       }
+
+      const elapsed = Date.now() - startedAt;
+      const remaining = minLoadingMs - elapsed;
+      if (remaining > 0) {
+        await new Promise((r) => setTimeout(r, remaining));
+      }
+
+      loading.value = false;
     };
 
     const uploadSkill = async () => {
