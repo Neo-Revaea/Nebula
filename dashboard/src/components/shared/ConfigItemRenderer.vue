@@ -188,7 +188,7 @@
 
     <FileConfigItem
       v-else-if="itemMeta?.type === 'file'"
-      :model-value="modelValue"
+      :model-value="modelValueArray"
       :item-meta="itemMeta"
       :plugin-name="pluginName"
       :config-key="configKey"
