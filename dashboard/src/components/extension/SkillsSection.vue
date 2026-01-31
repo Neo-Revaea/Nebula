@@ -26,11 +26,14 @@
           <item-card :item="skill" title-field="name" enabled-field="active" title-class="text-h3" :loading="itemLoading[skill.name] || false"
             :show-edit-button="false" @toggle-enabled="toggleSkill" @delete="confirmDelete">
             <template v-slot:item-details="{ item }">
-              <div class="text-caption text-medium-emphasis mb-2 skill-description">
+              <div
+                class="text-caption text-medium-emphasis mb-2 skill-description"
+                :title="item.description || tm('skills.noDescription')"
+              >
                 <v-icon size="small" class="me-1">mdi-text</v-icon>
                 {{ item.description || tm('skills.noDescription') }}
               </div>
-              <div class="text-caption text-medium-emphasis">
+              <div class="text-caption text-medium-emphasis skill-path" :title="item.path">
                 <v-icon size="small" class="me-1">mdi-file-document</v-icon>
                 {{ tm('skills.path') }}: {{ item.path }}
               </div>
@@ -163,6 +166,22 @@ export default defineComponent({
       loading.value = false;
     };
 
+    const handleApiResponse = <T,>(
+      res: AxiosResponse<ApiResponse<T>>,
+      successMessage: string,
+      failureMessageDefault: string,
+      onSuccess?: () => void | Promise<void>
+    ): void => {
+      if (res?.data?.status === "ok") {
+        showMessage(successMessage, "success");
+        void onSuccess?.();
+        return;
+      }
+
+      const msg = res?.data?.message || failureMessageDefault;
+      showMessage(msg, "error");
+    };
+
     const uploadSkill = async () => {
       if (!uploadFile.value) return;
       uploading.value = true;
@@ -180,14 +199,19 @@ export default defineComponent({
           "/api/skills/upload",
           formData,
           {
-          headers: { "Content-Type": "multipart/form-data" },
+            headers: { "Content-Type": "multipart/form-data" },
           }
         );
-        assertOk(res);
-        showMessage(tm("skills.uploadSuccess"), "success");
-        uploadDialog.value = false;
-        uploadFile.value = null;
-        await fetchSkills();
+        handleApiResponse(
+          res,
+          tm("skills.uploadSuccess"),
+          tm("skills.uploadFailed"),
+          async () => {
+            uploadDialog.value = false;
+            uploadFile.value = null;
+            await fetchSkills();
+          }
+        );
       } catch (err) {
         showMessage((err as any)?.message || tm("skills.uploadFailed"), "error");
       } finally {
@@ -202,13 +226,18 @@ export default defineComponent({
         const res = await axios.post<ApiResponse<{ name: string; active: boolean }>>(
           "/api/skills/update",
           {
-          name: skill.name,
-          active: nextActive,
+            name: skill.name,
+            active: nextActive,
           }
         );
-        assertOk(res);
-        skill.active = nextActive;
-        showMessage(tm("skills.updateSuccess"), "success");
+        handleApiResponse(
+          res,
+          tm("skills.updateSuccess"),
+          tm("skills.updateFailed"),
+          () => {
+            skill.active = nextActive;
+          }
+        );
       } catch (err) {
         showMessage((err as any)?.message || tm("skills.updateFailed"), "error");
       } finally {
@@ -231,10 +260,15 @@ export default defineComponent({
             name: skillToDelete.value.name,
           }
         );
-        assertOk(res);
-        showMessage(tm("skills.deleteSuccess"), "success");
-        deleteDialog.value = false;
-        await fetchSkills();
+        handleApiResponse(
+          res,
+          tm("skills.deleteSuccess"),
+          tm("skills.deleteFailed"),
+          async () => {
+            deleteDialog.value = false;
+            await fetchSkills();
+          }
+        );
       } catch (err) {
         showMessage((err as any)?.message || tm("skills.deleteFailed"), "error");
       } finally {
@@ -269,7 +303,18 @@ export default defineComponent({
 <style scoped>
 .skill-description {
   display: -webkit-box;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.skill-path {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 </style>
