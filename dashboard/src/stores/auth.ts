@@ -23,8 +23,8 @@ export const useAuthStore = defineStore({
         localStorage.setItem('user', this.username);
         localStorage.setItem('token', res.data.data.token);
         localStorage.setItem('change_pwd_hint', res.data.data?.change_pwd_hint);
-        const { router } = await import('@/router');
-        await router.push(this.returnUrl || '/');
+        const targetPath = this.returnUrl || '/';
+        window.location.hash = targetPath.startsWith('#') ? targetPath : `#${targetPath}`;
       } catch (error: unknown) {
         return Promise.reject(error);
       }
@@ -33,8 +33,7 @@ export const useAuthStore = defineStore({
       this.username = '';
       localStorage.removeItem('user');
       localStorage.removeItem('token');
-      const { router } = await import('@/router');
-      await router.push('/auth/login');
+      window.location.hash = '#/auth/login';
     },
     has_token(): boolean {
       return !!localStorage.getItem('token');
