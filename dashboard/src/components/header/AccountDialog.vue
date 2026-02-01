@@ -5,6 +5,7 @@ import { md5 } from 'js-md5'
 import { useAuthStore } from '@/stores/auth'
 import { useI18n } from '@/i18n/composables'
 import Logo from '@/components/shared/Logo.vue'
+import { useRouter } from 'vue-router'
 import { useDisplay } from 'vuetify'
 
 const props = defineProps<{
@@ -18,6 +19,7 @@ const emit = defineEmits<{
 
 const display = useDisplay()
 const { t } = useI18n()
+const router = useRouter()
 
 const username = localStorage.getItem('user')
 
@@ -81,6 +83,7 @@ async function accountEdit() {
       dialogModel.value = false
       const authStore = useAuthStore()
       authStore.logout()
+      router.push('/auth/login')
     }, 2000)
   } catch (err) {
     console.log(err)

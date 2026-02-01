@@ -23,17 +23,16 @@ export const useAuthStore = defineStore({
         localStorage.setItem('user', this.username);
         localStorage.setItem('token', res.data.data.token);
         localStorage.setItem('change_pwd_hint', res.data.data?.change_pwd_hint);
-        const targetPath = this.returnUrl || '/';
-        window.location.hash = targetPath.startsWith('#') ? targetPath : `#${targetPath}`;
       } catch (error: unknown) {
         return Promise.reject(error);
       }
     },
     async logout() {
       this.username = '';
+      this.returnUrl = null;
       localStorage.removeItem('user');
       localStorage.removeItem('token');
-      window.location.hash = '#/auth/login';
+      localStorage.removeItem('change_pwd_hint');
     },
     has_token(): boolean {
       return !!localStorage.getItem('token');

@@ -4,7 +4,7 @@ import { useAuthStore } from '@/stores/auth';
 import { Form } from 'vee-validate';
 import * as md5 from 'js-md5';
 import { useModuleI18n } from '@/i18n/composables';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 const { tm: t } = useModuleI18n('features/auth');
 
@@ -14,6 +14,7 @@ const password = ref('');
 const username = ref('');
 const loading = ref(false);
 const route = useRoute();
+const router = useRouter();
 
 type LoginFormValues = {
   username?: string;
@@ -33,8 +34,8 @@ async function validate(_values: LoginFormValues, { setErrors }: { setErrors: (e
   const authStore = useAuthStore();
   const redirect = route.query.redirect;
   authStore.returnUrl = typeof redirect === 'string' ? redirect : null;
-  return authStore.login(username.value, password_).then((res) => {
-    console.log(res);
+  return authStore.login(username.value, password_).then(async () => {
+    await router.push(authStore.returnUrl || '/');
     loading.value = false;
   }).catch((err: unknown) => {
     const message = err instanceof Error ? err.message : String(err);

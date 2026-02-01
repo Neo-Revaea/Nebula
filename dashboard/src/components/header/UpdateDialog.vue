@@ -6,6 +6,7 @@ import 'markstream-vue/index.css'
 import 'katex/dist/katex.min.css'
 import { useI18n } from '@/i18n/composables'
 import { useAuthStore } from '@/stores/auth'
+import { useRouter } from 'vue-router'
 import { useDisplay, useTheme } from 'vuetify'
 import { shikiWasmReady } from '@/composables/shikiWasm'
 import { getSelectedGitHubProxy } from '@/utils/githubProxy'
@@ -34,6 +35,7 @@ enableKatex()
 enableMermaid()
 
 const { t } = useI18n()
+const router = useRouter()
 
 const display = useDisplay()
 
@@ -138,6 +140,7 @@ async function checkUpdate() {
     if (err?.response && err.response.status == 401) {
       const authStore = useAuthStore()
       authStore.logout()
+      router.push('/auth/login')
       return
     }
     setUpdateStatusText(err)
