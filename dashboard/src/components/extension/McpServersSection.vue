@@ -25,7 +25,7 @@
 
       <v-row v-else>
         <v-col v-for="(server, index) in mcpServers || []" :key="index" cols="12" md="6" lg="4" xl="3">
-          <item-card style="background-color: rgb(var(--v-theme-mcpCardBg));" :item="server" title-field="name"
+          <item-card :item="server" title-field="name" title-class="text-h3"
             enabled-field="active" @toggle-enabled="updateServerStatus" @delete="deleteServer" @edit="editServer">
             <template v-slot:item-details="{ item }">
               <div class="d-flex align-center mb-2">

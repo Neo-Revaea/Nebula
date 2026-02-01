@@ -113,7 +113,7 @@ export default {
     hideHeader: { type: Boolean, default: false },
     noPadding: { type: Boolean, default: false },
     showSwitch: { type: Boolean, default: true },
-    titleClass: { type: String, default: 'text-h6' },
+    titleClass: { type: String, default: 'text-h3' },
     showEditButton: { type: Boolean, default: true },
     showDeleteButton: { type: Boolean, default: true },
     wrapActions: { type: Boolean, default: false },
