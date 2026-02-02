@@ -64,7 +64,15 @@
                 </div>
 
                 <!-- Bot Messages -->
-                <div v-else class="bot-message">
+                <div
+                    v-else
+                    class="bot-message"
+                    :class="{
+                        'has-reasoning': !!(msg.content.reasoning && msg.content.reasoning.trim()),
+                        'has-bot-icon': !(isStreaming && index === messages.length - 1)
+                            && (messages[index - 1]?.content.type !== 'bot')
+                    }"
+                >
                     <v-avatar class="bot-avatar" size="36">
                         <v-progress-circular :index="index" v-if="isStreaming && index === messages.length - 1"
                             indeterminate size="28" width="2"></v-progress-circular>
@@ -1068,31 +1076,51 @@ export default {
     }
 
     .bot-message {
-        display: flex;
-        justify-content: flex-start;
-        align-items: flex-start;
-        gap: 8px;
+        display: grid !important;
+        grid-template-columns: 44px 1fr;
+        grid-template-rows: auto auto auto;
+        column-gap: 8px;
+        row-gap: 6px;
         width: 100%;
-        --bot-avatar-offset: 48px;
     }
 
     .bot-message-content {
-        flex: 1;
-        min-width: 0;
-        max-width: 100% !important;
-        width: 100% !important;
+        display: contents !important;
     }
 
     .bot-avatar {
+        grid-column: 1;
+        grid-row: 1;
         margin-left: 4px;
+        position: relative;
+        z-index: 2;
     }
 
-    .bot-bubble {
+    .bot-reasoning {
+        grid-column: 2;
+        grid-row: 1;
+        min-width: 0;
+        width: auto;
+        max-width: 100%;
+        justify-self: start;
+    }
+
+    .bot-message .bot-bubble {
         max-width: none !important;
         box-sizing: border-box;
-        margin-left: calc(-1 * var(--bot-avatar-offset));
-        width: calc(100% + var(--bot-avatar-offset)) !important;
-        padding-left: calc(12px + var(--bot-avatar-offset));
+        margin-left: 0;
+        width: 100% !important;
+        grid-column: 1 / -1;
+        grid-row: 2;
+        padding-left: 12px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .bot-message-content > .message-actions {
+        grid-column: 1 / -1;
+        grid-row: 3;
+        margin-left: 0;
     }
 }
 
@@ -1184,6 +1212,12 @@ export default {
     justify-content: flex-start;
     align-items: flex-start;
     gap: 12px;
+}
+
+@media (min-width: 769px) {
+    .bot-message.has-bot-icon:not(.has-reasoning) .bot-avatar {
+        margin-top: 14px;
+    }
 }
 
 .bot-message-content {
