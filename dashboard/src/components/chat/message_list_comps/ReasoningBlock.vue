@@ -99,7 +99,7 @@ const toggleExpanded = () => {
 }
 
 @media (max-width: 768px) {
-    .reasoning-card {
+    .reasoning-card.is-expanded {
         width: 100%;
     }
 }
@@ -107,6 +107,7 @@ const toggleExpanded = () => {
 .reasoning-header {
     display: inline-flex;
     align-items: center;
+    width: 100%;
     gap: 6px;
     padding: 8px 12px;
     cursor: pointer;
@@ -145,7 +146,7 @@ const toggleExpanded = () => {
 
 .reasoning-content {
     padding: 10px 12px;
-    border-top: none;
+    border-top: 2px solid rgba(var(--v-theme-on-surface), 0.10);
     color: rgba(var(--v-theme-on-surface), 0.78);
     animation: fadeIn 0.2s ease-in-out;
     max-width: 100%;
