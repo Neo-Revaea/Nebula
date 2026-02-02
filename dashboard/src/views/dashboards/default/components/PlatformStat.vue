@@ -22,7 +22,7 @@
               <div class="platform-rank" :class="{'top-rank': i < 3}">{{ i + 1 }}</div>
             </template>
             
-            <v-list-item-title class="platform-name">{{ platform.name }}</v-list-item-title>
+            <v-list-item-title class="platform-name" :title="platform.name">{{ platform.name }}</v-list-item-title>
             
             <template v-slot:append>
               <div class="platform-count">
@@ -41,7 +41,7 @@
           <v-divider vertical></v-divider>
           <div class="platform-stat-item">
             <div class="stat-label">{{ t('charts.platformStat.mostActive') }}</div>
-            <div class="stat-value">{{ mostActivePlatform }}</div>
+            <div class="stat-value stat-value-ellipsis" :title="mostActivePlatform">{{ mostActivePlatform }}</div>
           </div>
           <v-divider vertical></v-divider>
           <div class="platform-stat-item">
@@ -181,6 +181,11 @@ export default defineComponent({
   margin-bottom: 4px;
   border-radius: 8px;
   transition: background-color 0.2s;
+  min-width: 0;
+}
+
+.platform-item :deep(.v-list-item__content) {
+  min-width: 0;
 }
 
 .platform-item:hover {
@@ -208,6 +213,9 @@ export default defineComponent({
 
 .platform-name {
   font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .platform-count {
@@ -232,13 +240,15 @@ export default defineComponent({
   justify-content: space-between;
   background-color: var(--v-theme-containerBg);
   border-radius: 8px;
-  padding: 12px;
+  padding: 12px 16px;
   margin-bottom: 16px;
 }
 
 .platform-stat-item {
   flex: 1;
   text-align: center;
+  min-width: 0;
+  padding: 0 6px;
 }
 
 .stat-label {
@@ -250,6 +260,12 @@ export default defineComponent({
 .stat-value {
   font-weight: 600;
   color: var(--v-theme-primaryText);
+}
+
+.stat-value-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .platform-chart {
