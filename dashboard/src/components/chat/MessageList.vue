@@ -72,6 +72,16 @@
                             color="#8fb6d2">mdi-star-four-points-small</v-icon>
                     </v-avatar>
                     <div class="bot-message-content">
+                        <!-- Reasoning Block (Collapsible) - 移出气泡，便于移动端布局控制 -->
+                        <ReasoningBlock
+                            v-if="msg.content.reasoning && msg.content.reasoning.trim()"
+                            class="bot-reasoning"
+                            :reasoning="msg.content.reasoning"
+                            :is-dark="isDark || isMarkdownDark"
+                            :model-value="isReasoningExpanded(index)"
+                            @update:modelValue="setReasoningExpanded(index, $event)"
+                        />
+
                         <div class="message-bubble bot-bubble">
                             <!-- Loading state -->
                             <div v-if="msg.content.isLoading" class="loading-container">
@@ -79,16 +89,6 @@
                             </div>
 
                             <template v-else>
-                                <!-- Reasoning Block (Collapsible) - 放在最前面 -->
-                                <ReasoningBlock
-                                    v-if="msg.content.reasoning && msg.content.reasoning.trim()"
-                                    class="mt-2"
-                                    :reasoning="msg.content.reasoning"
-                                    :is-dark="isDark || isMarkdownDark"
-                                    :model-value="isReasoningExpanded(index)"
-                                    @update:modelValue="setReasoningExpanded(index, $event)"
-                                />
-
                                 <!-- 使用 MessagePartsRenderer 渲染 message parts（含 tool calls 分组），配色跟随主题色 -->
                                 <MessagePartsRenderer
                                     :parts="msg.content.message"
@@ -1068,24 +1068,31 @@ export default {
     }
 
     .bot-message {
-        flex-direction: column;
+        display: flex;
+        justify-content: flex-start;
         align-items: flex-start;
         gap: 8px;
         width: 100%;
+        --bot-avatar-offset: 48px;
     }
 
     .bot-message-content {
+        flex: 1;
+        min-width: 0;
         max-width: 100% !important;
         width: 100% !important;
-    }
-
-    .bot-bubble {
-        width: 100% !important;
-        max-width: 100% !important;
     }
 
     .bot-avatar {
         margin-left: 4px;
+    }
+
+    .bot-bubble {
+        max-width: none !important;
+        box-sizing: border-box;
+        margin-left: calc(-1 * var(--bot-avatar-offset));
+        width: calc(100% + var(--bot-avatar-offset)) !important;
+        padding-left: calc(12px + var(--bot-avatar-offset));
     }
 }
 
@@ -1402,10 +1409,14 @@ export default {
     padding-left: 12px;
 }
 
-.user-avatar,
-.bot-avatar {
+.user-avatar {
     align-self: flex-start;
     margin-top: 12px;
+}
+
+.bot-avatar {
+    align-self: flex-start;
+    margin-top: 0;
 }
 
 /* 包含音频的消息气泡最小宽度 */

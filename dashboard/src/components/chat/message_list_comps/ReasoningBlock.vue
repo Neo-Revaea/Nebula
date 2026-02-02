@@ -85,7 +85,7 @@ const toggleExpanded = () => {
 
 <style scoped>
 .reasoning-card {
-    margin: 8px 0 12px;
+    margin: 0 0 12px;
     border: none;
     border-radius: 16px;
     overflow: hidden;
