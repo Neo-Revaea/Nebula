@@ -27,30 +27,44 @@
     </div>
 
     <div v-else-if="kbList.length > 0" class="kb-grid">
-      <v-card v-for="kb in kbList" :key="kb.kb_id" class="kb-card" elevation="2" hover
-        @click="navigateToDetail(kb.kb_id)">
-        <div class="kb-card-content">
-          <div class="kb-emoji">{{ kb.emoji || '📚' }}</div>
-          <h3 class="kb-name">{{ kb.kb_name }}</h3>
-          <p class="kb-description text-medium-emphasis">{{ kb.description || '暂无描述' }}</p>
+      <ItemCard
+        v-for="kb in kbList"
+        :key="kb.kb_id"
+        class="kb-card"
+        :item="kb"
+        title-field="kb_name"
+        :hide-header="true"
+        :no-padding="true"
+        :show-switch="false"
+        :show-edit-button="false"
+        :show-delete-button="false"
+        :show-copy-button="false"
+        @click="navigateToDetail(kb.kb_id)"
+      >
+        <template #item-details="{ item }">
+          <div class="kb-card-content">
+            <div class="kb-emoji">{{ item.emoji || '📚' }}</div>
+            <h3 class="kb-name">{{ item.kb_name }}</h3>
+            <p class="kb-description text-medium-emphasis">{{ item.description || '暂无描述' }}</p>
 
-          <div class="kb-stats mt-4">
-            <div class="stat-item">
-              <v-icon size="small" color="primary">mdi-file-document</v-icon>
-              <span>{{ kb.doc_count || 0 }} {{ t('list.documents') }}</span>
+            <div class="kb-stats mt-4">
+              <div class="stat-item">
+                <v-icon size="small" color="primary">mdi-file-document</v-icon>
+                <span>{{ item.doc_count || 0 }} {{ t('list.documents') }}</span>
+              </div>
+              <div class="stat-item">
+                <v-icon size="small" color="secondary">mdi-text-box</v-icon>
+                <span>{{ item.chunk_count || 0 }} {{ t('list.chunks') }}</span>
+              </div>
             </div>
-            <div class="stat-item">
-              <v-icon size="small" color="secondary">mdi-text-box</v-icon>
-              <span>{{ kb.chunk_count || 0 }} {{ t('list.chunks') }}</span>
+
+            <div class="kb-actions">
+              <v-btn icon="mdi-pencil" size="small" variant="text" color="info" @click.stop="editKB(item)" />
+              <v-btn icon="mdi-delete" size="small" variant="text" color="error" @click.stop="confirmDelete(item)" />
             </div>
           </div>
-
-          <div class="kb-actions">
-            <v-btn icon="mdi-pencil" size="small" variant="text" color="info" @click.stop="editKB(kb)" />
-            <v-btn icon="mdi-delete" size="small" variant="text" color="error" @click.stop="confirmDelete(kb)" />
-          </div>
-        </div>
-      </v-card>
+        </template>
+      </ItemCard>
     </div>
 
     <!-- 空状态 -->
@@ -203,6 +217,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import { useModuleI18n } from '@/i18n/composables'
+import ItemCard from '@/components/shared/ItemCard.vue'
 
 const { tm: t } = useModuleI18n('features/knowledge-base/index')
 const router = useRouter()
@@ -473,11 +488,6 @@ onMounted(() => {
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
-}
-
-.kb-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15) !important;
 }
 
 .kb-card-content {

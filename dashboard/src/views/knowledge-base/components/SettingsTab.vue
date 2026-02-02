@@ -1,6 +1,6 @@
 <template>
   <div class="settings-tab">
-    <v-card elevation="2">
+    <v-card elevation="1" class="soft-stat-card">
       <v-card-title class="pa-4">{{ t('settings.title') }}</v-card-title>
       <v-divider />
 

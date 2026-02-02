@@ -10,7 +10,7 @@
     </div>
 
     <!-- 文档列表 -->
-    <v-card elevation="2">
+    <v-card elevation="1" class="soft-stat-card">
       <v-data-table :headers="headers" :items="documents" :loading="loading" :search="searchQuery" :items-per-page="10">
         <template #item.doc_name="{ item }">
           <div class="d-flex align-center gap-2">
