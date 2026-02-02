@@ -136,29 +136,32 @@
           </v-row>
           <v-row v-else>
             <v-col v-for="(provider, index) in filteredProviders" :key="index" cols="12" md="6" lg="4" xl="3">
-              <item-card :item="provider" title-field="id" enabled-field="enable" actions-align="start" style="min-height: 200px;"
+              <item-card class="provider-item-card" :class="{ 'is-dark': isDark }" :item="provider" title-field="id" enabled-field="enable" actions-align="start" style="min-height: 200px;"
                 :loading="isProviderTesting(provider.id)" @toggle-enabled="toggleProviderEnable(provider, !provider.enable)"
-                :bglogo="getProviderIcon(provider.provider)" @delete="deleteProvider" @edit="configExistingProvider"
+                :bglogo="getProviderIcon(provider.provider)"
+                @delete="deleteProvider" @edit="configExistingProvider"
                 @copy="copyProvider" :show-copy-button="true">
 
                 <template #item-details="{ item }">
-                  <!-- 测试状态 chip -->
-                  <v-tooltip v-if="getProviderStatus(item.id)" location="top" max-width="300">
-                    <template v-slot:activator="{ props }">
-                      <v-chip v-bind="props" :color="getStatusColor(getProviderStatus(item.id)?.status)" size="small">
-                        <v-icon start size="small">
-                          {{ getProviderStatus(item.id)?.status === 'available' ? 'mdi-check-circle' :
-                            getProviderStatus(item.id)?.status === 'unavailable' ? 'mdi-alert-circle' :
-                              'mdi-clock-outline' }}
-                        </v-icon>
-                        {{ getStatusText(getProviderStatus(item.id)?.status) }}
-                      </v-chip>
-                    </template>
-                    <span v-if="getProviderStatus(item.id)?.status === 'unavailable'">
-                      {{ getProviderStatus(item.id)?.error }}
-                    </span>
-                    <span v-else>{{ getStatusText(getProviderStatus(item.id)?.status) }}</span>
-                  </v-tooltip>
+                  <div>
+                    <!-- 测试状态 chip -->
+                    <v-tooltip v-if="getProviderStatus(item.id)" location="top" max-width="300">
+                      <template v-slot:activator="{ props }">
+                        <v-chip v-bind="props" :color="getStatusColor(getProviderStatus(item.id)?.status)" size="small">
+                          <v-icon start size="small">
+                            {{ getProviderStatus(item.id)?.status === 'available' ? 'mdi-check-circle' :
+                              getProviderStatus(item.id)?.status === 'unavailable' ? 'mdi-alert-circle' :
+                                'mdi-clock-outline' }}
+                          </v-icon>
+                          {{ getStatusText(getProviderStatus(item.id)?.status) }}
+                        </v-chip>
+                      </template>
+                      <span v-if="getProviderStatus(item.id)?.status === 'unavailable'">
+                        {{ getProviderStatus(item.id)?.error }}
+                      </span>
+                      <span v-else>{{ getStatusText(getProviderStatus(item.id)?.status) }}</span>
+                    </v-tooltip>
+                  </div>
                 </template>
                 <template #actions="{ item }">
                   <v-btn style="z-index: 100000;" variant="tonal" color="info" rounded="xl" size="small"
@@ -269,9 +272,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
+import { useTheme } from 'vuetify'
 import { useModuleI18n } from '@/i18n/composables'
 import AstrBotConfig from '@/components/shared/AstrBotConfig.vue'
 import ItemCard from '@/components/shared/ItemCard.vue'
@@ -292,6 +296,9 @@ const props = defineProps({
 const { tm: rawTm } = useModuleI18n('features/provider')
 const tm: TranslateFn = rawTm
 const router = useRouter()
+
+const theme = useTheme()
+const isDark = computed(() => theme.global.current.value.dark)
 
 const snackbar = ref({
   show: false,
@@ -728,6 +735,18 @@ function goToConfigPage() {
 
 .provider-config-card {
   min-height: 280px;
+}
+
+.provider-item-card.is-dark :deep(> .d-flex.justify-end.align-center .v-img__img) {
+  filter: grayscale(100%) invert(1);
+}
+
+.provider-item-card:hover :deep(> .d-flex.justify-end.align-center) {
+  opacity: 0.32 !important;
+}
+
+.provider-item-card.is-dark:hover :deep(> .d-flex.justify-end.align-center .v-img__img) {
+  filter: invert(1);
 }
 
 @media (max-width: 960px) {
