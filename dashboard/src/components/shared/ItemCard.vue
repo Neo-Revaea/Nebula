@@ -36,13 +36,17 @@
 
     <v-card-actions
       v-if="!hideHeader"
-      :class="['flex-shrink-0 align-center', wrapActions ? 'flex-wrap ga-2' : '']"
+      :class="[
+        'flex-shrink-0 align-center',
+        wrapActions ? 'flex-wrap ga-2' : '',
+        actionsAlign === 'start' ? 'justify-start' : ''
+      ]"
       style="margin: 8px;"
     >
       
       <slot name="footer-start" :item="item"></slot>
       
-      <v-spacer></v-spacer>
+      <v-spacer v-if="actionsAlign !== 'start'"></v-spacer>
       
       <slot name="actions" :item="item"></slot>
       
@@ -117,7 +121,12 @@ export default {
     showEditButton: { type: Boolean, default: true },
     showDeleteButton: { type: Boolean, default: true },
     wrapActions: { type: Boolean, default: false },
-    pinActions: { type: Boolean, default: true }
+    pinActions: { type: Boolean, default: true },
+    actionsAlign: {
+      type: String,
+      default: 'end',
+      validator: (v: string) => ['start', 'end'].includes(v)
+    }
   },
   emits: ['toggle-enabled', 'delete', 'edit', 'copy'],
   methods: {

@@ -136,7 +136,7 @@
           </v-row>
           <v-row v-else>
             <v-col v-for="(provider, index) in filteredProviders" :key="index" cols="12" md="6" lg="4" xl="3">
-              <item-card :item="provider" title-field="id" enabled-field="enable"
+              <item-card :item="provider" title-field="id" enabled-field="enable" actions-align="start" style="min-height: 200px;"
                 :loading="isProviderTesting(provider.id)" @toggle-enabled="toggleProviderEnable(provider, !provider.enable)"
                 :bglogo="getProviderIcon(provider.provider)" @delete="deleteProvider" @edit="configExistingProvider"
                 @copy="copyProvider" :show-copy-button="true">
