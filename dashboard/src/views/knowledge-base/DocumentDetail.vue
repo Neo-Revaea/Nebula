@@ -21,7 +21,7 @@
     <!-- 主内容 -->
     <div v-else class="document-content">
       <!-- 文档信息卡片 -->
-      <v-card elevation="2" class="mb-6">
+      <v-card elevation="1" class="soft-stat-card mb-6">
         <v-card-title>{{ t('info.title') }}</v-card-title>
         <v-divider />
         <v-card-text>
@@ -78,7 +78,7 @@
       </v-card>
 
       <!-- 分块列表 -->
-      <v-card elevation="2">
+      <v-card elevation="1" class="soft-stat-card">
         <v-card-title class="d-flex align-center pa-4">
           <span>{{ t('chunks.title') }}</span>
           <v-chip class="ml-2" size="small" variant="tonal">

@@ -268,9 +268,9 @@ async def _ensure_persona_and_skills(
         )
     ).get("persona_id")
 
-    if not persona_id:
+    if not persona_id or persona_id == "[%None]":
         persona_id = req.conversation.persona_id or cfg.get("default_personality")
-        if persona_id is None or persona_id != "[%None]":
+        if persona_id is None or persona_id == "[%None]":
             default_persona = plugin_context.persona_manager.selected_default_persona_v3
             if default_persona:
                 persona_id = default_persona["name"]

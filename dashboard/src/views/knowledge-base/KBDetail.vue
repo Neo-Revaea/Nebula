@@ -7,14 +7,14 @@
         variant="text"
         @click="$router.push({ name: 'NativeKBList' })"
       />
-      <div class="header-content">
-        <div class="kb-title">
-          <span class="kb-emoji">{{ kb.emoji || '📚' }}</span>
+      <div class="kb-title">
+        <span class="kb-emoji">{{ kb.emoji || '📚' }}</span>
+        <div class="kb-title-text">
           <h1 class="text-h4">{{ kb.kb_name }}</h1>
+          <p v-if="kb.description" class="text-subtitle-1 text-medium-emphasis">
+            {{ kb.description }}
+          </p>
         </div>
-        <p v-if="kb.description" class="text-subtitle-1 text-medium-emphasis mt-2">
-          {{ kb.description }}
-        </p>
       </div>
     </div>
 
@@ -52,7 +52,7 @@
         <v-window-item value="overview">
           <v-row>
             <v-col cols="12" md="6">
-              <v-card elevation="2">
+              <v-card elevation="1" class="soft-stat-card">
                 <v-card-title>{{ t('overview.title') }}</v-card-title>
                 <v-divider />
                 <v-card-text>
@@ -102,7 +102,7 @@
             </v-col>
 
             <v-col cols="12" md="6">
-              <v-card elevation="2" class="mb-4">
+              <v-card elevation="1" class="soft-stat-card mb-4">
                 <v-card-title>{{ t('overview.stats') }}</v-card-title>
                 <v-divider />
                 <v-card-text>
@@ -125,7 +125,7 @@
                 </v-card-text>
               </v-card>
 
-              <v-card elevation="2">
+              <v-card elevation="1" class="soft-stat-card">
                 <v-card-title>{{ t('overview.embeddingModel') }}</v-card-title>
                 <v-divider />
                 <v-card-text>
@@ -263,19 +263,33 @@ onMounted(() => {
 
 .page-header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 16px;
   margin-bottom: 32px;
-}
-
-.header-content {
-  flex: 1;
 }
 
 .kb-title {
   display: flex;
   align-items: center;
   gap: 16px;
+  flex: 1;
+  min-width: 0;
+}
+
+.kb-title-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.kb-title-text > h1,
+.kb-title-text > p {
+  margin: 0;
+}
+
+.kb-title-text > p {
+  line-height: 1.4;
 }
 
 .kb-emoji {
@@ -319,11 +333,11 @@ onMounted(() => {
   text-align: center;
   border-radius: 12px;
   background: rgba(var(--v-theme-surface-variant), 0.1);
-  transition: all 0.3s ease;
+  transition: background-color 0.2s ease;
 }
 
 .stat-box:hover {
-  background: rgba(var(--v-theme-surface-variant), 0.5);
+  background: rgba(var(--v-theme-surface-variant), 0.18);
 }
 
 .stat-value {

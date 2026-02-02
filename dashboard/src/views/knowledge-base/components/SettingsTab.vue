@@ -1,6 +1,6 @@
 <template>
   <div class="settings-tab">
-    <v-card elevation="2">
+    <v-card elevation="1" class="soft-stat-card">
       <v-card-title class="pa-4">{{ t('settings.title') }}</v-card-title>
       <v-divider />
 
@@ -110,7 +110,7 @@
         <v-spacer />
         <v-btn
           color="primary"
-          variant="elevated"
+          variant="flat"
           prepend-icon="mdi-content-save"
           @click="saveSettings"
           :loading="saving"
@@ -151,7 +151,7 @@
           <v-btn variant="text" @click="cancelEmbeddingChange">
             取消
           </v-btn>
-          <v-btn color="warning" variant="elevated" @click="confirmEmbeddingChange">
+          <v-btn color="warning" variant="flat" @click="confirmEmbeddingChange">
             确认修改
           </v-btn>
         </v-card-actions>
