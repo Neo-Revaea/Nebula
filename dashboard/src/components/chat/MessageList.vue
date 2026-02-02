@@ -80,27 +80,14 @@
 
                             <template v-else>
                                 <!-- Reasoning Block (Collapsible) - 放在最前面 -->
-                                <div v-if="msg.content.reasoning && msg.content.reasoning.trim()"
-                                    class="reasoning-container" :class="{ 'is-dark': isDark }"
-                                    :style="isDark ? { backgroundColor: 'rgba(var(--v-theme-secondary), 0.08)' } : {}">
-                                    <div class="reasoning-header" :class="{ 'is-dark': isDark }"
-                                        @click="toggleReasoning(index)">
-                                        <v-icon size="small" class="reasoning-icon">
-                                            {{ isReasoningExpanded(index) ? 'mdi-chevron-down' : 'mdi-chevron-right' }}
-                                        </v-icon>
-                                        <span class="reasoning-label">{{ tm('reasoning.thinking') }}</span>
-                                    </div>
-                                    <div v-if="isReasoningExpanded(index)" class="reasoning-content">
-                                        <MarkdownRender
-                                            :key="shikiWasmReady ? 'shiki' : 'pre'"
-                                            :content="msg.content.reasoning"
-                                            class="reasoning-text markdown-content" :typewriter="false"
-                                            :is-dark="isDark || isMarkdownDark"
-                                            :render-code-blocks-as-pre="!shikiWasmReady"
-                                            :class="{ dark: isDark }"
-                                            :style="isDark ? { opacity: '0.85' } : {}" />
-                                    </div>
-                                </div>
+                                <ReasoningBlock
+                                    v-if="msg.content.reasoning && msg.content.reasoning.trim()"
+                                    class="mt-2"
+                                    :reasoning="msg.content.reasoning"
+                                    :is-dark="isDark || isMarkdownDark"
+                                    :model-value="isReasoningExpanded(index)"
+                                    @update:modelValue="setReasoningExpanded(index, $event)"
+                                />
 
                                 <!-- 使用 MessagePartsRenderer 渲染 message parts（含 tool calls 分组），配色跟随主题色 -->
                                 <MessagePartsRenderer
@@ -194,6 +181,7 @@ import 'markstream-vue/index.css';
 import 'katex/dist/katex.min.css';
 import axios from 'axios';
 import MessagePartsRenderer from '@/components/chat/message_list_comps/MessagePartsRenderer.vue';
+import ReasoningBlock from '@/components/chat/message_list_comps/ReasoningBlock.vue';
 import RefNode from '@/components/chat/message_list_comps/RefNode.vue';
 import ActionRef from '@/components/chat/message_list_comps/ActionRef.vue';
 import { shikiWasmReady } from '@/composables/shikiWasm';
@@ -206,6 +194,7 @@ export default {
     name: 'MessageList',
     components: {
         MarkdownRender,
+        ReasoningBlock,
         MessagePartsRenderer,
         ActionRef
     },
@@ -598,6 +587,15 @@ export default {
                 this.expandedReasoning.add(messageIndex);
             }
             // Force reactivity
+            this.expandedReasoning = new Set(this.expandedReasoning);
+        },
+
+        setReasoningExpanded(messageIndex: number, expanded: boolean) {
+            if (expanded) {
+                this.expandedReasoning.add(messageIndex);
+            } else {
+                this.expandedReasoning.delete(messageIndex);
+            }
             this.expandedReasoning = new Set(this.expandedReasoning);
         },
 
@@ -1415,6 +1413,66 @@ export default {
     min-width: 280px;
 }
 
+.audio-player {
+    width: 100%;
+    height: 36px;
+    border-radius: 18px;
+}
+
+/* 文件附件样式 */
+.file-attachments,
+.embedded-files {
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.file-attachment,
+.embedded-file {
+    display: flex;
+    align-items: center;
+}
+
+.file-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background-color: rgba(var(--v-theme-primary), 0.08);
+    border: 1px solid rgba(var(--v-theme-primary), 0.2);
+    border-radius: 8px;
+    color: rgb(var(--v-theme-primary));
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    max-width: 300px;
+}
+
+.file-link-download {
+    cursor: pointer;
+}
+
+.download-icon {
+    margin-left: 4px;
+    opacity: 0.7;
+}
+
+.file-icon {
+    flex-shrink: 0;
+    color: rgb(var(--v-theme-primary));
+}
+
+.file-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.file-link.is-dark:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+}
 /* 动画类 */
 .fade-in {
     animation: fadeIn 0.3s ease-in-out;

@@ -1,26 +1,35 @@
 <template>
     <div
-        class="mb-3 mt-1.5 border border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden w-fit"
-        :style="containerStyle"
+        class="reasoning-card"
+        :class="{ 'is-expanded': isExpanded, 'is-collapsed': !isExpanded }"
+        :style="{ backgroundColor: isDark ? '#2d2e30' : '#e7ebf4' }"
     >
-        <div class="reasoning-header inline-flex items-center px-2 py-2 cursor-pointer select-none rounded-2xl transition-colors"
-            @click="toggleExpanded">
-            <v-icon size="small" class="mr-1.5 reasoning-accent transition-transform"
-                :class="{ 'rotate-90': isExpanded }">
+        <div
+            class="reasoning-header"
+            role="button"
+            tabindex="0"
+            :aria-expanded="isExpanded"
+            @click="toggleExpanded"
+            @keydown.enter.prevent="toggleExpanded"
+            @keydown.space.prevent="toggleExpanded"
+        >
+            <v-icon
+                size="small"
+                class="reasoning-chevron"
+                :class="{ 'rotate-90': isExpanded }"
+            >
                 mdi-chevron-right
             </v-icon>
-            <span class="text-sm font-medium reasoning-accent tracking-wide">
-                {{ tm('reasoning.thinking') }}
-            </span>
+            <span class="reasoning-title">{{ tm('reasoning.thinking') }}</span>
         </div>
-        <div v-if="isExpanded" class="px-3 border-t border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 animate-fade-in italic">
+        <div v-if="isExpanded" class="reasoning-content animate-fade-in">
             <MarkdownRender
                 :key="shikiWasmReady ? 'shiki' : 'pre'"
                 :content="reasoning"
-                class="reasoning-text markdown-content text-sm leading-relaxed"
+                class="reasoning-text markdown-content"
                 :typewriter="false"
                 :is-dark="isDark"
-                :render-code-blocks-as-pre="false"
+                :render-code-blocks-as-pre="!shikiWasmReady"
                 :class="{ dark: isDark }"
                 :style="isDark ? { opacity: '0.85' } : {}"
             />
@@ -29,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useModuleI18n } from '@/i18n/composables';
 import { MarkdownRender } from 'markstream-vue';
 import 'markstream-vue/index.css';
@@ -41,6 +50,7 @@ const props = withDefaults(
         reasoning: string;
         isDark?: boolean;
         initialExpanded?: boolean;
+        modelValue?: boolean;
     }>(),
     {
         isDark: false,
@@ -48,14 +58,24 @@ const props = withDefaults(
     }
 );
 
-const { tm } = useModuleI18n('features/chat');
-const isExpanded = ref<boolean>(props.initialExpanded);
+const emit = defineEmits<{
+    (e: 'update:modelValue', value: boolean): void;
+}>();
 
-const containerStyle = computed<Record<string, string>>(() => {
-    const bgAlpha = props.isDark ? '0.08' : '0.06';
-    return {
-        backgroundColor: `rgba(var(--v-theme-secondary), ${bgAlpha})`
-    };
+const { tm } = useModuleI18n('features/chat');
+const uncontrolledExpanded = ref<boolean>(props.initialExpanded);
+
+const isExpanded = computed<boolean>({
+    get() {
+        return props.modelValue ?? uncontrolledExpanded.value;
+    },
+    set(value) {
+        if (props.modelValue === undefined) {
+            uncontrolledExpanded.value = value;
+            return;
+        }
+        emit('update:modelValue', value);
+    }
 });
 
 const toggleExpanded = () => {
@@ -64,6 +84,90 @@ const toggleExpanded = () => {
 </script>
 
 <style scoped>
+.reasoning-card {
+    margin: 8px 0 12px;
+    border: none;
+    border-radius: 16px;
+    overflow: hidden;
+    width: fit-content;
+    max-width: 100%;
+    box-shadow: none;
+}
+
+.reasoning-card.is-collapsed {
+    border-radius: 9999px;
+}
+
+@media (max-width: 768px) {
+    .reasoning-card.is-expanded {
+        width: 100%;
+    }
+}
+
+.reasoning-header {
+    display: inline-flex;
+    align-items: center;
+    width: 100%;
+    gap: 6px;
+    padding: 8px 12px;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s ease;
+    border-radius: 16px;
+    outline: none;
+    color: rgba(var(--v-theme-on-surface), 0.78);
+}
+
+.reasoning-card.is-collapsed .reasoning-header {
+    padding: 7px 14px;
+    border-radius: 9999px;
+}
+
+.reasoning-header:hover {
+    background-color: transparent;
+}
+
+.reasoning-header:focus-visible {
+    outline: 2px solid var(--v-theme-border);
+    outline-offset: 2px;
+}
+
+.reasoning-chevron {
+    color: currentColor;
+    transition: transform 0.2s ease;
+}
+
+.reasoning-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: inherit;
+    letter-spacing: 0.2px;
+}
+
+.reasoning-content {
+    padding: 10px 12px;
+    border-top: 2px solid rgba(var(--v-theme-on-surface), 0.10);
+    color: rgba(var(--v-theme-on-surface), 0.78);
+    animation: fadeIn 0.2s ease-in-out;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.reasoning-text {
+    font-size: 14px;
+    line-height: 1.65;
+    color: inherit;
+}
+
+.reasoning-text :deep(pre),
+.reasoning-text :deep(code) {
+    max-width: 100%;
+}
+
+.reasoning-text :deep(pre) {
+    overflow-x: auto;
+}
+
 .animate-fade-in {
     animation: fadeIn 0.2s ease-in-out;
 }
@@ -80,19 +184,5 @@ const toggleExpanded = () => {
 
 .rotate-90 {
     transform: rotate(90deg);
-}
-
-.reasoning-text {
-    font-size: 14px;
-    line-height: 1.6;
-    color: var(--v-theme-secondaryText);
-}
-
-.reasoning-accent {
-    color: rgb(var(--v-theme-secondary));
-}
-
-.reasoning-header:hover {
-    background-color: rgba(var(--v-theme-secondary), 0.08);
 }
 </style>
