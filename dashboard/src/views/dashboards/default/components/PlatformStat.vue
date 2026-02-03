@@ -22,7 +22,7 @@
               <div class="platform-rank" :class="{'top-rank': i < 3}">{{ i + 1 }}</div>
             </template>
             
-            <v-list-item-title class="platform-name">{{ platform.name }}</v-list-item-title>
+            <v-list-item-title class="platform-name" :title="platform.name">{{ platform.name }}</v-list-item-title>
             
             <template v-slot:append>
               <div class="platform-count">
@@ -41,7 +41,7 @@
           <v-divider vertical></v-divider>
           <div class="platform-stat-item">
             <div class="stat-label">{{ t('charts.platformStat.mostActive') }}</div>
-            <div class="stat-value">{{ mostActivePlatform }}</div>
+            <div class="stat-value stat-value-ellipsis" :title="mostActivePlatform">{{ mostActivePlatform }}</div>
           </div>
           <v-divider vertical></v-divider>
           <div class="platform-stat-item">
@@ -71,27 +71,42 @@
   </v-card>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
 import { useModuleI18n } from '@/i18n/composables';
 
-export default {
+type PlatformItem = {
+  name: string;
+  count: number;
+};
+
+type PlatformStatPayload = {
+  platform?: PlatformItem[];
+};
+
+export default defineComponent({
   name: 'PlatformStat',
-  props: ['stat'],
+  props: {
+    stat: {
+      type: Object as PropType<PlatformStatPayload | null>,
+      default: null,
+    },
+  },
   setup() {
     const { tm: t } = useModuleI18n('features/dashboard');
     return { t };
   },
   data() {
     return {
-      platforms: []
+      platforms: [] as PlatformItem[],
     };
   },
   computed: {
     sortedPlatforms() {
-      return [...this.platforms].sort((a, b) => b.count - a.count);
+      return [...this.platforms].sort((a: PlatformItem, b: PlatformItem) => b.count - a.count);
     },
     totalCount() {
-      return this.platforms.reduce((sum, platform) => sum + platform.count, 0);
+      return this.platforms.reduce((sum: number, platform: PlatformItem) => sum + platform.count, 0);
     },
     mostActivePlatform() {
       return this.sortedPlatforms.length > 0 ? this.sortedPlatforms[0].name : '-';
@@ -103,7 +118,7 @@ export default {
   },
   watch: {
     stat: {
-      handler: function (val) {
+      handler: function (val: PlatformStatPayload | null) {
         if (val && val.platform) {
           this.platforms = val.platform;
         }
@@ -112,11 +127,11 @@ export default {
     }
   },
   methods: {
-    getPercentage(count) {
+    getPercentage(count: number) {
       return this.totalCount ? (count / this.totalCount) * 100 : 0;
     }
   }
-};
+});
 </script>
 
 <style scoped>
@@ -166,6 +181,11 @@ export default {
   margin-bottom: 4px;
   border-radius: 8px;
   transition: background-color 0.2s;
+  min-width: 0;
+}
+
+.platform-item :deep(.v-list-item__content) {
+  min-width: 0;
 }
 
 .platform-item:hover {
@@ -193,6 +213,9 @@ export default {
 
 .platform-name {
   font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .platform-count {
@@ -217,13 +240,15 @@ export default {
   justify-content: space-between;
   background-color: var(--v-theme-containerBg);
   border-radius: 8px;
-  padding: 12px;
+  padding: 12px 16px;
   margin-bottom: 16px;
 }
 
 .platform-stat-item {
   flex: 1;
   text-align: center;
+  min-width: 0;
+  padding: 0 6px;
 }
 
 .stat-label {
@@ -235,6 +260,12 @@ export default {
 .stat-value {
   font-weight: 600;
   color: var(--v-theme-primaryText);
+}
+
+.stat-value-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .platform-chart {

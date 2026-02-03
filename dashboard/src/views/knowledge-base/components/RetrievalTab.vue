@@ -1,6 +1,6 @@
 <template>
   <div class="retrieval-tab">
-    <v-card elevation="2">
+    <v-card elevation="1" class="soft-stat-card">
       <v-card-title class="pa-4 pb-0">{{ t('retrieval.title') }}</v-card-title>
       <v-card-subtitle class="pb-4 pt-2">
         {{ t('retrieval.subtitle') }}
@@ -50,7 +50,7 @@
         </v-row>
 
         <div class="d-flex justify-end mb-4">
-          <v-btn prepend-icon="mdi-magnify" color="primary" variant="elevated" @click="performRetrieval"
+          <v-btn prepend-icon="mdi-magnify" color="primary" variant="flat" @click="performRetrieval"
             :loading="loading" :disabled="!query || query.trim() === ''">
             {{ loading ? t('retrieval.searching') : t('retrieval.search') }}
           </v-btn>
