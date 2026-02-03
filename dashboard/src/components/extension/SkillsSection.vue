@@ -1,40 +1,96 @@
 <template>
   <div class="skills-page">
-    <v-container fluid class="pa-0" elevation="0">
+    <v-container
+      fluid
+      class="pa-0"
+      elevation="0"
+    >
       <v-row class="d-flex justify-space-between align-center px-4 py-3 pb-8">
         <div>
-          <v-btn color="success" prepend-icon="mdi-upload" class="me-2" variant="tonal"
-            @click="uploadDialog = true">
+          <v-btn
+            color="success"
+            prepend-icon="mdi-upload"
+            class="me-2"
+            variant="tonal"
+            @click="uploadDialog = true"
+          >
             {{ tm('skills.upload') }}
           </v-btn>
-          <v-btn color="primary" prepend-icon="mdi-refresh" variant="tonal" @click="fetchSkills">
+          <v-btn
+            color="primary"
+            prepend-icon="mdi-refresh"
+            variant="tonal"
+            @click="fetchSkills"
+          >
             {{ tm('skills.refresh') }}
           </v-btn>
         </div>
       </v-row>
 
-      <v-progress-linear v-if="loading" indeterminate color="primary"></v-progress-linear>
+      <v-progress-linear
+        v-if="loading"
+        indeterminate
+        color="primary"
+      />
 
-      <div v-else-if="skills.length === 0" class="text-center pa-8">
-        <v-icon size="64" color="grey-lighten-1">mdi-folder-open</v-icon>
-        <p class="text-grey mt-4">{{ tm('skills.empty') }}</p>
+      <div
+        v-else-if="skills.length === 0"
+        class="text-center pa-8"
+      >
+        <v-icon
+          size="64"
+          color="grey-lighten-1"
+        >
+          mdi-folder-open
+        </v-icon>
+        <p class="text-grey mt-4">
+          {{ tm('skills.empty') }}
+        </p>
         <small class="text-grey">{{ tm('skills.emptyHint') }}</small>
       </div>
 
       <v-row v-else>
-        <v-col v-for="skill in skills" :key="skill.name" cols="12" md="6" lg="4" xl="3">
-          <item-card :item="skill" title-field="name" enabled-field="active" title-class="text-h3" :loading="itemLoading[skill.name] || false"
-            :show-edit-button="false" @toggle-enabled="toggleSkill" @delete="confirmDelete">
-            <template v-slot:item-details="{ item }">
+        <v-col
+          v-for="skill in skills"
+          :key="skill.name"
+          cols="12"
+          md="6"
+          lg="4"
+          xl="3"
+        >
+          <item-card
+            :item="skill"
+            title-field="name"
+            enabled-field="active"
+            title-class="text-h3"
+            :loading="itemLoading[skill.name] || false"
+            :show-edit-button="false"
+            @toggle-enabled="toggleSkill"
+            @delete="confirmDelete"
+          >
+            <template #item-details="{ item }">
               <div
                 class="text-caption text-medium-emphasis mb-2 skill-description"
                 :title="item.description || tm('skills.noDescription')"
               >
-                <v-icon size="small" class="me-1">mdi-text</v-icon>
+                <v-icon
+                  size="small"
+                  class="me-1"
+                >
+                  mdi-text
+                </v-icon>
                 {{ item.description || tm('skills.noDescription') }}
               </div>
-              <div class="text-caption text-medium-emphasis skill-path" :title="item.path">
-                <v-icon size="small" class="me-1">mdi-file-document</v-icon>
+              <div
+                class="text-caption text-medium-emphasis skill-path"
+                :title="item.path"
+              >
+                <v-icon
+                  size="small"
+                  class="me-1"
+                >
+                  mdi-file-document
+                </v-icon>
                 {{ tm('skills.path') }}: {{ item.path }}
               </div>
             </template>
@@ -43,9 +99,15 @@
       </v-row>
     </v-container>
 
-    <v-dialog v-model="uploadDialog" max-width="520px" persistent>
+    <v-dialog
+      v-model="uploadDialog"
+      max-width="520px"
+      persistent
+    >
       <v-card>
-        <v-card-title class="text-h3 pa-4 pb-0 pl-6">{{ tm('skills.uploadDialogTitle') }}</v-card-title>
+        <v-card-title class="text-h3 pa-4 pb-0 pl-6">
+          {{ tm('skills.uploadDialogTitle') }}
+        </v-card-title>
         <v-card-text>
           <small class="text-grey">{{ tm('skills.uploadHint') }}</small>
           <v-file-input
@@ -57,33 +119,62 @@
             :multiple="false"
           >
             <template #prepend>
-              <v-icon size="small">mdi-file-zip</v-icon>
+              <v-icon size="small">
+                mdi-file-zip
+              </v-icon>
             </template>
           </v-file-input>
         </v-card-text>
         <v-card-actions class="d-flex justify-end">
-          <v-btn variant="text" @click="uploadDialog = false">{{ tm('skills.cancel') }}</v-btn>
-          <v-btn color="primary" :loading="uploading" :disabled="!uploadFile" @click="uploadSkill">
+          <v-btn
+            variant="text"
+            @click="uploadDialog = false"
+          >
+            {{ tm('skills.cancel') }}
+          </v-btn>
+          <v-btn
+            color="primary"
+            :loading="uploading"
+            :disabled="!uploadFile"
+            @click="uploadSkill"
+          >
             {{ tm('skills.confirmUpload') }}
           </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="deleteDialog" max-width="400px">
+    <v-dialog
+      v-model="deleteDialog"
+      max-width="400px"
+    >
       <v-card>
         <v-card-title>{{ tm('skills.deleteTitle') }}</v-card-title>
         <v-card-text>{{ tm('skills.deleteMessage') }}</v-card-text>
         <v-card-actions class="d-flex justify-end">
-          <v-btn variant="text" @click="deleteDialog = false">{{ tm('skills.cancel') }}</v-btn>
-          <v-btn color="error" :loading="deleting" @click="deleteSkill">
+          <v-btn
+            variant="text"
+            @click="deleteDialog = false"
+          >
+            {{ tm('skills.cancel') }}
+          </v-btn>
+          <v-btn
+            color="error"
+            :loading="deleting"
+            @click="deleteSkill"
+          >
             {{ t('core.common.itemCard.delete') }}
           </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
 
-    <v-snackbar v-model="snackbar.show" :timeout="3000" :color="snackbar.color" elevation="24">
+    <v-snackbar
+      v-model="snackbar.show"
+      :timeout="3000"
+      :color="snackbar.color"
+      elevation="24"
+    >
       {{ snackbar.message }}
     </v-snackbar>
   </div>

@@ -100,54 +100,87 @@ const {
 
 <template>
   <v-row>
-    <v-col cols="12" md="12">
-      <v-card variant="flat" style="background-color: transparent">
+    <v-col
+      cols="12"
+      md="12"
+    >
+      <v-card
+        variant="flat"
+        style="background-color: transparent"
+      >
         <!-- 标签页 -->
         <v-card-text style="padding: 0px 12px;">
           <!-- 标签栏和搜索栏 - 响应式布局 -->
           <div class="mb-4 d-flex flex-wrap">
             <!-- 标签栏 -->
-            <v-tabs v-model="activeTab" color="primary">
+            <v-tabs
+              v-model="activeTab"
+              color="primary"
+            >
               <v-tab value="installed">
-                <v-icon class="mr-2">mdi-puzzle</v-icon>
+                <v-icon class="mr-2">
+                  mdi-puzzle
+                </v-icon>
                 {{ tm('tabs.installedPlugins') }}
               </v-tab>
               <v-tab value="mcp">
-                <v-icon class="mr-2">mdi-server-network</v-icon>
+                <v-icon class="mr-2">
+                  mdi-server-network
+                </v-icon>
                 {{ tm('tabs.installedMcpServers') }}
               </v-tab>
               <v-tab value="skills">
-                <v-icon class="mr-2">mdi-lightning-bolt</v-icon>
+                <v-icon class="mr-2">
+                  mdi-lightning-bolt
+                </v-icon>
                 {{ tm('tabs.skills') }}
               </v-tab>
               <v-tab value="market">
-                <v-icon class="mr-2">mdi-store</v-icon>
+                <v-icon class="mr-2">
+                  mdi-store
+                </v-icon>
                 {{ tm('tabs.market') }}
               </v-tab>
               <v-tab value="components">
-                <v-icon class="mr-2">mdi-wrench</v-icon>
+                <v-icon class="mr-2">
+                  mdi-wrench
+                </v-icon>
                 {{ tm('tabs.handlersOperation') }}
               </v-tab>
             </v-tabs>
 
             <!-- 搜索栏 - 在移动端时独占一行 -->
             <div style="flex-grow: 1; min-width: 250px; max-width: 400px; margin-left: auto; margin-top: 8px;">
-              <v-text-field v-if="activeTab === 'market'" v-model="marketSearch" density="compact"
-                :label="tm('search.marketPlaceholder')" prepend-inner-icon="mdi-magnify" variant="solo-filled" flat
-                hide-details single-line>
-              </v-text-field>
-              <v-text-field v-else-if="activeTab === 'installed'" v-model="pluginSearch" density="compact" :label="tm('search.placeholder')"
-                prepend-inner-icon="mdi-magnify" variant="solo-filled" flat hide-details single-line>
-              </v-text-field>
+              <v-text-field
+                v-if="activeTab === 'market'"
+                v-model="marketSearch"
+                density="compact"
+                :label="tm('search.marketPlaceholder')"
+                prepend-inner-icon="mdi-magnify"
+                variant="solo-filled"
+                flat
+                hide-details
+                single-line
+              />
+              <v-text-field
+                v-else-if="activeTab === 'installed'"
+                v-model="pluginSearch"
+                density="compact"
+                :label="tm('search.placeholder')"
+                prepend-inner-icon="mdi-magnify"
+                variant="solo-filled"
+                flat
+                hide-details
+                single-line
+              />
             </div>
-
           </div>
 
 
           <!-- 已安装插件标签页内容 -->
           <div v-if="activeTab === 'installed'">
             <InstalledExtensionsSection
-              v-model:isListView="isListView"
+              v-model:is-list-view="isListView"
               v-model:config-dialog="configDialog"
               v-model:show-plugin-info-dialog="showPluginInfoDialog"
               v-model:force-update-dialog-show="forceUpdateDialog.show"
@@ -184,7 +217,11 @@ const {
 
           <!-- 指令面板标签页内容 -->
           <div v-if="activeTab === 'components'">
-            <v-card class="rounded-lg" variant="flat" style="background-color: transparent;">
+            <v-card
+              class="rounded-lg"
+              variant="flat"
+              style="background-color: transparent;"
+            >
               <v-card-text class="pa-0">
                 <ComponentPanel :active="activeTab === 'components'" />
               </v-card-text>
@@ -193,7 +230,11 @@ const {
 
           <!-- 已安装的 MCP 服务器标签页内容 -->
           <div v-if="activeTab === 'mcp'">
-            <v-card class="rounded-lg" variant="flat" style="background-color: transparent;">
+            <v-card
+              class="rounded-lg"
+              variant="flat"
+              style="background-color: transparent;"
+            >
               <v-card-text class="pa-0">
                 <McpServersSection />
               </v-card-text>
@@ -202,7 +243,11 @@ const {
 
           <!-- Skills 标签页内容 -->
           <div v-if="activeTab === 'skills'">
-            <v-card class="rounded-lg" variant="flat" style="background-color: transparent;">
+            <v-card
+              class="rounded-lg"
+              variant="flat"
+              style="background-color: transparent;"
+            >
               <v-card-text class="pa-0">
                 <SkillsSection />
               </v-card-text>
@@ -234,9 +279,9 @@ const {
               :cart-count="cartCount"
               :editing-source="editingSource"
               :source-to-remove="sourceToRemove"
-              @update:currentPage="currentPage = $event"
-              @update:sortBy="sortBy = $event"
-              @update:sortOrder="sortOrder = $event"
+              @update:current-page="currentPage = $event"
+              @update:sort-by="sortBy = $event"
+              @update:sort-order="sortOrder = $event"
               @refresh="refreshPluginMarket"
               @handle-install-plugin="handleInstallPlugin"
               @open-install-dialog="dialog = true"
@@ -256,15 +301,26 @@ const {
           </div>
 
           <v-row v-if="loading_">
-            <v-col cols="12" class="d-flex justify-center">
-              <v-progress-circular indeterminate color="primary" size="48"></v-progress-circular>
+            <v-col
+              cols="12"
+              class="d-flex justify-center"
+            >
+              <v-progress-circular
+                indeterminate
+                color="primary"
+                size="48"
+              />
             </v-col>
           </v-row>
         </v-card-text>
       </v-card>
     </v-col>
 
-    <v-col v-if="activeTab === 'market'" cols="12" md="12">
+    <v-col
+      v-if="activeTab === 'market'"
+      cols="12"
+      md="12"
+    >
       <div class="d-flex align-center justify-center mt-4 mb-4 gap-4">
         <v-btn
           variant="text"
@@ -276,7 +332,7 @@ const {
         >
           {{ tm('market.devDocs') }}
         </v-btn>
-        <div style="height: 24px; width: 1px; background-color: rgba(var(--v-theme-on-surface), 0.12);"></div>
+        <div style="height: 24px; width: 1px; background-color: rgba(var(--v-theme-on-surface), 0.12);" />
         <v-btn
           variant="text"
           prepend-icon="mdi-github"
@@ -292,63 +348,119 @@ const {
   </v-row>
 
   <!-- 加载对话框 -->
-  <v-dialog v-model="loadingDialog.show" width="700" persistent>
+  <v-dialog
+    v-model="loadingDialog.show"
+    width="700"
+    persistent
+  >
     <v-card>
-      <v-card-title class="text-h5">{{ loadingDialog.title }}</v-card-title>
+      <v-card-title class="text-h5">
+        {{ loadingDialog.title }}
+      </v-card-title>
       <v-card-text style="max-height: calc(100vh - 200px); overflow-y: auto;">
-        <v-progress-linear v-if="loadingDialog.statusCode === 0" indeterminate color="primary"
-          class="mb-4"></v-progress-linear>
+        <v-progress-linear
+          v-if="loadingDialog.statusCode === 0"
+          indeterminate
+          color="primary"
+          class="mb-4"
+        />
 
-        <div v-if="loadingDialog.statusCode !== 0" class="py-8 text-center">
-          <v-icon class="mb-6" :color="loadingDialog.statusCode === 1 ? 'success' : 'error'"
+        <div
+          v-if="loadingDialog.statusCode !== 0"
+          class="py-8 text-center"
+        >
+          <v-icon
+            class="mb-6"
+            :color="loadingDialog.statusCode === 1 ? 'success' : 'error'"
             :icon="loadingDialog.statusCode === 1 ? 'mdi-check-circle-outline' : 'mdi-alert-circle-outline'"
-            size="128"></v-icon>
-          <div class="text-h4 font-weight-bold">{{ loadingDialog.result }}</div>
+            size="128"
+          />
+          <div class="text-h4 font-weight-bold">
+            {{ loadingDialog.result }}
+          </div>
         </div>
 
         <div style="margin-top: 32px;">
           <h3>{{ tm('dialogs.loading.logs') }}</h3>
-          <ConsoleDisplayer historyNum="10" style="height: 200px; margin-top: 16px; margin-bottom: 24px;">
-          </ConsoleDisplayer>
+          <ConsoleDisplayer
+            history-num="10"
+            style="height: 200px; margin-top: 16px; margin-bottom: 24px;"
+          />
         </div>
       </v-card-text>
 
-      <v-divider></v-divider>
+      <v-divider />
 
       <v-card-actions class="pa-4">
-        <v-spacer></v-spacer>
-        <v-btn color="blue-darken-1" variant="text" @click="resetLoadingDialog">{{ tm('buttons.close') }}</v-btn>
+        <v-spacer />
+        <v-btn
+          color="blue-darken-1"
+          variant="text"
+          @click="resetLoadingDialog"
+        >
+          {{ tm('buttons.close') }}
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 
 
-  <v-snackbar :timeout="2000" elevation="24" :color="snack_success" v-model="snack_show">
+  <v-snackbar
+    v-model="snack_show"
+    :timeout="2000"
+    elevation="24"
+    :color="snack_success"
+  >
     {{ snack_message }}
   </v-snackbar>
 
   <!-- 指令冲突提示对话框 -->
-  <v-dialog v-model="conflictDialog.show" max-width="420">
+  <v-dialog
+    v-model="conflictDialog.show"
+    max-width="420"
+  >
     <v-card class="rounded-lg">
       <v-card-title class="d-flex align-center pa-4">
-        <v-icon color="warning" class="mr-2">mdi-alert-circle</v-icon>
+        <v-icon
+          color="warning"
+          class="mr-2"
+        >
+          mdi-alert-circle
+        </v-icon>
         {{ tm('conflicts.title') }}
       </v-card-title>
       <v-card-text class="px-4 pb-2">
         <div class="d-flex align-center mb-3">
-          <v-chip color="warning" variant="tonal" size="large" class="font-weight-bold">
+          <v-chip
+            color="warning"
+            variant="tonal"
+            size="large"
+            class="font-weight-bold"
+          >
             {{ conflictDialog.count }}
           </v-chip>
           <span class="ml-2 text-body-1">{{ tm('conflicts.pairs') }}</span>
         </div>
-        <p class="text-body-2" style="color: rgba(var(--v-theme-on-surface), 0.7);">
+        <p
+          class="text-body-2"
+          style="color: rgba(var(--v-theme-on-surface), 0.7);"
+        >
           {{ tm('conflicts.message') }}
         </p>
       </v-card-text>
       <v-card-actions class="pa-4 pt-2">
-        <v-spacer></v-spacer>
-        <v-btn variant="text" @click="conflictDialog.show = false">{{ tm('conflicts.later') }}</v-btn>
-        <v-btn color="warning" variant="flat" @click="handleConflictConfirm">
+        <v-spacer />
+        <v-btn
+          variant="text"
+          @click="conflictDialog.show = false"
+        >
+          {{ tm('conflicts.later') }}
+        </v-btn>
+        <v-btn
+          color="warning"
+          variant="flat"
+          @click="handleConflictConfirm"
+        >
           {{ tm('conflicts.goToManage') }}
         </v-btn>
       </v-card-actions>
@@ -357,28 +469,63 @@ const {
 
 
   <!-- 上传插件对话框 -->
-  <v-dialog v-model="dialog" width="500">
-
-    <v-card :loading="loading_" class="rounded-lg" elevation="2">
+  <v-dialog
+    v-model="dialog"
+    width="500"
+  >
+    <v-card
+      :loading="loading_"
+      class="rounded-lg"
+      elevation="2"
+    >
       <template #loader>
-        <v-progress-linear :indeterminate="loading_" color="primary" height="2"></v-progress-linear>
+        <v-progress-linear
+          :indeterminate="loading_"
+          color="primary"
+          height="2"
+        />
       </template>
 
-      <v-card-title class="text-h5">{{ tm('dialogs.install.title') }}</v-card-title>
+      <v-card-title class="text-h5">
+        {{ tm('dialogs.install.title') }}
+      </v-card-title>
 
       <v-card-text>
-        <v-tabs v-model="uploadTab" color="primary">
-          <v-tab value="file">{{ tm('dialogs.install.fromFile') }}</v-tab>
-          <v-tab value="url">{{ tm('dialogs.install.fromUrl') }}</v-tab>
+        <v-tabs
+          v-model="uploadTab"
+          color="primary"
+        >
+          <v-tab value="file">
+            {{ tm('dialogs.install.fromFile') }}
+          </v-tab>
+          <v-tab value="url">
+            {{ tm('dialogs.install.fromUrl') }}
+          </v-tab>
         </v-tabs>
 
-        <v-window v-model="uploadTab" class="mt-4">
+        <v-window
+          v-model="uploadTab"
+          class="mt-4"
+        >
           <v-window-item value="file">
             <div class="d-flex flex-column align-center justify-center pa-4">
-              <v-file-input ref="fileInput" v-model="upload_file" :label="tm('upload.selectFile')" accept=".zip"
-                hide-details hide-input class="d-none"></v-file-input>
+              <v-file-input
+                ref="fileInput"
+                v-model="upload_file"
+                :label="tm('upload.selectFile')"
+                accept=".zip"
+                hide-details
+                hide-input
+                class="d-none"
+              />
 
-              <v-btn color="primary" size="large" prepend-icon="mdi-upload" @click="fileInput?.click?.()" elevation="2">
+              <v-btn
+                color="primary"
+                size="large"
+                prepend-icon="mdi-upload"
+                elevation="2"
+                @click="fileInput?.click?.()"
+              >
                 {{ tm('buttons.selectFile') }}
               </v-btn>
 
@@ -386,10 +533,18 @@ const {
                 {{ tm('messages.supportedFormats') }}
               </div>
 
-              <div v-if="upload_file" class="mt-4 text-center">
-                <v-chip color="primary" size="large" closable @click:close="upload_file = null">
+              <div
+                v-if="upload_file"
+                class="mt-4 text-center"
+              >
+                <v-chip
+                  color="primary"
+                  size="large"
+                  closable
+                  @click:close="upload_file = null"
+                >
                   {{ upload_file.name }}
-                  <template v-slot:append>
+                  <template #append>
                     <span class="text-caption ml-2">({{ (upload_file.size / 1024).toFixed(1) }}KB)</span>
                   </template>
                 </v-chip>
@@ -399,24 +554,41 @@ const {
 
           <v-window-item value="url">
             <div class="pa-4">
-              <v-text-field v-model="extension_url" :label="tm('upload.enterUrl')" variant="outlined"
-                prepend-inner-icon="mdi-link" hide-details class="rounded-lg mb-4"
-                placeholder="https://github.com/username/repo"></v-text-field>
+              <v-text-field
+                v-model="extension_url"
+                :label="tm('upload.enterUrl')"
+                variant="outlined"
+                prepend-inner-icon="mdi-link"
+                hide-details
+                class="rounded-lg mb-4"
+                placeholder="https://github.com/username/repo"
+              />
 
-              <ProxySelector></ProxySelector>
+              <ProxySelector />
             </div>
           </v-window-item>
         </v-window>
       </v-card-text>
 
       <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn color="grey" variant="text" @click="dialog = false">{{ tm('buttons.cancel') }}</v-btn>
-        <v-btn color="primary" variant="text" @click="newExtension">{{ tm('buttons.install') }}</v-btn>
+        <v-spacer />
+        <v-btn
+          color="grey"
+          variant="text"
+          @click="dialog = false"
+        >
+          {{ tm('buttons.cancel') }}
+        </v-btn>
+        <v-btn
+          color="primary"
+          variant="text"
+          @click="newExtension"
+        >
+          {{ tm('buttons.install') }}
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
-
 </template>
 
 <style scoped>

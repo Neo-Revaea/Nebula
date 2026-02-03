@@ -1,86 +1,150 @@
 <template>
-    <ItemCard :item="persona" title-field="persona_id" :show-switch="false" title-class="text-h3" :pin-actions="false"
-        :show-edit-button="false" :show-delete-button="false"
-        class="persona-card-fixed"
-        @click="$emit('view')" @edit="$emit('edit')" @delete="$emit('delete')" draggable="true" @dragstart="handleDragStart"
-        @dragend="handleDragEnd">
-        <template #item-details="{ item }">
-            <div class="content-container">
-                <div class="system-prompt-preview mb-2">
-                    {{ truncateText(item.system_prompt, 100) }}
-                </div>
+  <ItemCard
+    :item="persona"
+    title-field="persona_id"
+    :show-switch="false"
+    title-class="text-h3"
+    :pin-actions="false"
+    :show-edit-button="false"
+    :show-delete-button="false"
+    class="persona-card-fixed"
+    draggable="true"
+    @click="$emit('view')"
+    @edit="$emit('edit')"
+    @delete="$emit('delete')"
+    @dragstart="handleDragStart"
+    @dragend="handleDragEnd"
+  >
+    <template #item-details="{ item }">
+      <div class="content-container">
+        <div class="system-prompt-preview mb-2">
+          {{ truncateText(item.system_prompt, 100) }}
+        </div>
 
-                <div class="tags-container d-flex flex-wrap ga-2">
-                    <v-chip v-if="item.begin_dialogs && item.begin_dialogs.length > 0" size="small" color="secondary"
-                        variant="tonal" prepend-icon="mdi-chat">
-                        {{ tm('labels.presetDialogs', { count: item.begin_dialogs.length / 2 }) }}
-                    </v-chip>
+        <div class="tags-container d-flex flex-wrap ga-2">
+          <v-chip
+            v-if="item.begin_dialogs && item.begin_dialogs.length > 0"
+            size="small"
+            color="secondary"
+            variant="tonal"
+            prepend-icon="mdi-chat"
+          >
+            {{ tm('labels.presetDialogs', { count: item.begin_dialogs.length / 2 }) }}
+          </v-chip>
 
-                    <v-chip v-if="item.tools === null" size="small" color="success" variant="tonal"
-                        prepend-icon="mdi-tools">
-                        {{ tm('form.allToolsAvailable') }}
-                    </v-chip>
-                    <v-chip v-else-if="item.tools && item.tools.length > 0" size="small" color="primary"
-                        variant="tonal" prepend-icon="mdi-tools">
-                        {{ item.tools.length }} {{ tm('persona.toolsCount') }}
-                    </v-chip>
+          <v-chip
+            v-if="item.tools === null"
+            size="small"
+            color="success"
+            variant="tonal"
+            prepend-icon="mdi-tools"
+          >
+            {{ tm('form.allToolsAvailable') }}
+          </v-chip>
+          <v-chip
+            v-else-if="item.tools && item.tools.length > 0"
+            size="small"
+            color="primary"
+            variant="tonal"
+            prepend-icon="mdi-tools"
+          >
+            {{ item.tools.length }} {{ tm('persona.toolsCount') }}
+          </v-chip>
 
-                    <v-chip v-if="item.skills === null" size="small" color="success" variant="tonal"
-                        prepend-icon="mdi-lightning-bolt">
-                        {{ tm('form.allSkillsAvailable') }}
-                    </v-chip>
-                    <v-chip v-else-if="item.skills && item.skills.length > 0" size="small" color="primary"
-                        variant="tonal" prepend-icon="mdi-lightning-bolt">
-                        {{ item.skills.length }} {{ tm('persona.skillsCount') }}
-                    </v-chip>
-                </div>
-            </div>
+          <v-chip
+            v-if="item.skills === null"
+            size="small"
+            color="success"
+            variant="tonal"
+            prepend-icon="mdi-lightning-bolt"
+          >
+            {{ tm('form.allSkillsAvailable') }}
+          </v-chip>
+          <v-chip
+            v-else-if="item.skills && item.skills.length > 0"
+            size="small"
+            color="primary"
+            variant="tonal"
+            prepend-icon="mdi-lightning-bolt"
+          >
+            {{ item.skills.length }} {{ tm('persona.skillsCount') }}
+          </v-chip>
+        </div>
+      </div>
+    </template>
+
+    <template #footer-start="{ item }">
+      <v-tooltip
+        location="bottom"
+        open-delay="300"
+      >
+        <template #activator="{ props }">
+          <div
+            v-bind="props"
+            class="text-caption text-medium-emphasis ms-2 d-flex align-center cursor-help"
+          >
+            <v-icon
+              size="small"
+              start
+              class="me-1"
+            >
+              mdi-clock-outline
+            </v-icon>
+            {{ formatDate(item.created_at).split(' ')[0] }}
+          </div>
         </template>
+        <span>{{ tm('labels.createdAt') }}: {{ formatDate(item.created_at) }}</span>
+      </v-tooltip>
+    </template>
 
-        <template #footer-start="{ item }">
-            <v-tooltip location="bottom" open-delay="300">
-                <template v-slot:activator="{ props }">
-                    <div v-bind="props" class="text-caption text-medium-emphasis ms-2 d-flex align-center cursor-help">
-                        <v-icon size="small" start class="me-1">mdi-clock-outline</v-icon>
-                        {{ formatDate(item.created_at).split(' ')[0] }}
-                    </div>
-                </template>
-                <span>{{ tm('labels.createdAt') }}: {{ formatDate(item.created_at) }}</span>
-            </v-tooltip>
+    <template #actions>
+      <v-btn
+        variant="tonal"
+        color="primary"
+        size="small"
+        rounded="xl"
+        @click.stop="$emit('edit')"
+      >
+        {{ t('core.common.itemCard.edit') }}
+      </v-btn>
+
+      <v-menu location="bottom end">
+        <template #activator="{ props }">
+          <v-btn
+            v-bind="props"
+            icon="mdi-dots-horizontal"
+            variant="text"
+            size="small"
+            @click.stop
+          />
         </template>
+        <v-list density="compact">
+          <v-list-item @click="$emit('move')">
+            <v-list-item-title>{{ tm('persona.contextMenu.moveTo') }}</v-list-item-title>
+          </v-list-item>
+          <v-list-item @click="$emit('delete')">
+            <v-list-item-title class="text-error">
+              {{ t('core.common.itemCard.delete') }}
+            </v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+    </template>
+  </ItemCard>
 
-        <template #actions>
-            <v-btn variant="tonal" color="primary" size="small" rounded="xl" @click.stop="$emit('edit')">
-                {{ t('core.common.itemCard.edit') }}
-            </v-btn>
-
-            <v-menu location="bottom end">
-                <template #activator="{ props }">
-                    <v-btn
-                        v-bind="props"
-                        icon="mdi-dots-horizontal"
-                        variant="text"
-                        size="small"
-                        @click.stop
-                    />
-                </template>
-                <v-list density="compact">
-                    <v-list-item @click="$emit('move')">
-                        <v-list-item-title>{{ tm('persona.contextMenu.moveTo') }}</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item @click="$emit('delete')">
-                        <v-list-item-title class="text-error">{{ t('core.common.itemCard.delete') }}</v-list-item-title>
-                    </v-list-item>
-                </v-list>
-            </v-menu>
-        </template>
-    </ItemCard>
-
-    <!-- Custom Drag Preview -->
-    <div ref="dragPreview" class="drag-preview">
-        <v-icon size="small" class="mr-2">mdi-account</v-icon>
-        <span class="text-subtitle-2">{{ persona.persona_id }}</span>
-    </div>
+  <!-- Custom Drag Preview -->
+  <div
+    ref="dragPreview"
+    class="drag-preview"
+  >
+    <v-icon
+      size="small"
+      class="mr-2"
+    >
+      mdi-account
+    </v-icon>
+    <span class="text-subtitle-2">{{ persona.persona_id }}</span>
+  </div>
 </template>
 
 <script lang="ts">

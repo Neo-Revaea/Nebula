@@ -1,144 +1,219 @@
 <template>
-    <v-card class="chat-page-card" elevation="0" rounded="0">
-        <v-card-text class="chat-page-container">
-            <!-- 遮罩层 (手机端) -->
-            <div class="mobile-overlay" v-if="isMobile && mobileMenuOpen" @click="closeMobileSidebar"></div>
+  <v-card
+    class="chat-page-card"
+    elevation="0"
+    rounded="0"
+  >
+    <v-card-text class="chat-page-container">
+      <!-- 遮罩层 (手机端) -->
+      <div
+        v-if="isMobile && mobileMenuOpen"
+        class="mobile-overlay"
+        @click="closeMobileSidebar"
+      />
 
-            <div class="chat-layout">
-                <ConversationSidebar
-                    :sessions="sessions"
-                    :selectedSessions="selectedSessions"
-                    :currSessionId="currSessionId"
-                    :selectedProjectId="selectedProjectId"
-                    :isDark="isDark"
-                    :chatboxMode="chatboxMode"
-                    :isMobile="isMobile"
-                    :mobileMenuOpen="mobileMenuOpen"
-                    :projects="projects"
-                    @newChat="handleNewChat"
-                    @selectConversation="handleSelectConversation"
-                    @editTitle="showEditTitleDialog"
-                    @deleteConversation="handleDeleteConversation"
-                    @closeMobileSidebar="closeMobileSidebar"
-                    @toggleTheme="toggleTheme"
-                    @toggleFullscreen="toggleFullscreen"
-                    @selectProject="handleSelectProject"
-                    @createProject="showCreateProjectDialog"
-                    @editProject="showEditProjectDialog"
-                    @deleteProject="handleDeleteProject"
-                />
+      <div class="chat-layout">
+        <ConversationSidebar
+          :sessions="sessions"
+          :selected-sessions="selectedSessions"
+          :curr-session-id="currSessionId"
+          :selected-project-id="selectedProjectId"
+          :is-dark="isDark"
+          :chatbox-mode="chatboxMode"
+          :is-mobile="isMobile"
+          :mobile-menu-open="mobileMenuOpen"
+          :projects="projects"
+          @new-chat="handleNewChat"
+          @select-conversation="handleSelectConversation"
+          @edit-title="showEditTitleDialog"
+          @delete-conversation="handleDeleteConversation"
+          @close-mobile-sidebar="closeMobileSidebar"
+          @toggle-theme="toggleTheme"
+          @toggle-fullscreen="toggleFullscreen"
+          @select-project="handleSelectProject"
+          @create-project="showCreateProjectDialog"
+          @edit-project="showEditProjectDialog"
+          @delete-project="handleDeleteProject"
+        />
 
-                <!-- 右侧聊天内容区域 -->
-                <div class="chat-content-panel">
-                    <!-- Live Mode -->
-                    <LiveMode v-if="liveModeOpen" @close="closeLiveMode" />
+        <!-- 右侧聊天内容区域 -->
+        <div class="chat-content-panel">
+          <!-- Live Mode -->
+          <LiveMode
+            v-if="liveModeOpen"
+            @close="closeLiveMode"
+          />
 
-                    <!-- 正常聊天界面 -->
-                    <template v-else>
-                        <div class="conversation-header fade-in" v-if="isMobile">
-                            <!-- 手机端菜单按钮 -->
-                            <v-btn icon class="mobile-menu-btn" @click="toggleMobileSidebar" variant="text">
-                                <v-icon>mdi-menu</v-icon>
-                            </v-btn>
-                        </div>
-                    <div class="message-list-wrapper" v-if="!selectedProjectId && messages && messages.length > 0">
-                        <MessageList :messages="messages" :isDark="isDark"
-                            :isStreaming="isStreaming || isConvRunning"
-                            :isLoadingMessages="isLoadingMessages"
-                            @openImagePreview="openImagePreview"
-                            @replyMessage="handleReplyMessage"
-                            @replyWithText="handleReplyWithText"
-                            @openRefs="handleOpenRefs"
-                            ref="messageList" />
-                        <div class="message-list-fade" :class="{ 'fade-dark': isDark }"></div>
-                    </div>
-                    <ProjectView
-                        v-else-if="selectedProjectId"
-                        :project="currentProject"
-                        :sessions="projectSessions"
-                        @selectSession="(sessionId) => handleSelectConversation([sessionId])"
-                        @editSessionTitle="showEditTitleDialog"
-                        @deleteSession="handleDeleteConversation"
-                    />
-                    <WelcomeView
-                        v-else
-                        :isLoading="isLoadingMessages"
-                        bot-name="Nebula"
-                    />
-
-                    <!-- 输入区域 -->
-                    <ChatInput
-                        v-model:prompt="prompt"
-                        :stagedImagesUrl="stagedImagesUrl"
-                        :stagedAudioUrl="stagedAudioUrl"
-                        :stagedFiles="stagedNonImageFiles"
-                        :disabled="isStreaming || isConvRunning || isLoadingMessages"
-                        :enableStreaming="enableStreaming"
-                        :isRecording="isRecording"
-                        :session-id="currSessionId || null"
-                        :current-session="getCurrentSession"
-                        :replyTo="replyTo"
-                        @send="handleSendMessage"
-                        @toggleStreaming="toggleStreaming"
-                        @removeImage="removeImage"
-                        @removeAudio="removeAudio"
-                        @removeFile="removeFile"
-                        @startRecording="handleStartRecording"
-                        @stopRecording="handleStopRecording"
-                        @pasteImage="handlePaste"
-                        @fileSelect="handleFileSelect"
-                        @clearReply="clearReply"
-                        @openLiveMode="openLiveMode"
-                        ref="chatInputRef"
-                    />
-                    </template>
-                </div>
-
-                <!-- Refs Sidebar -->
-                <RefsSidebar v-model="refsSidebarOpen" :refs="refsSidebarRefs" />
+          <!-- 正常聊天界面 -->
+          <template v-else>
+            <div
+              v-if="isMobile"
+              class="conversation-header fade-in"
+            >
+              <!-- 手机端菜单按钮 -->
+              <v-btn
+                icon
+                class="mobile-menu-btn"
+                variant="text"
+                @click="toggleMobileSidebar"
+              >
+                <v-icon>mdi-menu</v-icon>
+              </v-btn>
             </div>
-        </v-card-text>
-    </v-card>
+            <div
+              v-if="!selectedProjectId && messages && messages.length > 0"
+              class="message-list-wrapper"
+            >
+              <MessageList
+                ref="messageList"
+                :messages="messages"
+                :is-dark="isDark"
+                :is-streaming="isStreaming || isConvRunning"
+                :is-loading-messages="isLoadingMessages"
+                @open-image-preview="openImagePreview"
+                @reply-message="handleReplyMessage"
+                @reply-with-text="handleReplyWithText"
+                @open-refs="handleOpenRefs"
+              />
+              <div
+                class="message-list-fade"
+                :class="{ 'fade-dark': isDark }"
+              />
+            </div>
+            <ProjectView
+              v-else-if="selectedProjectId"
+              :project="currentProject"
+              :sessions="projectSessions"
+              @select-session="(sessionId) => handleSelectConversation([sessionId])"
+              @edit-session-title="showEditTitleDialog"
+              @delete-session="handleDeleteConversation"
+            />
+            <WelcomeView
+              v-else
+              :is-loading="isLoadingMessages"
+              bot-name="Nebula"
+            />
+
+            <!-- 输入区域 -->
+            <ChatInput
+              v-model:prompt="prompt"
+              :staged-images-url="stagedImagesUrl"
+              :staged-audio-url="stagedAudioUrl"
+              :staged-files="stagedNonImageFiles"
+              :disabled="isStreaming || isConvRunning || isLoadingMessages"
+              :enable-streaming="enableStreaming"
+              :is-recording="isRecording"
+              :session-id="currSessionId || null"
+              :current-session="getCurrentSession"
+              :reply-to="replyTo"
+              @send="handleSendMessage"
+              @toggle-streaming="toggleStreaming"
+              ref="chatInputRef"
+              @remove-image="removeImage"
+              @remove-audio="removeAudio"
+              @remove-file="removeFile"
+              @start-recording="handleStartRecording"
+              @stop-recording="handleStopRecording"
+              @paste-image="handlePaste"
+              @file-select="handleFileSelect"
+              @clear-reply="clearReply"
+              @open-live-mode="openLiveMode"
+            />
+          </template>
+        </div>
+
+        <!-- Refs Sidebar -->
+        <RefsSidebar
+          v-model="refsSidebarOpen"
+          :refs="refsSidebarRefs"
+        />
+      </div>
+    </v-card-text>
+  </v-card>
     
-    <!-- 编辑对话标题对话框 -->
-    <v-dialog v-model="editTitleDialog" max-width="400">
-        <v-card>
-            <v-card-title class="dialog-title">{{ tm('actions.editTitle') }}</v-card-title>
-            <v-card-text>
-                <v-text-field v-model="editingTitle" :label="tm('conversation.newConversation')" variant="outlined"
-                    hide-details class="mt-2" @keyup.enter="handleSaveTitle" autofocus />
-            </v-card-text>
-            <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn variant="text" @click="editTitleDialog = false" color="grey-darken-1">{{ t('core.common.cancel') }}</v-btn>
-                <v-btn variant="text" @click="handleSaveTitle" color="primary">{{ t('core.common.save') }}</v-btn>
-            </v-card-actions>
-        </v-card>
-    </v-dialog>
+  <!-- 编辑对话标题对话框 -->
+  <v-dialog
+    v-model="editTitleDialog"
+    max-width="400"
+  >
+    <v-card>
+      <v-card-title class="dialog-title">
+        {{ tm('actions.editTitle') }}
+      </v-card-title>
+      <v-card-text>
+        <v-text-field
+          v-model="editingTitle"
+          :label="tm('conversation.newConversation')"
+          variant="outlined"
+          hide-details
+          class="mt-2"
+          autofocus
+          @keyup.enter="handleSaveTitle"
+        />
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer />
+        <v-btn
+          variant="text"
+          color="grey-darken-1"
+          @click="editTitleDialog = false"
+        >
+          {{ t('core.common.cancel') }}
+        </v-btn>
+        <v-btn
+          variant="text"
+          color="primary"
+          @click="handleSaveTitle"
+        >
+          {{ t('core.common.save') }}
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 
-    <!-- 图片预览对话框 -->
-    <v-dialog v-model="imagePreviewDialog" max-width="90vw" max-height="90vh" scrollable>
-        <v-card class="image-preview-card" elevation="8">
-            <v-card-title class="image-preview-header d-flex justify-space-between align-center pa-4">
-                <span>{{ t('core.common.imagePreview') }}</span>
-                <v-btn icon="mdi-close" variant="text" @click="imagePreviewDialog = false" />
-            </v-card-title>
-            <v-card-text class="image-preview-body text-center pa-4">
-                <img :src="previewImageUrl" class="preview-image-large" />
-            </v-card-text>
-            <v-card-actions class="image-preview-footer pa-2">
-                <v-spacer />
-                <v-btn variant="text" @click="imagePreviewDialog = false">{{ t('core.common.close') }}</v-btn>
-            </v-card-actions>
-        </v-card>
-    </v-dialog>
+  <!-- 图片预览对话框 -->
+  <v-dialog
+    v-model="imagePreviewDialog"
+    max-width="90vw"
+    max-height="90vh"
+    scrollable
+  >
+    <v-card
+      class="image-preview-card"
+      elevation="8"
+    >
+      <v-card-title class="image-preview-header d-flex justify-space-between align-center pa-4">
+        <span>{{ t('core.common.imagePreview') }}</span>
+        <v-btn
+          icon="mdi-close"
+          variant="text"
+          @click="imagePreviewDialog = false"
+        />
+      </v-card-title>
+      <v-card-text class="image-preview-body text-center pa-4">
+        <img
+          :src="previewImageUrl"
+          class="preview-image-large"
+        >
+      </v-card-text>
+      <v-card-actions class="image-preview-footer pa-2">
+        <v-spacer />
+        <v-btn
+          variant="text"
+          @click="imagePreviewDialog = false"
+        >
+          {{ t('core.common.close') }}
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 
-    <!-- 创建/编辑项目对话框 -->
-    <ProjectDialog
-        v-model="projectDialog"
-        :project="editingProject"
-        @save="handleSaveProject"
-    />
+  <!-- 创建/编辑项目对话框 -->
+  <ProjectDialog
+    v-model="projectDialog"
+    :project="editingProject"
+    @save="handleSaveProject"
+  />
 </template>
 
 <script setup lang="ts">

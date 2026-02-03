@@ -1,6 +1,9 @@
 <template>
-  <v-menu offset="12" location="bottom center">
-    <template v-slot:activator="{ props: activatorProps }">
+  <v-menu
+    offset="12"
+    location="bottom center"
+  >
+    <template #activator="{ props: activatorProps }">
       <v-btn
         v-bind="activatorProps"
         :variant="(props.variant === 'header' || props.variant === 'chatbox') ? 'flat' : 'text'"
@@ -10,25 +13,37 @@
         size="small"
         :class="['language-switcher', `language-switcher--${props.variant}`, (props.variant === 'header' || props.variant === 'chatbox') ? 'action-btn' : '']"
       >
-        <v-icon size="18" :color="iconColor">mdi-translate</v-icon>
+        <v-icon
+          size="18"
+          :color="iconColor"
+        >
+          mdi-translate
+        </v-icon>
       </v-btn>
     </template>
     
-    <v-card class="language-dropdown" elevation="8" rounded="lg">
-      <v-list density="compact" class="pa-1">
+    <v-card
+      class="language-dropdown"
+      elevation="8"
+      rounded="lg"
+    >
+      <v-list
+        density="compact"
+        class="pa-1"
+      >
         <v-list-item
           v-for="lang in languageOptions"
           :key="lang.value"
           :value="lang.value"
-          @click="changeLanguage(lang.value)"
           :class="{ 'v-list-item--active': currentLocale === lang.value, 'language-item-selected': currentLocale === lang.value }"
           class="language-item"
           rounded="md"
+          @click="changeLanguage(lang.value)"
         >
-          <template v-slot:prepend>
+          <template #prepend>
             <span 
               :class="['fi', `fi-${lang.flag}`, 'language-flag-styled']"
-            ></span>
+            />
           </template>
           <v-list-item-title>{{ lang.label }}</v-list-item-title>
         </v-list-item>

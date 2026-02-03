@@ -1,40 +1,43 @@
 <template>
+  <div
+    class="reasoning-card"
+    :class="{ 'is-expanded': isExpanded, 'is-collapsed': !isExpanded }"
+    :style="{ backgroundColor: isDark ? '#2d2e30' : '#e7ebf4' }"
+  >
     <div
-        class="reasoning-card"
-        :class="{ 'is-expanded': isExpanded, 'is-collapsed': !isExpanded }"
-        :style="{ backgroundColor: isDark ? '#2d2e30' : '#e7ebf4' }"
+      class="reasoning-header"
+      role="button"
+      tabindex="0"
+      :aria-expanded="isExpanded"
+      @click="toggleExpanded"
+      @keydown.enter.prevent="toggleExpanded"
+      @keydown.space.prevent="toggleExpanded"
     >
-        <div
-            class="reasoning-header"
-            role="button"
-            tabindex="0"
-            :aria-expanded="isExpanded"
-            @click="toggleExpanded"
-            @keydown.enter.prevent="toggleExpanded"
-            @keydown.space.prevent="toggleExpanded"
-        >
-            <v-icon
-                size="small"
-                class="reasoning-chevron"
-                :class="{ 'rotate-90': isExpanded }"
-            >
-                mdi-chevron-right
-            </v-icon>
-            <span class="reasoning-title">{{ tm('reasoning.thinking') }}</span>
-        </div>
-        <div v-if="isExpanded" class="reasoning-content animate-fade-in">
-            <MarkdownRender
-                :key="shikiWasmReady ? 'shiki' : 'pre'"
-                :content="reasoning"
-                class="reasoning-text markdown-content"
-                :typewriter="false"
-                :is-dark="isDark"
-                :render-code-blocks-as-pre="!shikiWasmReady"
-                :class="{ dark: isDark }"
-                :style="isDark ? { opacity: '0.85' } : {}"
-            />
-        </div>
+      <v-icon
+        size="small"
+        class="reasoning-chevron"
+        :class="{ 'rotate-90': isExpanded }"
+      >
+        mdi-chevron-right
+      </v-icon>
+      <span class="reasoning-title">{{ tm('reasoning.thinking') }}</span>
     </div>
+    <div
+      v-if="isExpanded"
+      class="reasoning-content animate-fade-in"
+    >
+      <MarkdownRender
+        :key="shikiWasmReady ? 'shiki' : 'pre'"
+        :content="reasoning"
+        class="reasoning-text markdown-content"
+        :typewriter="false"
+        :is-dark="isDark"
+        :render-code-blocks-as-pre="!shikiWasmReady"
+        :class="{ dark: isDark }"
+        :style="isDark ? { opacity: '0.85' } : {}"
+      />
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">

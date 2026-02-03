@@ -1,19 +1,41 @@
 <template>
-    <div v-if="usedRefs.length > 0" class="refs-container" @click="handleClick">
-        <div class="refs-avatars">
-            <div v-for="(ref, refIdx) in usedRefs.slice(0, 3)" :key="refIdx" class="ref-avatar"
-                :style="{ zIndex: 3 - refIdx }">
-                <img v-if="ref.favicon" :src="ref.favicon" class="ref-favicon" @error="handleFaviconError" />
-                <span v-else class="ref-initial">{{ getRefInitial(ref.title) }}</span>
-            </div>
-            <span v-if="usedRefs.length > 3" class="refs-more">
-                +{{ usedRefs.length - 3 }}
-            </span>
-            <span class="ml-2" style="color: gray;">
-                {{ tm('refs.sources') }}
-            </span>
-        </div>
+  <div
+    v-if="usedRefs.length > 0"
+    class="refs-container"
+    @click="handleClick"
+  >
+    <div class="refs-avatars">
+      <div
+        v-for="(ref, refIdx) in usedRefs.slice(0, 3)"
+        :key="refIdx"
+        class="ref-avatar"
+        :style="{ zIndex: 3 - refIdx }"
+      >
+        <img
+          v-if="ref.favicon"
+          :src="ref.favicon"
+          class="ref-favicon"
+          @error="handleFaviconError"
+        >
+        <span
+          v-else
+          class="ref-initial"
+        >{{ getRefInitial(ref.title) }}</span>
+      </div>
+      <span
+        v-if="usedRefs.length > 3"
+        class="refs-more"
+      >
+        +{{ usedRefs.length - 3 }}
+      </span>
+      <span
+        class="ml-2"
+        style="color: gray;"
+      >
+        {{ tm('refs.sources') }}
+      </span>
     </div>
+  </div>
 </template>
 
 <script setup lang="ts">

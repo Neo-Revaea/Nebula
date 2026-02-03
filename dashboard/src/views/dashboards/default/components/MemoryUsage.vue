@@ -9,11 +9,16 @@
     <template #item-details>
       <div class="d-flex align-start content-wrapper">
         <div class="icon-wrapper">
-          <v-icon icon="mdi-memory" size="24"></v-icon>
+          <v-icon
+            icon="mdi-memory"
+            size="24"
+          />
         </div>
         
         <div class="stat-content">
-          <div class="stat-title">{{ t('stats.memoryUsage.title') }}</div>
+          <div class="stat-title">
+            {{ t('stats.memoryUsage.title') }}
+          </div>
           
           <div class="stat-value-wrapper">
             <h2 class="stat-value">
@@ -23,7 +28,12 @@
           </div>
 
           <div class="metrics-row">
-            <v-chip :color="memoryStatus.color" size="x-small" variant="tonal" class="status-chip">
+            <v-chip
+              :color="memoryStatus.color"
+              size="x-small"
+              variant="tonal"
+              class="status-chip"
+            >
               {{ memoryStatus.label }}
             </v-chip>
             <div class="cpu-metric">

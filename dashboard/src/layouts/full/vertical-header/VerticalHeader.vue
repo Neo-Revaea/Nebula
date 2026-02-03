@@ -121,38 +121,80 @@ const isChristmas = computed(() => {
 </script>
 
 <template>
-  <v-app-bar elevation="0" height="55" class="header-with-border">
-
-    <v-btn v-if="customizer.viewMode === 'bot' && useCustomizerStore().uiTheme === 'PurpleTheme'" style="margin-left: 16px;"
-      class="hidden-md-and-down"  icon rounded="sm" variant="flat"
-      @click.stop="customizer.SET_MINI_SIDEBAR(!customizer.mini_sidebar)">
+  <v-app-bar
+    elevation="0"
+    height="55"
+    class="header-with-border"
+  >
+    <v-btn
+      v-if="customizer.viewMode === 'bot' && useCustomizerStore().uiTheme === 'PurpleTheme'"
+      style="margin-left: 16px;"
+      class="hidden-md-and-down"
+      icon
+      rounded="sm"
+      variant="flat"
+      @click.stop="customizer.SET_MINI_SIDEBAR(!customizer.mini_sidebar)"
+    >
       <v-icon>mdi-menu</v-icon>
     </v-btn>
-    <v-btn v-else-if="customizer.viewMode === 'bot'"
+    <v-btn
+      v-else-if="customizer.viewMode === 'bot'"
       style="margin-left: 22px;"
-      class="hidden-md-and-down" icon rounded="sm" variant="flat"
-      @click.stop="customizer.SET_MINI_SIDEBAR(!customizer.mini_sidebar)">
+      class="hidden-md-and-down"
+      icon
+      rounded="sm"
+      variant="flat"
+      @click.stop="customizer.SET_MINI_SIDEBAR(!customizer.mini_sidebar)"
+    >
       <v-icon>mdi-menu</v-icon>
     </v-btn>
-    <v-btn v-if="customizer.viewMode === 'bot' && useCustomizerStore().uiTheme === 'PurpleTheme'" class="hidden-lg-and-up ms-3"
-      icon rounded="sm" variant="flat" @click.stop="customizer.SET_SIDEBAR_DRAWER">
+    <v-btn
+      v-if="customizer.viewMode === 'bot' && useCustomizerStore().uiTheme === 'PurpleTheme'"
+      class="hidden-lg-and-up ms-3"
+      icon
+      rounded="sm"
+      variant="flat"
+      @click.stop="customizer.SET_SIDEBAR_DRAWER"
+    >
       <v-icon>mdi-menu</v-icon>
     </v-btn>
-    <v-btn v-else-if="customizer.viewMode === 'bot'" class="hidden-lg-and-up ms-3" icon rounded="sm" variant="flat"
-      @click.stop="customizer.SET_SIDEBAR_DRAWER">
+    <v-btn
+      v-else-if="customizer.viewMode === 'bot'"
+      class="hidden-lg-and-up ms-3"
+      icon
+      rounded="sm"
+      variant="flat"
+      @click.stop="customizer.SET_SIDEBAR_DRAWER"
+    >
       <v-icon>mdi-menu</v-icon>
     </v-btn>
 
-    <div class="logo-container" :class="{ 'mobile-logo': $vuetify.display.xs, 'chat-mode-logo': customizer.viewMode === 'chat' }" @click="handleLogoClick">
-      <span class="logo-text Outfit" style="position: relative;">
-          Nebula
-          <img v-if="isChristmas" src="@/assets/images/xmas-hat.png" alt="Christmas hat" class="xmas-hat" />
+    <div
+      class="logo-container"
+      :class="{ 'mobile-logo': $vuetify.display.xs, 'chat-mode-logo': customizer.viewMode === 'chat' }"
+      @click="handleLogoClick"
+    >
+      <span
+        class="logo-text Outfit"
+        style="position: relative;"
+      >
+        Nebula
+        <img
+          v-if="isChristmas"
+          src="@/assets/images/xmas-hat.png"
+          alt="Christmas hat"
+          class="xmas-hat"
+        >
       </span>
-      <span class="logo-text logo-text-light Outfit" style="color: grey;" v-if="customizer.viewMode === 'chat'">ChatUI</span>
+      <span
+        v-if="customizer.viewMode === 'chat'"
+        class="logo-text logo-text-light Outfit"
+        style="color: grey;"
+      >ChatUI</span>
       <span class="version-text hidden-xs">{{ botCurrVersion }}</span>
     </div>
 
-  <v-spacer />
+    <v-spacer />
 
     <div class="mr-4 hidden-xs">
       <small v-if="hasNewVersion">
@@ -171,19 +213,32 @@ const isChristmas = computed(() => {
       class="mr-4"
       color="primary"
     >
-      <v-btn value="bot" size="small">
-        <v-icon start>mdi-robot</v-icon>
+      <v-btn
+        value="bot"
+        size="small"
+      >
+        <v-icon start>
+          mdi-robot
+        </v-icon>
         Bot
       </v-btn>
-      <v-btn value="chat" size="small">
-        <v-icon start>mdi-chat</v-icon>
+      <v-btn
+        value="chat"
+        size="small"
+      >
+        <v-icon start>
+          mdi-chat
+        </v-icon>
         Chat
       </v-btn>
     </v-btn-toggle>
 
 
-    <StyledMenu offset="12" location="bottom end">
-      <template v-slot:activator="{ props: activatorProps }">
+    <StyledMenu
+      offset="12"
+      location="bottom end"
+    >
+      <template #activator="{ props: activatorProps }">
         <v-btn
           v-bind="activatorProps"
           size="small"
@@ -200,11 +255,11 @@ const isChristmas = computed(() => {
       <LanguageMenu />
 
       <v-list-item
-        @click="toggleDarkMode()"
         class="styled-menu-item"
         rounded="md"
+        @click="toggleDarkMode()"
       >
-        <template v-slot:prepend>
+        <template #prepend>
           <v-icon>
             {{ useCustomizerStore().uiTheme === 'PurpleThemeDark' ? 'mdi-weather-night' : 'mdi-white-balance-sunny' }}
           </v-icon>
@@ -215,25 +270,35 @@ const isChristmas = computed(() => {
       </v-list-item>
 
       <v-list-item
-        @click="openUpdateDialog"
         class="styled-menu-item"
         rounded="md"
+        @click="openUpdateDialog"
       >
-        <template v-slot:prepend>
+        <template #prepend>
           <v-icon>mdi-arrow-up-circle</v-icon>
         </template>
         <v-list-item-title>{{ t('core.header.updateDialog.title') }}</v-list-item-title>
-        <template v-slot:append v-if="hasNewVersion || dashboardHasNewVersion">
-          <v-chip size="x-small" color="primary" variant="tonal" class="ml-2">!</v-chip>
+        <template
+          v-if="hasNewVersion || dashboardHasNewVersion"
+          #append
+        >
+          <v-chip
+            size="x-small"
+            color="primary"
+            variant="tonal"
+            class="ml-2"
+          >
+            !
+          </v-chip>
         </template>
       </v-list-item>
 
       <v-list-item
-        @click="dialog = true"
         class="styled-menu-item"
         rounded="md"
+        @click="dialog = true"
       >
-        <template v-slot:prepend>
+        <template #prepend>
           <v-icon>mdi-account</v-icon>
         </template>
         <v-list-item-title>{{ t('core.header.accountDialog.title') }}</v-list-item-title>
@@ -247,10 +312,15 @@ const isChristmas = computed(() => {
       @update-flags="(v) => { hasNewVersion = v.hasNewVersion; dashboardHasNewVersion = v.dashboardHasNewVersion }"
     />
 
-    <AccountDialog v-model="dialog" :warning="accountWarning" />
+    <AccountDialog
+      v-model="dialog"
+      :warning="accountWarning"
+    />
 
-    <v-dialog v-model="aboutDialog"
-      width="600">
+    <v-dialog
+      v-model="aboutDialog"
+      width="600"
+    >
       <v-card>
         <v-card-text style="overflow-y: auto;">
           <AboutPage />

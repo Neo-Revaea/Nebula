@@ -9,15 +9,24 @@
     <template #item-details="{ item }">
       <div class="d-flex align-start content-wrapper">
         <div class="icon-wrapper">
-          <v-icon icon="mdi-server-network" size="24"></v-icon>
+          <v-icon
+            icon="mdi-server-network"
+            size="24"
+          />
         </div>
 
         <div class="stat-content">
-          <div class="stat-title">{{ t('stats.onlinePlatform.title') }}</div>
-          <div class="stat-value-wrapper">
-            <h2 class="stat-value">{{ stat.platform_count || 0 }}</h2>
+          <div class="stat-title">
+            {{ t('stats.onlinePlatform.title') }}
           </div>
-          <div class="stat-subtitle">{{ t('stats.onlinePlatform.subtitle') }}</div>
+          <div class="stat-value-wrapper">
+            <h2 class="stat-value">
+              {{ stat.platform_count || 0 }}
+            </h2>
+          </div>
+          <div class="stat-subtitle">
+            {{ t('stats.onlinePlatform.subtitle') }}
+          </div>
         </div>
       </div>
     </template>

@@ -126,8 +126,8 @@ function openChangelogDialog() {
 
 <template>
   <v-navigation-drawer
-    left
     v-model="customizer.Sidebar_drawer"
+    left
     elevation="0"
     rail-width="80"
     app
@@ -136,12 +136,25 @@ function openChangelogDialog() {
     :rail="customizer.mini_sidebar"
   >
     <div class="sidebar-container">
-      <v-list class="pa-4 listitem flex-grow-1" v-model:opened="openedItems" :open-strategy="'multiple'">
-        <template v-for="(item, i) in sidebarMenu" :key="i">
-          <NavItem :item="item" class="leftPadding" />
+      <v-list
+        v-model:opened="openedItems"
+        class="pa-4 listitem flex-grow-1"
+        :open-strategy="'multiple'"
+      >
+        <template
+          v-for="(item, i) in sidebarMenu"
+          :key="i"
+        >
+          <NavItem
+            :item="item"
+            class="leftPadding"
+          />
         </template>
       </v-list>
-      <div class="sidebar-footer" v-if="!customizer.mini_sidebar">
+      <div
+        v-if="!customizer.mini_sidebar"
+        class="sidebar-footer"
+      >
         <v-btn
           class="sidebar-action-btn"
           size="small"
@@ -187,7 +200,9 @@ function openChangelogDialog() {
             variant="outlined"
             class="ml-2"
             style="font-weight: normal;"
-          >{{ formatNumber(starCount) }}</v-chip>
+          >
+            {{ formatNumber(starCount) }}
+          </v-chip>
         </v-btn>
       </div>
     </div>
@@ -195,10 +210,9 @@ function openChangelogDialog() {
     <div 
       v-if="!customizer.mini_sidebar && customizer.Sidebar_drawer"
       class="sidebar-resize-handle"
-      @mousedown="startSidebarResize"
       :class="{ 'resizing': isResizing }"
-    >
-    </div>
+      @mousedown="startSidebarResize"
+    />
   </v-navigation-drawer>
    
   <ChangelogDialog v-model="changelogDialog" />

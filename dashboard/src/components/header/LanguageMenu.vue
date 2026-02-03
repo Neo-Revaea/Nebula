@@ -25,37 +25,60 @@ const changeLanguage = async (langCode: string) => {
     :close-on-content-click="true"
     transition="scale-transition"
   >
-    <template v-slot:activator="{ props: activatorProps }">
-      <v-list-item v-bind="activatorProps" class="styled-menu-item" rounded="md" @click.stop>
-        <template v-slot:prepend>
+    <template #activator="{ props: activatorProps }">
+      <v-list-item
+        v-bind="activatorProps"
+        class="styled-menu-item"
+        rounded="md"
+        @click.stop
+      >
+        <template #prepend>
           <v-icon>mdi-translate</v-icon>
         </template>
         <v-list-item-title>{{ t('core.header.buttons.language') || 'Language' }}</v-list-item-title>
-        <template v-slot:append>
-          <v-icon size="small" color="medium-emphasis">
+        <template #append>
+          <v-icon
+            size="small"
+            color="medium-emphasis"
+          >
             {{ display.mobile.value ? 'mdi-chevron-down' : 'mdi-chevron-right' }}
           </v-icon>
         </template>
       </v-list-item>
     </template>
 
-    <v-card class="language-dropdown" elevation="8" rounded="lg">
-      <v-list density="compact" class="pa-1">
+    <v-card
+      class="language-dropdown"
+      elevation="8"
+      rounded="lg"
+    >
+      <v-list
+        density="compact"
+        class="pa-1"
+      >
         <v-list-item
           v-for="lang in languageOptions"
           :key="lang.value"
           :value="lang.value"
-          @click="changeLanguage(lang.value)"
           :class="{ 'language-item-selected': currentLocale === lang.value }"
           class="language-item"
           rounded="md"
+          @click="changeLanguage(lang.value)"
         >
-          <template v-slot:prepend>
-            <span :class="['fi', `fi-${lang.flag}`, 'language-flag-styled']"></span>
+          <template #prepend>
+            <span :class="['fi', `fi-${lang.flag}`, 'language-flag-styled']" />
           </template>
           <v-list-item-title>{{ lang.label }}</v-list-item-title>
-          <template v-slot:append v-if="currentLocale === lang.value">
-            <v-icon color="primary" size="small">mdi-check</v-icon>
+          <template
+            v-if="currentLocale === lang.value"
+            #append
+          >
+            <v-icon
+              color="primary"
+              size="small"
+            >
+              mdi-check
+            </v-icon>
           </template>
         </v-list-item>
       </v-list>

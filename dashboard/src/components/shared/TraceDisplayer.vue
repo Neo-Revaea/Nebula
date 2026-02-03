@@ -315,60 +315,151 @@ export default defineComponent({
 
 <template>
   <div class="trace-wrapper">
-    <div class="trace-table" ref="scrollEl" :style="{ height: tableHeight }">
+    <div
+      ref="scrollEl"
+      class="trace-table"
+      :style="{ height: tableHeight }"
+    >
       <div class="trace-row trace-header">
-        <div class="trace-cell time">Time</div>
-        <div class="trace-cell span">Event ID</div>
-        <div class="trace-cell umo">UMO</div>
+        <div class="trace-cell time">
+          Time
+        </div>
+        <div class="trace-cell span">
+          Event ID
+        </div>
+        <div class="trace-cell umo">
+          UMO
+        </div>
         <!-- <div class="trace-cell count">Records</div> -->
         <!-- <div class="trace-cell last">Last</div> -->
-        <div class="trace-cell sender">Sender</div>
-        <div class="trace-cell outline">Outline</div>
-        <div class="trace-cell fields"></div>
+        <div class="trace-cell sender">
+          Sender
+        </div>
+        <div class="trace-cell outline">
+          Outline
+        </div>
+        <div class="trace-cell fields" />
       </div>
-      <div class="trace-group" :class="{ highlight: highlightMap[event.span_id] }" v-for="event in events"
-        :key="event.span_id">
+      <div
+        v-for="event in events"
+        :key="event.span_id"
+        class="trace-group"
+        :class="{ highlight: highlightMap[event.span_id] }"
+      >
         <div class="trace-row trace-event">
-          <div class="trace-cell time" data-label="Time">{{ formatTime(event.first_time) }}</div>
-          <div class="trace-cell span" data-label="Event ID" :title="event.span_id">
+          <div
+            class="trace-cell time"
+            data-label="Time"
+          >
+            {{ formatTime(event.first_time) }}
+          </div>
+          <div
+            class="trace-cell span"
+            data-label="Event ID"
+            :title="event.span_id"
+          >
             <div class="event-title">
               {{ shortSpan(event.span_id) }}
             </div>
           </div>
-          <div class="trace-cell umo" data-label="UMO" :title="event.umo || ''">{{ event.umo }}</div>
+          <div
+            class="trace-cell umo"
+            data-label="UMO"
+            :title="event.umo || ''"
+          >
+            {{ event.umo }}
+          </div>
           <!-- <div class="trace-cell count">
             <div class="event-meta">{{ event.records.length }}</div>
           </div> -->
           <!-- <div class="trace-cell last">
             <div class="event-meta">{{ formatTime(event.last_time) }}</div>
           </div> -->
-          <div class="trace-cell sender" data-label="Sender">
-            <div class="event-sub sender-text" :title="event.sender_name || '-'">{{ event.sender_name || '-' }}</div>
+          <div
+            class="trace-cell sender"
+            data-label="Sender"
+          >
+            <div
+              class="event-sub sender-text"
+              :title="event.sender_name || '-'"
+            >
+              {{ event.sender_name || '-' }}
+            </div>
           </div>
-          <div class="trace-cell outline" data-label="Outline">
-            <div class="event-sub outline" :title="event.message_outline || '-'">{{ event.message_outline || '-' }}</div>
+          <div
+            class="trace-cell outline"
+            data-label="Outline"
+          >
+            <div
+              class="event-sub outline"
+              :title="event.message_outline || '-'"
+            >
+              {{ event.message_outline || '-' }}
+            </div>
           </div>
-          <div class="trace-cell fields event-controls" data-label="Controls">
-            <v-btn class="toggle-btn" size="x-small" variant="text" color="primary" @click="toggleEvent(event.span_id)">
+          <div
+            class="trace-cell fields event-controls"
+            data-label="Controls"
+          >
+            <v-btn
+              class="toggle-btn"
+              size="x-small"
+              variant="text"
+              color="primary"
+              @click="toggleEvent(event.span_id)"
+            >
               {{ event.collapsed ? 'Expand' : 'Collapse' }}
-              <span v-if="event.hasAgentPrepare" class="agent-dot" />
+              <span
+                v-if="event.hasAgentPrepare"
+                class="agent-dot"
+              />
             </v-btn>
           </div>
         </div>
-        <div class="trace-records" v-if="!event.collapsed">
-          <div class="trace-record" v-for="record in getVisibleRecords(event)" :key="record.key">
-            <div class="trace-record-time">{{ record.timeLabel }}</div>
-            <div class="trace-record-action" :title="toTitle(record.action)">{{ record.action }}</div>
-            <pre class="trace-record-fields" :title="toTitle(record.fieldsText)">{{ record.fieldsText }}</pre>
+        <div
+          v-if="!event.collapsed"
+          class="trace-records"
+        >
+          <div
+            v-for="record in getVisibleRecords(event)"
+            :key="record.key"
+            class="trace-record"
+          >
+            <div class="trace-record-time">
+              {{ record.timeLabel }}
+            </div>
+            <div
+              class="trace-record-action"
+              :title="toTitle(record.action)"
+            >
+              {{ record.action }}
+            </div>
+            <pre
+              class="trace-record-fields"
+              :title="toTitle(record.fieldsText)"
+            >{{ record.fieldsText }}</pre>
           </div>
-          <div class="event-more" v-if="event.visibleCount < event.records.length">
-            <v-btn size="x-small" variant="tonal" color="primary" @click="showMore(event.span_id)">
+          <div
+            v-if="event.visibleCount < event.records.length"
+            class="event-more"
+          >
+            <v-btn
+              size="x-small"
+              variant="tonal"
+              color="primary"
+              @click="showMore(event.span_id)"
+            >
               Show more
             </v-btn>
           </div>
         </div>
       </div>
-      <div v-if="events.length === 0" class="trace-empty">No trace data yet.</div>
+      <div
+        v-if="events.length === 0"
+        class="trace-empty"
+      >
+        No trace data yet.
+      </div>
     </div>
   </div>
 </template>

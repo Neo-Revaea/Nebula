@@ -1,16 +1,33 @@
 <template>
   <div>
-    <div class="filter-controls mb-2" v-if="showLevelBtns">
-      <v-chip-group v-model="selectedLevels" column multiple>
-        <v-chip v-for="level in logLevels" :key="level" :color="getLevelColor(level)" filter variant="flat" size="small"
-          :text-color="level === 'DEBUG' || level === 'INFO' ? 'black' : 'white'" class="font-weight-medium">
+    <div
+      v-if="showLevelBtns"
+      class="filter-controls mb-2"
+    >
+      <v-chip-group
+        v-model="selectedLevels"
+        column
+        multiple
+      >
+        <v-chip
+          v-for="level in logLevels"
+          :key="level"
+          :color="getLevelColor(level)"
+          filter
+          variant="flat"
+          size="small"
+          :text-color="level === 'DEBUG' || level === 'INFO' ? 'black' : 'white'"
+          class="font-weight-medium"
+        >
           {{ level }}
         </v-chip>
       </v-chip-group>
     </div>
 
-    <div ref="term" style="background-color: #1e1e1e; padding: 16px; border-radius: 8px; overflow-y:auto; height: 100%">
-    </div>
+    <div
+      ref="term"
+      style="background-color: #1e1e1e; padding: 16px; border-radius: 8px; overflow-y:auto; height: 100%"
+    />
   </div>
 </template>
 
@@ -31,6 +48,16 @@ type NormalizedLog = {
 
 export default {
   name: 'ConsoleDisplayer',
+  props: {
+    historyNum: {
+      type: String,
+      default: "-1"
+    },
+    showLevelBtns: {
+      type: Boolean,
+      default: true
+    }
+  },
   data() {
     return {
       maxLocalLogCacheLen: 1000,
@@ -61,16 +88,6 @@ export default {
       maxRetryAttempts: 10,       
       baseRetryDelay: 1000,       
       lastEventId: null as string | null,          
-    }
-  },
-  props: {
-    historyNum: {
-      type: String,
-      default: "-1"
-    },
-    showLevelBtns: {
-      type: Boolean,
-      default: true
     }
   },
   watch: {

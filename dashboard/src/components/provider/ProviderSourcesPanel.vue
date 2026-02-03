@@ -1,9 +1,14 @@
 <template>
-  <v-card class="provider-sources-panel h-100" :class="{ 'is-dark': isDark }" elevation="0">
-    
+  <v-card
+    class="provider-sources-panel h-100"
+    :class="{ 'is-dark': isDark }"
+    elevation="0"
+  >
     <div class="provider-sources-header d-flex align-center justify-space-between px-4 pt-4 pb-2">
       <div class="d-flex align-center ga-2">
-        <h3 class="mb-0">{{ tm('providerSources.title') }}</h3>
+        <h3 class="mb-0">
+          {{ tm('providerSources.title') }}
+        </h3>
       </div>
       <v-menu>
         <template #activator="{ props }">
@@ -31,7 +36,12 @@
     </div>
 
     <div v-if="displayedProviderSources.length > 0">
-      <v-list class="provider-source-list" nav density="compact" lines="two">
+      <v-list
+        class="provider-source-list"
+        nav
+        density="compact"
+        lines="two"
+      >
         <v-list-item
           v-for="source in displayedProviderSources"
           :key="source.isPlaceholder ? `template-${source.templateKey}` : source.id"
@@ -42,20 +52,34 @@
           @click="emitSelectSource(source)"
         >
           <template #prepend>
-            <v-avatar size="32" variant="text" rounded="0">
+            <v-avatar
+              size="32"
+              variant="text"
+              rounded="0"
+            >
               <v-img 
                 v-if="source?.provider" 
                 :src="resolveSourceIcon(source)" 
                 class="provider-icon" 
                 alt="logo" 
                 contain
-              ></v-img>
-              <v-icon v-else size="32" color="medium-emphasis">mdi-creation</v-icon>
+              />
+              <v-icon
+                v-else
+                size="32"
+                color="medium-emphasis"
+              >
+                mdi-creation
+              </v-icon>
             </v-avatar>
           </template>
 
-          <v-list-item-title class="font-weight-bold">{{ getSourceDisplayName(source) }}</v-list-item-title>
-          <v-list-item-subtitle class="text-truncate">{{ source.api_base || 'N/A' }}</v-list-item-subtitle>
+          <v-list-item-title class="font-weight-bold">
+            {{ getSourceDisplayName(source) }}
+          </v-list-item-title>
+          <v-list-item-subtitle class="text-truncate">
+            {{ source.api_base || 'N/A' }}
+          </v-list-item-subtitle>
           
           <template #append>
             <div class="d-flex align-center ga-1">
@@ -66,15 +90,25 @@
                 size="x-small"
                 color="error"
                 @click.stop="emitDeleteSource(source)"
-              ></v-btn>
+              />
             </div>
           </template>
         </v-list-item>
       </v-list>
     </div>
-    <div v-else class="text-center py-8 px-4">
-      <v-icon size="48" color="grey-lighten-1">mdi-api-off</v-icon>
-      <p class="text-grey mt-2">{{ tm('providerSources.empty') }}</p>
+    <div
+      v-else
+      class="text-center py-8 px-4"
+    >
+      <v-icon
+        size="48"
+        color="grey-lighten-1"
+      >
+        mdi-api-off
+      </v-icon>
+      <p class="text-grey mt-2">
+        {{ tm('providerSources.empty') }}
+      </p>
     </div>
   </v-card>
 </template>

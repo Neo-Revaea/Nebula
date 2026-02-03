@@ -7,8 +7,11 @@
       location="top end"
       class="market-fab-badge"
     >
-      <v-tooltip :text="tm('market.cart.title')" location="left">
-        <template v-slot:activator="{ props }">
+      <v-tooltip
+        :text="tm('market.cart.title')"
+        location="left"
+      >
+        <template #activator="{ props }">
           <v-btn
             v-bind="props"
             class="config-floating-btn market-fab-btn"
@@ -17,14 +20,19 @@
             size="x-large"
             @click="cartDialog = true"
           >
-            <v-icon size="32">mdi-cart</v-icon>
+            <v-icon size="32">
+              mdi-cart
+            </v-icon>
           </v-btn>
         </template>
       </v-tooltip>
     </v-badge>
 
-    <v-tooltip :text="tm('market.installPlugin')" location="left">
-      <template v-slot:activator="{ props }">
+    <v-tooltip
+      :text="tm('market.installPlugin')"
+      location="left"
+    >
+      <template #activator="{ props }">
         <v-btn
           v-bind="props"
           class="config-floating-btn market-fab-btn"
@@ -33,29 +41,54 @@
           size="x-large"
           @click="emit('open-install-dialog')"
         >
-          <v-icon size="32">mdi-plus</v-icon>
+          <v-icon size="32">
+            mdi-plus
+          </v-icon>
         </v-btn>
       </template>
     </v-tooltip>
   </div>
 
-  <v-dialog v-model="sourceDialog" max-width="480" scroll-strategy="block" scroll-target="body">
+  <v-dialog
+    v-model="sourceDialog"
+    max-width="480"
+    scroll-strategy="block"
+    scroll-target="body"
+  >
     <v-card style="height: 520px; display: flex; flex-direction: column;">
       <v-card-title class="d-flex align-center">
-        <v-icon size="small" class="mr-2">mdi-source-branch</v-icon>
+        <v-icon
+          size="small"
+          class="mr-2"
+        >
+          mdi-source-branch
+        </v-icon>
         <span class="text-subtitle-1 font-weight-medium">{{ tm('market.source') }}</span>
-        <v-spacer></v-spacer>
+        <v-spacer />
       </v-card-title>
 
-      <v-divider></v-divider>
+      <v-divider />
 
       <v-card-text style="flex: 1; overflow-y: auto;">
-        <v-chip color="primary" variant="tonal" size="small" class="mb-3">
-          <v-icon start size="small">mdi-check</v-icon>
+        <v-chip
+          color="primary"
+          variant="tonal"
+          size="small"
+          class="mb-3"
+        >
+          <v-icon
+            start
+            size="small"
+          >
+            mdi-check
+          </v-icon>
           {{ selectedSourceDisplay }}
         </v-chip>
 
-        <v-list density="compact" class="pa-0">
+        <v-list
+          density="compact"
+          class="pa-0"
+        >
           <v-list-subheader class="font-weight-bold text-caption text-uppercase mb-1">
             {{ tm('market.availableSources') }}
           </v-list-subheader>
@@ -68,13 +101,22 @@
             @click="emit('select-plugin-source', null)"
           >
             <template #prepend>
-              <v-icon icon="mdi-shield-check" size="small" class="mr-2"></v-icon>
+              <v-icon
+                icon="mdi-shield-check"
+                size="small"
+                class="mr-2"
+              />
             </template>
             <v-list-item-title>{{ tm('market.defaultSource') }}</v-list-item-title>
-            <v-list-item-subtitle class="text-caption">{{ tm('market.defaultOfficialSource') }}</v-list-item-subtitle>
+            <v-list-item-subtitle class="text-caption">
+              {{ tm('market.defaultOfficialSource') }}
+            </v-list-item-subtitle>
           </v-list-item>
 
-          <v-divider class="my-2" v-if="customSources.length > 0"></v-divider>
+          <v-divider
+            v-if="customSources.length > 0"
+            class="my-2"
+          />
 
           <v-list-item
             v-for="source in customSources"
@@ -86,24 +128,38 @@
             @click="emit('select-plugin-source', source.url)"
           >
             <template #prepend>
-              <v-icon icon="mdi-link-variant" size="small" class="mr-2"></v-icon>
+              <v-icon
+                icon="mdi-link-variant"
+                size="small"
+                class="mr-2"
+              />
             </template>
             <v-list-item-title>{{ source.name }}</v-list-item-title>
-            <v-list-item-subtitle class="text-caption">{{ source.url }}</v-list-item-subtitle>
+            <v-list-item-subtitle class="text-caption">
+              {{ source.url }}
+            </v-list-item-subtitle>
           </v-list-item>
         </v-list>
 
-          <div
-            class="d-flex align-center justify-center mt-3"
-            style="border: 1px dashed rgba(var(--v-border-color), 0.4); border-radius: 8px; padding: 12px; cursor: pointer;"
-            @click="emit('add-custom-source')"
+        <div
+          class="d-flex align-center justify-center mt-3"
+          style="border: 1px dashed rgba(var(--v-border-color), 0.4); border-radius: 8px; padding: 12px; cursor: pointer;"
+          @click="emit('add-custom-source')"
+        >
+          <v-icon
+            size="small"
+            class="mr-2"
           >
-            <v-icon size="small" class="mr-2">mdi-plus</v-icon>
-            <span class="text-body-2 font-weight-medium">{{ tm('market.addSource') }}</span>
-          </div>
+            mdi-plus
+          </v-icon>
+          <span class="text-body-2 font-weight-medium">{{ tm('market.addSource') }}</span>
+        </div>
       </v-card-text>
 
-      <v-card-actions class="d-flex align-center" style="gap: 8px;">
+      <v-card-actions
+        class="d-flex align-center"
+        style="gap: 8px;"
+      >
         <template v-if="selectedSourceObj">
           <v-btn
             variant="text"
@@ -111,7 +167,12 @@
             color="medium-emphasis"
             @click="emit('edit-custom-source', selectedSourceObj)"
           >
-            <v-icon start size="small">mdi-pencil-outline</v-icon>
+            <v-icon
+              start
+              size="small"
+            >
+              mdi-pencil-outline
+            </v-icon>
             {{ tm('market.editSource') }}
           </v-btn>
           <v-btn
@@ -120,20 +181,40 @@
             color="error"
             @click="emit('remove-custom-source', selectedSourceObj)"
           >
-            <v-icon start size="small">mdi-trash-can-outline</v-icon>
+            <v-icon
+              start
+              size="small"
+            >
+              mdi-trash-can-outline
+            </v-icon>
             {{ tm('market.removeSource') }}
           </v-btn>
         </template>
-        <v-spacer></v-spacer>
-        <v-btn variant="text" color="primary" @click="sourceDialog = false">{{ tm('buttons.close') }}</v-btn>
+        <v-spacer />
+        <v-btn
+          variant="text"
+          color="primary"
+          @click="sourceDialog = false"
+        >
+          {{ tm('buttons.close') }}
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 
   <div class="mt-4 market-page">
-    <div class="d-flex align-center mb-2" style="justify-content: space-between; flex-wrap: wrap; gap: 8px;">
-      <div class="d-flex align-center" style="gap: 6px;">
-        <h2 class="d-flex align-center" style="gap: 8px;">
+    <div
+      class="d-flex align-center mb-2"
+      style="justify-content: space-between; flex-wrap: wrap; gap: 8px;"
+    >
+      <div
+        class="d-flex align-center"
+        style="gap: 6px;"
+      >
+        <h2
+          class="d-flex align-center"
+          style="gap: 8px;"
+        >
           <span>{{ tm('market.allPlugins') }}</span>
           <v-chip
             size="small"
@@ -145,13 +226,24 @@
             {{ filteredMarketPlugins.length }}
           </v-chip>
         </h2>
-        <v-btn icon variant="text" @click="emit('refresh')" :loading="marketLoadingLatched">
+        <v-btn
+          icon
+          variant="text"
+          :loading="marketLoadingLatched"
+          @click="emit('refresh')"
+        >
           <v-icon>mdi-refresh</v-icon>
         </v-btn>
       </div>
 
-      <div class="d-flex align-center" style="gap: 8px; flex-wrap: wrap;">
-        <v-tooltip :text="selectedSourceTooltip" location="top">
+      <div
+        class="d-flex align-center"
+        style="gap: 8px; flex-wrap: wrap;"
+      >
+        <v-tooltip
+          :text="selectedSourceTooltip"
+          location="top"
+        >
           <template #activator="{ props }">
             <v-btn
               v-bind="props"
@@ -162,7 +254,9 @@
               height="40"
               @click="sourceDialog = true"
             >
-              <v-icon size="small">mdi-source-branch</v-icon>
+              <v-icon size="small">
+                mdi-source-branch
+              </v-icon>
               <span class="text-body-2 font-weight-medium text-truncate">{{ selectedSourceDisplay }}</span>
             </v-btn>
           </template>
@@ -176,50 +270,94 @@
           hide-details
           style="max-width: 150px;"
         >
-          <template v-slot:prepend-inner>
-            <v-icon size="small">mdi-sort</v-icon>
+          <template #prepend-inner>
+            <v-icon size="small">
+              mdi-sort
+            </v-icon>
           </template>
         </v-select>
 
         <v-btn
-          icon
           v-if="sortBy !== 'default'"
-          @click="toggleSortOrder"
+          icon
           variant="text"
           density="compact"
+          @click="toggleSortOrder"
         >
-          <v-icon size="small">{{ sortOrder === 'desc' ? 'mdi-sort-descending' : 'mdi-sort-ascending' }}</v-icon>
-          <v-tooltip activator="parent" location="top">
+          <v-icon size="small">
+            {{ sortOrder === 'desc' ? 'mdi-sort-descending' : 'mdi-sort-ascending' }}
+          </v-icon>
+          <v-tooltip
+            activator="parent"
+            location="top"
+          >
             {{ sortOrder === 'desc' ? tm('sort.descending') : tm('sort.ascending') }}
           </v-tooltip>
         </v-btn>
       </div>
     </div>
 
-    <v-dialog v-model="cartDialog" max-width="720" scroll-strategy="block" scroll-target="body">
+    <v-dialog
+      v-model="cartDialog"
+      max-width="720"
+      scroll-strategy="block"
+      scroll-target="body"
+    >
       <v-card>
         <v-card-title class="d-flex align-center justify-space-between px-4 py-3">
-          <div class="d-flex align-center" style="gap: 8px; min-width: 0;">
+          <div
+            class="d-flex align-center"
+            style="gap: 8px; min-width: 0;"
+          >
             <v-icon>mdi-cart</v-icon>
             <span class="text-subtitle-1 font-weight-medium">{{ tm('market.cart.title') }}</span>
-            <v-chip size="small" color="primary" variant="tonal">{{ cartCount }}</v-chip>
+            <v-chip
+              size="small"
+              color="primary"
+              variant="tonal"
+            >
+              {{ cartCount }}
+            </v-chip>
           </div>
 
-          <v-btn icon variant="text" @click="cartDialog = false">
+          <v-btn
+            icon
+            variant="text"
+            @click="cartDialog = false"
+          >
             <v-icon>mdi-close</v-icon>
-            <v-tooltip activator="parent" location="top">{{ tm('buttons.close') }}</v-tooltip>
+            <v-tooltip
+              activator="parent"
+              location="top"
+            >
+              {{ tm('buttons.close') }}
+            </v-tooltip>
           </v-btn>
         </v-card-title>
 
-        <v-divider></v-divider>
+        <v-divider />
 
-        <v-card-text class="px-4 py-4" style="max-height: 60vh; overflow-y: auto;">
-          <v-alert v-if="cartItems.length === 0" density="compact" variant="tonal" color="secondary">
+        <v-card-text
+          class="px-4 py-4"
+          style="max-height: 60vh; overflow-y: auto;"
+        >
+          <v-alert
+            v-if="cartItems.length === 0"
+            density="compact"
+            variant="tonal"
+            color="secondary"
+          >
             {{ tm('market.cart.empty') }}
           </v-alert>
 
-          <v-list v-else density="compact">
-            <v-list-item v-for="plugin in cartItems" :key="getCartKey(plugin)">
+          <v-list
+            v-else
+            density="compact"
+          >
+            <v-list-item
+              v-for="plugin in cartItems"
+              :key="getCartKey(plugin)"
+            >
               <v-list-item-title class="text-body-1 font-weight-medium">
                 {{ displayPluginName(plugin) }}
               </v-list-item-title>
@@ -235,19 +373,33 @@
                   @click="emit('view-readme', plugin)"
                 >
                   <v-icon>mdi-book-open-variant</v-icon>
-                  <v-tooltip activator="parent" location="top">{{ tm('market.cart.viewReadme') }}</v-tooltip>
+                  <v-tooltip
+                    activator="parent"
+                    location="top"
+                  >
+                    {{ tm('market.cart.viewReadme') }}
+                  </v-tooltip>
                 </v-btn>
 
-                <v-btn icon variant="text" @click="emit('toggle-cart', plugin)">
+                <v-btn
+                  icon
+                  variant="text"
+                  @click="emit('toggle-cart', plugin)"
+                >
                   <v-icon>mdi-delete-outline</v-icon>
-                  <v-tooltip activator="parent" location="top">{{ tm('market.cart.remove') }}</v-tooltip>
+                  <v-tooltip
+                    activator="parent"
+                    location="top"
+                  >
+                    {{ tm('market.cart.remove') }}
+                  </v-tooltip>
                 </v-btn>
               </template>
             </v-list-item>
           </v-list>
         </v-card-text>
 
-        <v-divider></v-divider>
+        <v-divider />
 
         <v-card-actions class="px-4 pb-4">
           <v-btn
@@ -258,7 +410,7 @@
           >
             {{ tm('market.cart.clear') }}
           </v-btn>
-          <v-spacer></v-spacer>
+          <v-spacer />
           <v-btn
             color="primary"
             variant="flat"
@@ -280,12 +432,21 @@
           md="6"
           lg="4"
         >
-          <v-skeleton-loader type="card" class="rounded-lg" />
+          <v-skeleton-loader
+            type="card"
+            class="rounded-lg"
+          />
         </v-col>
       </template>
 
       <template v-else>
-        <v-col v-for="plugin in paginatedPlugins" :key="plugin.name" cols="12" md="6" lg="4">
+        <v-col
+          v-for="plugin in paginatedPlugins"
+          :key="plugin.name"
+          cols="12"
+          md="6"
+          lg="4"
+        >
           <ItemCard
             :item="toItemCardPlugin(plugin)"
             title-field="_title"
@@ -298,18 +459,35 @@
             style="height: 15rem;"
           >
             <template #item-details>
-              <v-chip v-if="plugin?.pinned" color="warning" size="small" label style="position: absolute; right: 8px; top: 8px; z-index: 10; height: 26px; padding: 0 10px; font-weight: bold;">
+              <v-chip
+                v-if="plugin?.pinned"
+                color="warning"
+                size="small"
+                label
+                style="position: absolute; right: 8px; top: 8px; z-index: 10; height: 26px; padding: 0 10px; font-weight: bold;"
+              >
                 {{ tm('market.recommended') }}
               </v-chip>
 
               <div style="padding: 12px; padding-bottom: 8px; display: flex; gap: 12px; width: 100%; height: 100%; overflow: hidden;">
                 <div style="flex-shrink: 0;">
-                  <img :src="plugin?.logo || defaultPluginIcon" :alt="plugin.name" style="height: 100px; width: 100px; border-radius: 8px; object-fit: cover;" />
+                  <img
+                    :src="plugin?.logo || defaultPluginIcon"
+                    :alt="plugin.name"
+                    style="height: 100px; width: 100px; border-radius: 8px; object-fit: cover;"
+                  >
                 </div>
 
                 <div style="flex: 1; overflow: hidden; display: flex; flex-direction: column;">
-                  <div class="d-flex align-center" style="gap: 4px; margin-bottom: 6px;">
-                    <v-icon icon="mdi-account" size="x-small" style="color: rgba(var(--v-theme-on-surface), 0.5);"></v-icon>
+                  <div
+                    class="d-flex align-center"
+                    style="gap: 4px; margin-bottom: 6px;"
+                  >
+                    <v-icon
+                      icon="mdi-account"
+                      size="x-small"
+                      style="color: rgba(var(--v-theme-on-surface), 0.5);"
+                    />
                     <a
                       v-if="plugin?.social_link"
                       :href="plugin.social_link"
@@ -326,8 +504,15 @@
                     >
                       {{ plugin.author }}
                     </span>
-                    <div class="d-flex align-center text-subtitle-2 ml-2" style="color: rgba(var(--v-theme-on-surface), 0.7);">
-                      <v-icon icon="mdi-source-branch" size="x-small" style="margin-right: 2px;"></v-icon>
+                    <div
+                      class="d-flex align-center text-subtitle-2 ml-2"
+                      style="color: rgba(var(--v-theme-on-surface), 0.7);"
+                    >
+                      <v-icon
+                        icon="mdi-source-branch"
+                        size="x-small"
+                        style="margin-right: 2px;"
+                      />
                       <span>{{ plugin.version }}</span>
                     </div>
                   </div>
@@ -336,13 +521,32 @@
                     {{ formatDescription(plugin.desc) }}
                   </div>
 
-                  <div class="d-flex align-center" style="gap: 8px; margin-top: auto;">
-                    <div v-if="plugin.stars !== undefined" class="d-flex align-center text-subtitle-2" style="color: rgba(var(--v-theme-on-surface), 0.7);">
-                      <v-icon icon="mdi-star" size="x-small" style="margin-right: 2px;"></v-icon>
+                  <div
+                    class="d-flex align-center"
+                    style="gap: 8px; margin-top: auto;"
+                  >
+                    <div
+                      v-if="plugin.stars !== undefined"
+                      class="d-flex align-center text-subtitle-2"
+                      style="color: rgba(var(--v-theme-on-surface), 0.7);"
+                    >
+                      <v-icon
+                        icon="mdi-star"
+                        size="x-small"
+                        style="margin-right: 2px;"
+                      />
                       <span>{{ plugin.stars }}</span>
                     </div>
-                    <div v-if="plugin.updated_at" class="d-flex align-center text-subtitle-2" style="color: rgba(var(--v-theme-on-surface), 0.7);">
-                      <v-icon icon="mdi-clock-outline" size="x-small" style="margin-right: 2px;"></v-icon>
+                    <div
+                      v-if="plugin.updated_at"
+                      class="d-flex align-center text-subtitle-2"
+                      style="color: rgba(var(--v-theme-on-surface), 0.7);"
+                    >
+                      <v-icon
+                        icon="mdi-clock-outline"
+                        size="x-small"
+                        style="margin-right: 2px;"
+                      />
                       <span>{{ formatUpdatedAt(plugin.updated_at) }}</span>
                     </div>
                   </div>
@@ -361,15 +565,32 @@
               >
                 {{ tag === 'danger' ? tm('tags.danger') : tag }}
               </v-chip>
-              <v-menu v-if="plugin.tags && plugin.tags.length > 2" open-on-hover offset-y>
-                <template v-slot:activator="{ props: menuProps }">
-                  <v-chip v-bind="menuProps" color="grey" label size="x-small" style="height: 20px; cursor: pointer;">
+              <v-menu
+                v-if="plugin.tags && plugin.tags.length > 2"
+                open-on-hover
+                offset-y
+              >
+                <template #activator="{ props: menuProps }">
+                  <v-chip
+                    v-bind="menuProps"
+                    color="grey"
+                    label
+                    size="x-small"
+                    style="height: 20px; cursor: pointer;"
+                  >
                     +{{ plugin.tags.length - 2 }}
                   </v-chip>
                 </template>
                 <v-list density="compact">
-                  <v-list-item v-for="tag in plugin.tags.slice(2)" :key="tag">
-                    <v-chip :color="tag === 'danger' ? 'error' : 'primary'" label size="small">
+                  <v-list-item
+                    v-for="tag in plugin.tags.slice(2)"
+                    :key="tag"
+                  >
+                    <v-chip
+                      :color="tag === 'danger' ? 'error' : 'primary'"
+                      label
+                      size="small"
+                    >
                       {{ tag === 'danger' ? tm('tags.danger') : tag }}
                     </v-chip>
                   </v-list-item>
@@ -378,7 +599,10 @@
             </template>
 
             <template #actions>
-              <v-tooltip :text="isInCart(plugin) ? tm('market.cart.remove') : tm('market.cart.add')" location="top">
+              <v-tooltip
+                :text="isInCart(plugin) ? tm('market.cart.remove') : tm('market.cart.add')"
+                location="top"
+              >
                 <template #activator="{ props: tipProps }">
                   <v-btn
                     v-bind="tipProps"
@@ -390,13 +614,27 @@
                     :disabled="!!plugin?.installed"
                     @click="emit('toggle-cart', plugin)"
                   >
-                    <v-icon size="20">{{ isInCart(plugin) ? 'mdi-cart-remove' : 'mdi-cart-plus' }}</v-icon>
+                    <v-icon size="20">
+                      {{ isInCart(plugin) ? 'mdi-cart-remove' : 'mdi-cart-plus' }}
+                    </v-icon>
                   </v-btn>
                 </template>
               </v-tooltip>
 
-              <v-btn v-if="plugin?.repo" color="secondary" size="70" variant="tonal" :href="plugin.repo" target="_blank" style="height: 32px;">
-                <v-icon icon="mdi-github" start size="20"></v-icon>
+              <v-btn
+                v-if="plugin?.repo"
+                color="secondary"
+                size="70"
+                variant="tonal"
+                :href="plugin.repo"
+                target="_blank"
+                style="height: 32px;"
+              >
+                <v-icon
+                  icon="mdi-github"
+                  start
+                  size="20"
+                />
                 {{ tm('buttons.viewRepo') }}
               </v-btn>
 
@@ -404,13 +642,20 @@
                 v-if="!plugin?.installed"
                 color="primary"
                 size="50"
-                @click="emit('handle-install-plugin', plugin)"
                 variant="flat"
                 style="height: 32px;"
+                @click="emit('handle-install-plugin', plugin)"
               >
                 {{ tm('buttons.install') }}
               </v-btn>
-              <v-btn v-else color="success" size="70" variant="tonal" disabled style="height: 32px;">
+              <v-btn
+                v-else
+                color="success"
+                size="70"
+                variant="tonal"
+                disabled
+                style="height: 32px;"
+              >
                 ✓ {{ tm('status.installed') }}
               </v-btn>
             </template>
@@ -419,32 +664,50 @@
       </template>
     </v-row>
 
-    <div class="d-flex justify-center mt-4" v-if="totalPages > 1">
+    <div
+      v-if="totalPages > 1"
+      class="d-flex justify-center mt-4"
+    >
       <v-pagination
         v-model="currentPageModel"
         :length="totalPages"
         :total-visible="paginationTotalVisible"
         :size="paginationSize"
-      ></v-pagination>
+      />
     </div>
   </div>
 
   <!-- 危险插件确认对话框（下沉） -->
-  <v-dialog v-model="dangerConfirmDialogModel" width="500" persistent>
+  <v-dialog
+    v-model="dangerConfirmDialogModel"
+    width="500"
+    persistent
+  >
     <v-card>
       <v-card-title class="text-h5 d-flex align-center">
-        <v-icon color="warning" class="mr-2">mdi-alert-circle</v-icon>
+        <v-icon
+          color="warning"
+          class="mr-2"
+        >
+          mdi-alert-circle
+        </v-icon>
         {{ tm('dialogs.danger_warning.title') }}
       </v-card-title>
       <v-card-text>
         <div>{{ tm('dialogs.danger_warning.message') }}</div>
       </v-card-text>
       <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn color="grey" @click="emit('cancel-danger-install')">
+        <v-spacer />
+        <v-btn
+          color="grey"
+          @click="emit('cancel-danger-install')"
+        >
           {{ tm('dialogs.danger_warning.cancel') }}
         </v-btn>
-        <v-btn color="warning" @click="emit('confirm-danger-install')">
+        <v-btn
+          color="warning"
+          @click="emit('confirm-danger-install')"
+        >
           {{ tm('dialogs.danger_warning.confirm') }}
         </v-btn>
       </v-card-actions>
@@ -452,9 +715,14 @@
   </v-dialog>
 
   <!-- 添加/编辑自定义插件源对话框（下沉） -->
-  <v-dialog v-model="showSourceDialogModel" width="500">
+  <v-dialog
+    v-model="showSourceDialogModel"
+    width="500"
+  >
     <v-card>
-      <v-card-title class="text-h5">{{ props.editingSource ? tm('market.editSource') : tm('market.addSource') }}</v-card-title>
+      <v-card-title class="text-h5">
+        {{ props.editingSource ? tm('market.editSource') : tm('market.addSource') }}
+      </v-card-title>
       <v-card-text>
         <div class="pa-2">
           <v-text-field
@@ -465,7 +733,7 @@
             hide-details
             class="mb-4"
             placeholder="我的插件源"
-          ></v-text-field>
+          />
 
           <v-text-field
             v-model="sourceUrlModel"
@@ -474,7 +742,7 @@
             prepend-inner-icon="mdi-link"
             hide-details
             placeholder="https://example.com/plugins.json"
-          ></v-text-field>
+          />
 
           <div class="text-caption text-medium-emphasis mt-2">
             {{ tm('messages.enterJsonUrl') }}
@@ -482,31 +750,68 @@
         </div>
       </v-card-text>
       <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn color="grey" variant="text" @click="showSourceDialogModel = false">{{ tm('buttons.cancel') }}</v-btn>
-        <v-btn color="primary" variant="text" @click="emit('save-custom-source')">{{ tm('buttons.save') }}</v-btn>
+        <v-spacer />
+        <v-btn
+          color="grey"
+          variant="text"
+          @click="showSourceDialogModel = false"
+        >
+          {{ tm('buttons.cancel') }}
+        </v-btn>
+        <v-btn
+          color="primary"
+          variant="text"
+          @click="emit('save-custom-source')"
+        >
+          {{ tm('buttons.save') }}
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 
   <!-- 删除插件源确认对话框（下沉） -->
-  <v-dialog v-model="showRemoveSourceDialogModel" width="400">
+  <v-dialog
+    v-model="showRemoveSourceDialogModel"
+    width="400"
+  >
     <v-card>
       <v-card-title class="text-h5 d-flex align-center">
-        <v-icon color="warning" class="mr-2">mdi-alert-circle</v-icon>
+        <v-icon
+          color="warning"
+          class="mr-2"
+        >
+          mdi-alert-circle
+        </v-icon>
         {{ tm('dialogs.uninstall.title') }}
       </v-card-title>
       <v-card-text>
         <div>{{ tm('market.confirmRemoveSource') }}</div>
-        <div v-if="props.sourceToRemove" class="mt-2">
+        <div
+          v-if="props.sourceToRemove"
+          class="mt-2"
+        >
           <strong>{{ props.sourceToRemove.name }}</strong>
-          <div class="text-caption">{{ props.sourceToRemove.url }}</div>
+          <div class="text-caption">
+            {{ props.sourceToRemove.url }}
+          </div>
         </div>
       </v-card-text>
       <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn color="grey" variant="text" @click="showRemoveSourceDialogModel = false">{{ tm('buttons.cancel') }}</v-btn>
-        <v-btn color="error" variant="text" @click="emit('confirm-remove-source')">{{ tm('buttons.deleteSource') }}</v-btn>
+        <v-spacer />
+        <v-btn
+          color="grey"
+          variant="text"
+          @click="showRemoveSourceDialogModel = false"
+        >
+          {{ tm('buttons.cancel') }}
+        </v-btn>
+        <v-btn
+          color="error"
+          variant="text"
+          @click="emit('confirm-remove-source')"
+        >
+          {{ tm('buttons.deleteSource') }}
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>

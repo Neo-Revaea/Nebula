@@ -111,84 +111,116 @@ onUnmounted(() => {
 <template>
   <main class="mui-login">
     <div class="mui-login__container">
-        <figure
-          class="mui-login__visual"
-          :class="{ 'is-loaded': heroImageLoaded }"
-          aria-hidden="true"
+      <figure
+        class="mui-login__visual"
+        :class="{ 'is-loaded': heroImageLoaded }"
+        aria-hidden="true"
+      >
+        <Transition name="carousel-fade">
+          <img
+            v-if="currentImageUrl"
+            :key="currentImageUrl"
+            :src="currentImageUrl"
+            alt="Random Wallpaper"
+            decoding="async"
+            loading="eager"
+            @load="onHeroImageLoad"
+          >
+        </Transition>
+
+        <div class="visual-overlay" />
+
+        <div
+          class="visual-controls"
+          role="toolbar"
+          aria-label="Login interface controls"
         >
-          <Transition name="carousel-fade">
-            <img
-              v-if="currentImageUrl"
-              :key="currentImageUrl"
-              :src="currentImageUrl"
-              alt="Random Wallpaper"
-              decoding="async"
-              loading="eager"
-              @load="onHeroImageLoad"
+          <LanguageSwitcher
+            class="visual-controls__language"
+            :icon-color="themeIconColor"
+          />
+          <v-divider
+            vertical
+            class="visual-controls__divider"
+          />
+          <v-btn
+            class="visual-controls__theme-btn"
+            icon
+            variant="text"
+            size="small"
+            :aria-label="isDarkTheme ? switchToLightLabel : switchToDarkLabel"
+            @click="toggleTheme"
+          >
+            <v-icon
+              size="18"
+              :color="themeIconColor"
             >
-          </Transition>
-
-          <div class="visual-overlay"></div>
-
-          <div class="visual-controls" role="toolbar" aria-label="Login interface controls">
-            <LanguageSwitcher class="visual-controls__language" :icon-color="themeIconColor" />
-            <v-divider vertical class="visual-controls__divider" />
-            <v-btn
-              class="visual-controls__theme-btn"
-              icon
-              variant="text"
-              size="small"
-              :aria-label="isDarkTheme ? switchToLightLabel : switchToDarkLabel"
-              @click="toggleTheme"
+              {{ isDarkTheme ? 'mdi-white-balance-sunny' : 'mdi-weather-night' }}
+            </v-icon>
+            <v-tooltip
+              activator="parent"
+              location="top"
             >
-              <v-icon size="18" :color="themeIconColor">
-                {{ isDarkTheme ? 'mdi-white-balance-sunny' : 'mdi-weather-night' }}
-              </v-icon>
-              <v-tooltip activator="parent" location="top">
-                {{ isDarkTheme ? switchToLightLabel : switchToDarkLabel }}
-              </v-tooltip>
-            </v-btn>
-          </div>
-        </figure>
+              {{ isDarkTheme ? switchToLightLabel : switchToDarkLabel }}
+            </v-tooltip>
+          </v-btn>
+        </div>
+      </figure>
 
-        <section class="mui-login__panel" aria-labelledby="loginTitle">
-          <div class="mui-login__copy">
-            <div class="mui-login__hero">
-              <div class="header-title login-header-title">
-                <img
-                  src="@/assets/images/icon-no-shadow.svg"
-                  alt="AstrBot Logo"
-                  class="header-logo login-header-logo"
-                  width="28"
-                  height="28"
-                  decoding="async"
-                  draggable="false"
+      <section
+        class="mui-login__panel"
+        aria-labelledby="loginTitle"
+      >
+        <div class="mui-login__copy">
+          <div class="mui-login__hero">
+            <div class="header-title login-header-title">
+              <img
+                src="@/assets/images/icon-no-shadow.svg"
+                alt="AstrBot Logo"
+                class="header-logo login-header-logo"
+                width="28"
+                height="28"
+                decoding="async"
+                draggable="false"
+              >
+              <div class="title-wrapper">
+                <div
+                  class="animated-title"
+                  role="heading"
+                  :aria-label="headerTitle"
                 >
-                <div class="title-wrapper">
-                  <div class="animated-title" role="heading" :aria-label="headerTitle">
-                    <span
-                      v-for="(char, index) in titleChars"
-                      :key="`${char}-${index}`"
-                      class="title-char"
-                      :style="{ animationDelay: `${index * 0.06}s` }"
-                      aria-hidden="true"
-                    >{{ char }}</span>
-                  </div>
+                  <span
+                    v-for="(char, index) in titleChars"
+                    :key="`${char}-${index}`"
+                    class="title-char"
+                    :style="{ animationDelay: `${index * 0.06}s` }"
+                    aria-hidden="true"
+                  >{{ char }}</span>
                 </div>
               </div>
             </div>
-
-            <h1 id="loginTitle" class="mui-login__title">
-              <v-icon size="24" class="title-icon" color="primary">mdi-emoticon-happy-outline</v-icon>
-              {{ welcomeTitle }}
-            </h1>
-            
-            <div class="mt-4">
-                <AuthLogin />
-            </div>
           </div>
-        </section>
-      </div>
+
+          <h1
+            id="loginTitle"
+            class="mui-login__title"
+          >
+            <v-icon
+              size="24"
+              class="title-icon"
+              color="primary"
+            >
+              mdi-emoticon-happy-outline
+            </v-icon>
+            {{ welcomeTitle }}
+          </h1>
+            
+          <div class="mt-4">
+            <AuthLogin />
+          </div>
+        </div>
+      </section>
+    </div>
   </main>
 </template>
 

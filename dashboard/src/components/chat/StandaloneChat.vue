@@ -1,61 +1,92 @@
 <template>
-    <v-card class="standalone-chat-card" elevation="0" rounded="0">
-        <v-card-text class="standalone-chat-container">
-            <div class="chat-layout">
-                <!-- 聊天内容区域 -->
-                <div class="chat-content-panel">
-                    <MessageList v-if="messages && messages.length > 0" :messages="messages" :isDark="isDark"
-                        :isStreaming="isStreaming || isConvRunning" @openImagePreview="openImagePreview"
-                        ref="messageList" />
-                    <WelcomeView v-else bot-name="Nebula">
-                        <p class="text-caption text-medium-emphasis mt-2 text-center">
-                            测试配置: {{ configId || 'default' }}
-                        </p>
-                    </WelcomeView>
+  <v-card
+    class="standalone-chat-card"
+    elevation="0"
+    rounded="0"
+  >
+    <v-card-text class="standalone-chat-container">
+      <div class="chat-layout">
+        <!-- 聊天内容区域 -->
+        <div class="chat-content-panel">
+          <MessageList
+            v-if="messages && messages.length > 0"
+            ref="messageList"
+            :messages="messages"
+            :is-dark="isDark"
+            :is-streaming="isStreaming || isConvRunning"
+            @open-image-preview="openImagePreview"
+          />
+          <WelcomeView
+            v-else
+            bot-name="Nebula"
+          >
+            <p class="text-caption text-medium-emphasis mt-2 text-center">
+              测试配置: {{ configId || 'default' }}
+            </p>
+          </WelcomeView>
 
-                    <!-- 输入区域 -->
-                    <ChatInput
-                        v-model:prompt="prompt"
-                        :stagedImagesUrl="stagedImagesUrl"
-                        :stagedAudioUrl="stagedAudioUrl"
-                        :disabled="isStreaming"
-                        :enableStreaming="enableStreaming"
-                        :isRecording="isRecording"
-                        :session-id="currSessionId || null"
-                        :current-session="getCurrentSession"
-                        :config-id="configId"
-                        @send="handleSendMessage"
-                        @toggleStreaming="toggleStreaming"
-                        @removeImage="removeImage"
-                        @removeAudio="removeAudio"
-                        @startRecording="handleStartRecording"
-                        @stopRecording="handleStopRecording"
-                        @pasteImage="handlePaste"
-                        @fileSelect="handleFileSelect"
-                        @openLiveMode=""
-                        ref="chatInputRef"
-                    />
-                </div>
-            </div>
-        </v-card-text>
+          <!-- 输入区域 -->
+          <ChatInput
+            v-model:prompt="prompt"
+            :staged-images-url="stagedImagesUrl"
+            :staged-audio-url="stagedAudioUrl"
+            :disabled="isStreaming"
+            :enable-streaming="enableStreaming"
+            :is-recording="isRecording"
+            :session-id="currSessionId || null"
+            :current-session="getCurrentSession"
+            :config-id="configId"
+            ref="chatInputRef"
+            @send="handleSendMessage"
+            @toggle-streaming="toggleStreaming"
+            @remove-image="removeImage"
+            @remove-audio="removeAudio"
+            @start-recording="handleStartRecording"
+            @stop-recording="handleStopRecording"
+            @paste-image="handlePaste"
+            @file-select="handleFileSelect"
+          />
+        </div>
+      </div>
+    </v-card-text>
+  </v-card>
+
+  <!-- 图片预览对话框 -->
+  <v-dialog
+    v-model="imagePreviewDialog"
+    max-width="90vw"
+    max-height="90vh"
+    scrollable
+  >
+    <v-card
+      class="image-preview-card"
+      elevation="8"
+    >
+      <v-card-title class="image-preview-header d-flex justify-space-between align-center pa-4">
+        <span>{{ t('core.common.imagePreview') }}</span>
+        <v-btn
+          icon="mdi-close"
+          variant="text"
+          @click="imagePreviewDialog = false"
+        />
+      </v-card-title>
+      <v-card-text class="image-preview-body text-center pa-4">
+        <img
+          :src="previewImageUrl"
+          class="preview-image-large"
+        >
+      </v-card-text>
+      <v-card-actions class="image-preview-footer pa-2">
+        <v-spacer />
+        <v-btn
+          variant="text"
+          @click="imagePreviewDialog = false"
+        >
+          {{ t('core.common.close') }}
+        </v-btn>
+      </v-card-actions>
     </v-card>
-
-    <!-- 图片预览对话框 -->
-    <v-dialog v-model="imagePreviewDialog" max-width="90vw" max-height="90vh" scrollable>
-        <v-card class="image-preview-card" elevation="8">
-            <v-card-title class="image-preview-header d-flex justify-space-between align-center pa-4">
-                <span>{{ t('core.common.imagePreview') }}</span>
-                <v-btn icon="mdi-close" variant="text" @click="imagePreviewDialog = false" />
-            </v-card-title>
-            <v-card-text class="image-preview-body text-center pa-4">
-                <img :src="previewImageUrl" class="preview-image-large" />
-            </v-card-text>
-            <v-card-actions class="image-preview-footer pa-2">
-                <v-spacer />
-                <v-btn variant="text" @click="imagePreviewDialog = false">{{ t('core.common.close') }}</v-btn>
-            </v-card-actions>
-        </v-card>
-    </v-dialog>
+  </v-dialog>
 </template>
 
 <script setup lang="ts">

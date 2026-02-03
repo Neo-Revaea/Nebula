@@ -1,50 +1,77 @@
 <template>
-    <ItemCard :item="folder" title-field="name" :show-switch="false" title-class="text-h3" :show-edit-button="false"
-        :show-delete-button="false" :pin-actions="false" :no-padding="true" class="folder-card-fixed"
-        :class="{ 'drag-over': isDragOver }"
-        @click="$emit('click')"
-        @dragover.prevent="handleDragOver" @dragleave="handleDragLeave" @drop.prevent="handleDrop">
-        <template #title-prepend>
-            <v-icon size="20" color="amber-darken-2">mdi-folder</v-icon>
-        </template>
+  <ItemCard
+    :item="folder"
+    title-field="name"
+    :show-switch="false"
+    title-class="text-h3"
+    :show-edit-button="false"
+    :show-delete-button="false"
+    :pin-actions="false"
+    :no-padding="true"
+    class="folder-card-fixed"
+    :class="{ 'drag-over': isDragOver }"
+    @click="$emit('click')"
+    @dragover.prevent="handleDragOver"
+    @dragleave="handleDragLeave"
+    @drop.prevent="handleDrop"
+  >
+    <template #title-prepend>
+      <v-icon
+        size="20"
+        color="amber-darken-2"
+      >
+        mdi-folder
+      </v-icon>
+    </template>
 
-        <template #item-details>
-            <div class="folder-content-container">
-                <div v-if="folder.description" class="folder-description text-body-2 text-medium-emphasis">
-                    {{ folder.description }}
-                </div>
-            </div>
-        </template>
+    <template #item-details>
+      <div class="folder-content-container">
+        <div
+          v-if="folder.description"
+          class="folder-description text-body-2 text-medium-emphasis"
+        >
+          {{ folder.description }}
+        </div>
+      </div>
+    </template>
 
-        <template #actions>
-            <v-btn variant="tonal" color="secondary" size="small" rounded="xl" @click.stop="$emit('open')">
-                {{ tm('folder.contextMenu.open') }}
-            </v-btn>
+    <template #actions>
+      <v-btn
+        variant="tonal"
+        color="secondary"
+        size="small"
+        rounded="xl"
+        @click.stop="$emit('open')"
+      >
+        {{ tm('folder.contextMenu.open') }}
+      </v-btn>
 
-            <v-menu location="bottom end">
-                <template #activator="{ props }">
-                    <v-btn
-                        v-bind="props"
-                        icon="mdi-dots-horizontal"
-                        variant="text"
-                        size="small"
-                        @click.stop
-                    />
-                </template>
-                <v-list density="compact">
-                    <v-list-item @click="$emit('rename')">
-                        <v-list-item-title>{{ tm('folder.contextMenu.rename') }}</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item @click="$emit('move')">
-                        <v-list-item-title>{{ tm('folder.contextMenu.moveTo') }}</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item @click="$emit('delete')">
-                        <v-list-item-title class="text-error">{{ tm('folder.contextMenu.delete') }}</v-list-item-title>
-                    </v-list-item>
-                </v-list>
-            </v-menu>
+      <v-menu location="bottom end">
+        <template #activator="{ props }">
+          <v-btn
+            v-bind="props"
+            icon="mdi-dots-horizontal"
+            variant="text"
+            size="small"
+            @click.stop
+          />
         </template>
-    </ItemCard>
+        <v-list density="compact">
+          <v-list-item @click="$emit('rename')">
+            <v-list-item-title>{{ tm('folder.contextMenu.rename') }}</v-list-item-title>
+          </v-list-item>
+          <v-list-item @click="$emit('move')">
+            <v-list-item-title>{{ tm('folder.contextMenu.moveTo') }}</v-list-item-title>
+          </v-list-item>
+          <v-list-item @click="$emit('delete')">
+            <v-list-item-title class="text-error">
+              {{ tm('folder.contextMenu.delete') }}
+            </v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+    </template>
+  </ItemCard>
 </template>
 
 <script lang="ts">

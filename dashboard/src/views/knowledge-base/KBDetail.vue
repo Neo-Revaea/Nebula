@@ -10,8 +10,13 @@
       <div class="kb-title">
         <span class="kb-emoji">{{ kb.emoji || '📚' }}</span>
         <div class="kb-title-text">
-          <h1 class="text-h4">{{ kb.kb_name }}</h1>
-          <p v-if="kb.description" class="text-subtitle-1 text-medium-emphasis">
+          <h1 class="text-h4">
+            {{ kb.kb_name }}
+          </h1>
+          <p
+            v-if="kb.description"
+            class="text-subtitle-1 text-medium-emphasis"
+          >
             {{ kb.description }}
           </p>
         </div>
@@ -19,40 +24,77 @@
     </div>
 
     <!-- 加载状态 -->
-    <div v-if="loading" class="loading-container">
-      <v-progress-circular indeterminate color="primary" size="64" />
+    <div
+      v-if="loading"
+      class="loading-container"
+    >
+      <v-progress-circular
+        indeterminate
+        color="primary"
+        size="64"
+      />
     </div>
 
     <!-- 主内容 -->
-    <div v-else class="kb-content">
+    <div
+      v-else
+      class="kb-content"
+    >
       <!-- 标签页 -->
-      <v-tabs v-model="activeTab" class="mb-6" color="primary">
+      <v-tabs
+        v-model="activeTab"
+        class="mb-6"
+        color="primary"
+      >
         <v-tab value="overview">
-          <v-icon start>mdi-information-outline</v-icon>
+          <v-icon start>
+            mdi-information-outline
+          </v-icon>
           {{ t('tabs.overview') }}
         </v-tab>
         <v-tab value="documents">
-          <v-icon start>mdi-file-document-multiple</v-icon>
+          <v-icon start>
+            mdi-file-document-multiple
+          </v-icon>
           {{ t('tabs.documents') }}
-          <v-chip class="ml-2" size="small" variant="tonal">{{ kb.doc_count || 0 }}</v-chip>
+          <v-chip
+            class="ml-2"
+            size="small"
+            variant="tonal"
+          >
+            {{ kb.doc_count || 0 }}
+          </v-chip>
         </v-tab>
         <v-tab value="retrieval">
-          <v-icon start>mdi-magnify</v-icon>
+          <v-icon start>
+            mdi-magnify
+          </v-icon>
           {{ t('tabs.retrieval') }}
         </v-tab>
         <v-tab value="settings">
-          <v-icon start>mdi-cog</v-icon>
+          <v-icon start>
+            mdi-cog
+          </v-icon>
           {{ t('tabs.settings') }}
         </v-tab>
       </v-tabs>
 
       <!-- 标签页内容 -->
-      <v-window v-model="activeTab" style="padding: 8px;">
+      <v-window
+        v-model="activeTab"
+        style="padding: 8px;"
+      >
         <!-- 概览 -->
         <v-window-item value="overview">
           <v-row>
-            <v-col cols="12" md="6">
-              <v-card elevation="1" class="soft-stat-card">
+            <v-col
+              cols="12"
+              md="6"
+            >
+              <v-card
+                elevation="1"
+                class="soft-stat-card"
+              >
                 <v-card-title>{{ t('overview.title') }}</v-card-title>
                 <v-divider />
                 <v-card-text>
@@ -101,31 +143,58 @@
               </v-card>
             </v-col>
 
-            <v-col cols="12" md="6">
-              <v-card elevation="1" class="soft-stat-card mb-4">
+            <v-col
+              cols="12"
+              md="6"
+            >
+              <v-card
+                elevation="1"
+                class="soft-stat-card mb-4"
+              >
                 <v-card-title>{{ t('overview.stats') }}</v-card-title>
                 <v-divider />
                 <v-card-text>
                   <v-row>
                     <v-col cols="6">
                       <div class="stat-box">
-                        <v-icon size="48" color="primary">mdi-file-document</v-icon>
-                        <div class="stat-value">{{ kb.doc_count || 0 }}</div>
-                        <div class="stat-label">{{ t('overview.docCount') }}</div>
+                        <v-icon
+                          size="48"
+                          color="primary"
+                        >
+                          mdi-file-document
+                        </v-icon>
+                        <div class="stat-value">
+                          {{ kb.doc_count || 0 }}
+                        </div>
+                        <div class="stat-label">
+                          {{ t('overview.docCount') }}
+                        </div>
                       </div>
                     </v-col>
                     <v-col cols="6">
                       <div class="stat-box">
-                        <v-icon size="48" color="secondary">mdi-text-box</v-icon>
-                        <div class="stat-value">{{ kb.chunk_count || 0 }}</div>
-                        <div class="stat-label">{{ t('overview.chunkCount') }}</div>
+                        <v-icon
+                          size="48"
+                          color="secondary"
+                        >
+                          mdi-text-box
+                        </v-icon>
+                        <div class="stat-value">
+                          {{ kb.chunk_count || 0 }}
+                        </div>
+                        <div class="stat-label">
+                          {{ t('overview.chunkCount') }}
+                        </div>
                       </div>
                     </v-col>
                   </v-row>
                 </v-card-text>
               </v-card>
 
-              <v-card elevation="1" class="soft-stat-card">
+              <v-card
+                elevation="1"
+                class="soft-stat-card"
+              >
                 <v-card-title>{{ t('overview.embeddingModel') }}</v-card-title>
                 <v-divider />
                 <v-card-text>
@@ -154,23 +223,36 @@
 
         <!-- 文档管理 -->
         <v-window-item value="documents">
-          <DocumentsTab :kb-id="kbId" :kb="kb" @refresh="loadKB" />
+          <DocumentsTab
+            :kb-id="kbId"
+            :kb="kb"
+            @refresh="loadKB"
+          />
         </v-window-item>
 
         <!-- 知识库检索 -->
         <v-window-item value="retrieval">
-          <RetrievalTab :kb-id="kbId" :kb-name="kb.kb_name"/>
+          <RetrievalTab
+            :kb-id="kbId"
+            :kb-name="kb.kb_name"
+          />
         </v-window-item>
 
         <!-- 设置 -->
         <v-window-item value="settings">
-          <SettingsTab :kb="kb" @updated="loadKB" />
+          <SettingsTab
+            :kb="kb"
+            @updated="loadKB"
+          />
         </v-window-item>
       </v-window>
     </div>
 
     <!-- 消息提示 -->
-    <v-snackbar v-model="snackbar.show" :color="snackbar.color">
+    <v-snackbar
+      v-model="snackbar.show"
+      :color="snackbar.color"
+    >
       {{ snackbar.text }}
     </v-snackbar>
   </div>

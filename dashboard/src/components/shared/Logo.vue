@@ -2,14 +2,20 @@
   <div class="logo-container">
     <div class="logo-content">
       <div class="logo-image">
-        <img width="110" src="@/assets/images/nebula_logo_mini.webp" alt="Nebula Logo">
+        <img
+          width="110"
+          src="@/assets/images/nebula_logo_mini.webp"
+          alt="Nebula Logo"
+        >
       </div>
       <div class="logo-text">
         <h2 
           class="logo-title"
           v-html="formatTitle(title || t('core.header.logoTitle'))"
-        ></h2>
-        <h4 class="hint-text logo-subtitle">{{ subtitle || t('core.header.accountDialog.title') }}</h4>
+        />
+        <h4 class="hint-text logo-subtitle">
+          {{ subtitle || t('core.header.accountDialog.title') }}
+        </h4>
       </div>
     </div>
   </div>

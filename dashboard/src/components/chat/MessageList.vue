@@ -1,183 +1,279 @@
 <template>
-    <div class="messages-container" ref="messageContainer" :class="{ 'is-dark': isDark }">
-        <!-- 加载指示器 -->
-        <div v-if="isLoadingMessages" class="loading-overlay" :class="{ 'is-dark': isDark }">
-            <v-progress-circular indeterminate size="48" width="4" color="primary"></v-progress-circular>
-        </div>
-        <!-- 聊天消息列表 -->
-        <div class="message-list" :class="{ 'loading-blur': isLoadingMessages }" @mouseup="handleTextSelection">
-            <div class="message-item fade-in" v-for="(msg, index) in messages" :key="index" :class="{ 'is-last-actionable': isLastActionableMessage(index) }">
-                <!-- 用户消息 -->
-                <div v-if="msg.content.type == 'user'" class="user-message">
-                    <div class="user-message-content">
-                        <div class="message-bubble user-bubble" :class="{ 'has-audio': hasAudio(msg.content.message), 'has-corner-btn': shouldCollapseUserMsg(msg) }"
-                            :style="{ backgroundColor: isDark ? '#2d2e30' : '#e7ebf4' }">
-                            <!-- 右上角展开/收起按钮（仅当需要折叠时显示） -->
-                            <v-btn
-                                v-if="shouldCollapseUserMsg(msg)"
-                                icon
-                                variant="text"
-                                class="corner-expand-btn"
-                                @click.stop="toggleUserMessage(index)"
-                                :title="isUserMessageExpanded(index)
-                                    ? (t('core.common.collapse') || '收起')
-                                    : (t('core.common.expand') || '展开')"
-                            >
-                                <v-icon size="small">
-                                    {{ isUserMessageExpanded(index) ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
-                                </v-icon>
-                            </v-btn>
-
-                            <div
-                                class="collapsible-content"
-                                :class="{ 'is-collapsed': shouldCollapseUserMsg(msg) && !isUserMessageExpanded(index) }"
-                            >
-                            <MessagePartsRenderer
-                                :parts="msg.content.message"
-                                variant="user"
-                                :is-dark="isDark"
-                                :is-markdown-dark="isMarkdownDark"
-                                :shiki-wasm-ready="shikiWasmReady"
-                                :current-time="currentTime"
-                                :downloading-files="downloadingFiles"
-                                :get-reply-content="getReplyContent"
-                                @open-image-preview="$emit('openImagePreview', $event)"
-                                @download-file="downloadFile"
-                                @scroll-to-message="scrollToMessage"
-                            />
-                            </div>
-                        </div>
-
-                        <!-- 用户消息：气泡外（底部）复制按钮 -->
-                        <div class="user-message-actions">
-                            <v-btn
-                                :icon="getCopyIcon(index)"
-                                size="x-small"
-                                variant="text"
-                                class="copy-message-btn"
-                                :class="{ 'copy-success': isCopySuccess(index) }"
-                                @click="copyBotMessage(msg.content.message, index)"
-                                :title="t('core.common.copy')"
-                            />
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Bot Messages -->
-                <div
-                    v-else
-                    class="bot-message"
-                    :class="{
-                        'has-reasoning': !!(msg.content.reasoning && msg.content.reasoning.trim()),
-                        'has-bot-icon': !(isStreaming && index === messages.length - 1)
-                            && (messages[index - 1]?.content.type !== 'bot')
-                    }"
-                >
-                    <v-avatar class="bot-avatar" size="36">
-                        <v-progress-circular :index="index" v-if="isStreaming && index === messages.length - 1"
-                            indeterminate size="28" width="2"></v-progress-circular>
-                        <v-icon v-else-if="messages[index - 1]?.content.type !== 'bot'" size="64"
-                            color="#8fb6d2">mdi-star-four-points-small</v-icon>
-                    </v-avatar>
-                    <div class="bot-message-content">
-                        <!-- Reasoning Block (Collapsible) - 移出气泡，便于移动端布局控制 -->
-                        <ReasoningBlock
-                            v-if="msg.content.reasoning && msg.content.reasoning.trim()"
-                            class="bot-reasoning"
-                            :reasoning="msg.content.reasoning"
-                            :is-dark="isDark || isMarkdownDark"
-                            :model-value="isReasoningExpanded(index)"
-                            @update:modelValue="setReasoningExpanded(index, $event)"
-                        />
-
-                        <div class="message-bubble bot-bubble">
-                            <!-- Loading state -->
-                            <div v-if="msg.content.isLoading" class="loading-container">
-                                <span class="loading-text">{{ tm('message.loading') }}</span>
-                            </div>
-
-                            <template v-else>
-                                <!-- 使用 MessagePartsRenderer 渲染 message parts（含 tool calls 分组），配色跟随主题色 -->
-                                <MessagePartsRenderer
-                                    :parts="msg.content.message"
-                                    :is-dark="isDark"
-                                    :is-markdown-dark="isMarkdownDark"
-                                    :shiki-wasm-ready="shikiWasmReady"
-                                    :current-time="currentTime"
-                                    :downloading-files="downloadingFiles"
-                                    @open-image-preview="$emit('openImagePreview', $event)"
-                                    @download-file="downloadFile"
-                                />
-                            </template>
-                        </div>
-                        <div class="message-actions" v-if="isBotMessageActionable(msg)">
-                            <span class="message-time" v-if="msg.created_at">{{ formatMessageTime(msg.created_at)
-                                }}</span>
-                            <!-- Agent Stats Menu -->
-                            <v-menu v-if="msg.content.agentStats" location="bottom" open-on-hover
-                                :close-on-content-click="false">
-                                <template v-slot:activator="{ props }">
-                                    <v-icon v-bind="props" size="x-small"
-                                        class="stats-info-icon">mdi-information-outline</v-icon>
-                                </template>
-                                <v-card class="stats-menu-card" variant="elevated" elevation="3">
-                                    <v-card-text class="stats-menu-content">
-                                        <div class="stats-menu-row">
-                                            <span class="stats-menu-label">{{ tm('stats.inputTokens') }}</span>
-                                            <span class="stats-menu-value">{{
-                                                getInputTokens(msg.content.agentStats.token_usage) }}</span>
-                                        </div>
-                                        <div class="stats-menu-row">
-                                            <span class="stats-menu-label">{{ tm('stats.outputTokens') }}</span>
-                                            <span class="stats-menu-value">{{ msg.content.agentStats.token_usage.output || 0 }}</span>
-                                        </div>
-                                        <div class="stats-menu-row"
-                                            v-if="msg.content.agentStats.token_usage.input_cached > 0">
-                                            <span class="stats-menu-label">{{ tm('stats.cachedTokens') }}</span>
-                                            <span class="stats-menu-value">{{
-                                                msg.content.agentStats.token_usage.input_cached }}</span>
-                                        </div>
-                                        <div class="stats-menu-row"
-                                            v-if="msg.content.agentStats.time_to_first_token > 0">
-                                            <span class="stats-menu-label">{{ tm('stats.ttft') }}</span>
-                                            <span class="stats-menu-value">{{
-                                                formatTTFT(msg.content.agentStats.time_to_first_token) }}</span>
-                                        </div>
-                                        <div class="stats-menu-row">
-                                            <span class="stats-menu-label">{{ tm('stats.duration') }}</span>
-                                            <span class="stats-menu-value">{{
-                                                formatAgentDuration(msg.content.agentStats) }}</span>
-                                        </div>
-                                    </v-card-text>
-                                </v-card>
-                            </v-menu>
-                            <v-btn :icon="getCopyIcon(index)" size="x-small" variant="text" class="copy-message-btn"
-                                :class="{ 'copy-success': isCopySuccess(index) }"
-                                @click="copyBotMessage(msg.content.message, index)" :title="t('core.common.copy')" />
-                            <v-btn icon="mdi-reply-outline" size="x-small" variant="text" class="reply-message-btn"
-                                @click="$emit('replyMessage', msg, index)" :title="tm('actions.reply')" />
-                            
-                            <!-- Refs Visualization -->
-                            <ActionRef :refs="msg.content.refs" @open-refs="openRefsSidebar" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 浮动引用按钮 -->
-        <div v-if="selectedText.content && selectedText.messageIndex !== null" class="selection-quote-button" :style="{
-            top: selectedText.position.top + 'px',
-            left: selectedText.position.left + 'px',
-            position: 'fixed'
-        }">
-            <v-btn size="large" rounded="xl" @click="handleQuoteSelected" class="quote-btn"
-                :class="{ 'dark-mode': isDark }">
-                <v-icon left small>mdi-reply</v-icon>
-                引用
-            </v-btn>
-        </div>
+  <div
+    ref="messageContainer"
+    class="messages-container"
+    :class="{ 'is-dark': isDark }"
+  >
+    <!-- 加载指示器 -->
+    <div
+      v-if="isLoadingMessages"
+      class="loading-overlay"
+      :class="{ 'is-dark': isDark }"
+    >
+      <v-progress-circular
+        indeterminate
+        size="48"
+        width="4"
+        color="primary"
+      />
     </div>
+    <!-- 聊天消息列表 -->
+    <div
+      class="message-list"
+      :class="{ 'loading-blur': isLoadingMessages }"
+      @mouseup="handleTextSelection"
+    >
+      <div
+        v-for="(msg, index) in messages"
+        :key="index"
+        class="message-item fade-in"
+        :class="{ 'is-last-actionable': isLastActionableMessage(index) }"
+      >
+        <!-- 用户消息 -->
+        <div
+          v-if="msg.content.type == 'user'"
+          class="user-message"
+        >
+          <div class="user-message-content">
+            <div
+              class="message-bubble user-bubble"
+              :class="{ 'has-audio': hasAudio(msg.content.message), 'has-corner-btn': shouldCollapseUserMsg(msg) }"
+              :style="{ backgroundColor: isDark ? '#2d2e30' : '#e7ebf4' }"
+            >
+              <!-- 右上角展开/收起按钮（仅当需要折叠时显示） -->
+              <v-btn
+                v-if="shouldCollapseUserMsg(msg)"
+                icon
+                variant="text"
+                class="corner-expand-btn"
+                :title="isUserMessageExpanded(index)
+                  ? (t('core.common.collapse') || '收起')
+                  : (t('core.common.expand') || '展开')"
+                @click.stop="toggleUserMessage(index)"
+              >
+                <v-icon size="small">
+                  {{ isUserMessageExpanded(index) ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
+                </v-icon>
+              </v-btn>
+
+              <div
+                class="collapsible-content"
+                :class="{ 'is-collapsed': shouldCollapseUserMsg(msg) && !isUserMessageExpanded(index) }"
+              >
+                <MessagePartsRenderer
+                  :parts="msg.content.message"
+                  variant="user"
+                  :is-dark="isDark"
+                  :is-markdown-dark="isMarkdownDark"
+                  :shiki-wasm-ready="shikiWasmReady"
+                  :current-time="currentTime"
+                  :downloading-files="downloadingFiles"
+                  :get-reply-content="getReplyContent"
+                  @open-image-preview="$emit('openImagePreview', $event)"
+                  @download-file="downloadFile"
+                  @scroll-to-message="scrollToMessage"
+                />
+              </div>
+            </div>
+
+            <!-- 用户消息：气泡外（底部）复制按钮 -->
+            <div class="user-message-actions">
+              <v-btn
+                :icon="getCopyIcon(index)"
+                size="x-small"
+                variant="text"
+                class="copy-message-btn"
+                :class="{ 'copy-success': isCopySuccess(index) }"
+                :title="t('core.common.copy')"
+                @click="copyBotMessage(msg.content.message, index)"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Bot Messages -->
+        <div
+          v-else
+          class="bot-message"
+          :class="{
+            'has-reasoning': !!(msg.content.reasoning && msg.content.reasoning.trim()),
+            'has-bot-icon': !(isStreaming && index === messages.length - 1)
+              && (messages[index - 1]?.content.type !== 'bot')
+          }"
+        >
+          <v-avatar
+            class="bot-avatar"
+            size="36"
+          >
+            <v-progress-circular
+              v-if="isStreaming && index === messages.length - 1"
+              :index="index"
+              indeterminate
+              size="28"
+              width="2"
+            />
+            <v-icon
+              v-else-if="messages[index - 1]?.content.type !== 'bot'"
+              size="64"
+              color="#8fb6d2"
+            >
+              mdi-star-four-points-small
+            </v-icon>
+          </v-avatar>
+          <div class="bot-message-content">
+            <!-- Reasoning Block (Collapsible) - 移出气泡，便于移动端布局控制 -->
+            <ReasoningBlock
+              v-if="msg.content.reasoning && msg.content.reasoning.trim()"
+              class="bot-reasoning"
+              :reasoning="msg.content.reasoning"
+              :is-dark="isDark || isMarkdownDark"
+              :model-value="isReasoningExpanded(index)"
+              @update:model-value="setReasoningExpanded(index, $event)"
+            />
+
+            <div class="message-bubble bot-bubble">
+              <!-- Loading state -->
+              <div
+                v-if="msg.content.isLoading"
+                class="loading-container"
+              >
+                <span class="loading-text">{{ tm('message.loading') }}</span>
+              </div>
+
+              <template v-else>
+                <!-- 使用 MessagePartsRenderer 渲染 message parts（含 tool calls 分组），配色跟随主题色 -->
+                <MessagePartsRenderer
+                  :parts="msg.content.message"
+                  :is-dark="isDark"
+                  :is-markdown-dark="isMarkdownDark"
+                  :shiki-wasm-ready="shikiWasmReady"
+                  :current-time="currentTime"
+                  :downloading-files="downloadingFiles"
+                  @open-image-preview="$emit('openImagePreview', $event)"
+                  @download-file="downloadFile"
+                />
+              </template>
+            </div>
+            <div
+              v-if="isBotMessageActionable(msg)"
+              class="message-actions"
+            >
+              <span
+                v-if="msg.created_at"
+                class="message-time"
+              >{{ formatMessageTime(msg.created_at)
+              }}</span>
+              <!-- Agent Stats Menu -->
+              <v-menu
+                v-if="msg.content.agentStats"
+                location="bottom"
+                open-on-hover
+                :close-on-content-click="false"
+              >
+                <template #activator="{ props }">
+                  <v-icon
+                    v-bind="props"
+                    size="x-small"
+                    class="stats-info-icon"
+                  >
+                    mdi-information-outline
+                  </v-icon>
+                </template>
+                <v-card
+                  class="stats-menu-card"
+                  variant="elevated"
+                  elevation="3"
+                >
+                  <v-card-text class="stats-menu-content">
+                    <div class="stats-menu-row">
+                      <span class="stats-menu-label">{{ tm('stats.inputTokens') }}</span>
+                      <span class="stats-menu-value">{{
+                        getInputTokens(msg.content.agentStats.token_usage) }}</span>
+                    </div>
+                    <div class="stats-menu-row">
+                      <span class="stats-menu-label">{{ tm('stats.outputTokens') }}</span>
+                      <span class="stats-menu-value">{{ msg.content.agentStats.token_usage.output || 0 }}</span>
+                    </div>
+                    <div
+                      v-if="msg.content.agentStats.token_usage.input_cached > 0"
+                      class="stats-menu-row"
+                    >
+                      <span class="stats-menu-label">{{ tm('stats.cachedTokens') }}</span>
+                      <span class="stats-menu-value">{{
+                        msg.content.agentStats.token_usage.input_cached }}</span>
+                    </div>
+                    <div
+                      v-if="msg.content.agentStats.time_to_first_token > 0"
+                      class="stats-menu-row"
+                    >
+                      <span class="stats-menu-label">{{ tm('stats.ttft') }}</span>
+                      <span class="stats-menu-value">{{
+                        formatTTFT(msg.content.agentStats.time_to_first_token) }}</span>
+                    </div>
+                    <div class="stats-menu-row">
+                      <span class="stats-menu-label">{{ tm('stats.duration') }}</span>
+                      <span class="stats-menu-value">{{
+                        formatAgentDuration(msg.content.agentStats) }}</span>
+                    </div>
+                  </v-card-text>
+                </v-card>
+              </v-menu>
+              <v-btn
+                :icon="getCopyIcon(index)"
+                size="x-small"
+                variant="text"
+                class="copy-message-btn"
+                :class="{ 'copy-success': isCopySuccess(index) }"
+                :title="t('core.common.copy')"
+                @click="copyBotMessage(msg.content.message, index)"
+              />
+              <v-btn
+                icon="mdi-reply-outline"
+                size="x-small"
+                variant="text"
+                class="reply-message-btn"
+                :title="tm('actions.reply')"
+                @click="$emit('replyMessage', msg, index)"
+              />
+                            
+              <!-- Refs Visualization -->
+              <ActionRef
+                :refs="msg.content.refs"
+                @open-refs="openRefsSidebar"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 浮动引用按钮 -->
+    <div
+      v-if="selectedText.content && selectedText.messageIndex !== null"
+      class="selection-quote-button"
+      :style="{
+        top: selectedText.position.top + 'px',
+        left: selectedText.position.left + 'px',
+        position: 'fixed'
+      }"
+    >
+      <v-btn
+        size="large"
+        rounded="xl"
+        class="quote-btn"
+        :class="{ 'dark-mode': isDark }"
+        @click="handleQuoteSelected"
+      >
+        <v-icon
+          left
+          small
+        >
+          mdi-reply
+        </v-icon>
+        引用
+      </v-btn>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -205,6 +301,12 @@ export default {
         ReasoningBlock,
         MessagePartsRenderer,
         ActionRef
+    },
+    provide() {
+        return {
+            isDark: this.isDark,
+            webSearchResults: () => this.webSearchResults
+        };
     },
     props: {
         messages: {
@@ -238,12 +340,6 @@ export default {
             tm,
             shikiWasmReady,
             isMarkdownDark,
-        };
-    },
-    provide() {
-        return {
-            isDark: this.isDark,
-            webSearchResults: () => this.webSearchResults
         };
     },
     data() {

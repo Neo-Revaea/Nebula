@@ -1,44 +1,70 @@
 <template>
+  <div style="background-color: var(--v-theme-surface, #fff); padding: 8px; padding-left: 16px; border-radius: 8px; margin-bottom: 16px;">
+    <v-list lines="two">
+      <v-list-subheader>{{ tm('network.title') }}</v-list-subheader>
 
-    <div style="background-color: var(--v-theme-surface, #fff); padding: 8px; padding-left: 16px; border-radius: 8px; margin-bottom: 16px;">
+      <v-list-item>
+        <ProxySelector />
+      </v-list-item>
 
-        <v-list lines="two">
-            <v-list-subheader>{{ tm('network.title') }}</v-list-subheader>
+      <v-list-subheader>{{ tm('sidebar.title') }}</v-list-subheader>
 
-            <v-list-item>
-                <ProxySelector></ProxySelector>
-            </v-list-item>
+      <v-list-item
+        :subtitle="tm('sidebar.customize.subtitle')"
+        :title="tm('sidebar.customize.title')"
+      >
+        <SidebarCustomizer />
+      </v-list-item>
 
-            <v-list-subheader>{{ tm('sidebar.title') }}</v-list-subheader>
+      <v-list-subheader>{{ tm('system.title') }}</v-list-subheader>
 
-            <v-list-item :subtitle="tm('sidebar.customize.subtitle')" :title="tm('sidebar.customize.title')">
-                <SidebarCustomizer></SidebarCustomizer>
-            </v-list-item>
+      <v-list-item
+        :subtitle="tm('system.backup.subtitle')"
+        :title="tm('system.backup.title')"
+      >
+        <v-btn
+          style="margin-top: 16px;"
+          color="primary"
+          @click="openBackupDialog"
+        >
+          <v-icon class="mr-2">
+            mdi-backup-restore
+          </v-icon>
+          {{ tm('system.backup.button') }}
+        </v-btn>
+      </v-list-item>
 
-            <v-list-subheader>{{ tm('system.title') }}</v-list-subheader>
+      <v-list-item
+        :subtitle="tm('system.restart.subtitle')"
+        :title="tm('system.restart.title')"
+      >
+        <v-btn
+          style="margin-top: 16px;"
+          color="error"
+          @click="restartAstrBot"
+        >
+          {{ tm('system.restart.button') }}
+        </v-btn>
+      </v-list-item>
 
-            <v-list-item :subtitle="tm('system.backup.subtitle')" :title="tm('system.backup.title')">
-                <v-btn style="margin-top: 16px;" color="primary" @click="openBackupDialog">
-                    <v-icon class="mr-2">mdi-backup-restore</v-icon>
-                    {{ tm('system.backup.button') }}
-                </v-btn>
-            </v-list-item>
+      <v-list-item
+        :subtitle="tm('system.migration.subtitle')"
+        :title="tm('system.migration.title')"
+      >
+        <v-btn
+          style="margin-top: 16px;"
+          color="primary"
+          @click="startMigration"
+        >
+          {{ tm('system.migration.button') }}
+        </v-btn>
+      </v-list-item>
+    </v-list>
+  </div>
 
-            <v-list-item :subtitle="tm('system.restart.subtitle')" :title="tm('system.restart.title')">
-                <v-btn style="margin-top: 16px;" color="error" @click="restartAstrBot">{{ tm('system.restart.button') }}</v-btn>
-            </v-list-item>
-
-            <v-list-item :subtitle="tm('system.migration.subtitle')" :title="tm('system.migration.title')">
-                <v-btn style="margin-top: 16px;" color="primary" @click="startMigration">{{ tm('system.migration.button') }}</v-btn>
-            </v-list-item>
-        </v-list>
-
-    </div>
-
-    <WaitingForRestart ref="wfr"></WaitingForRestart>
-    <MigrationDialog ref="migrationDialog"></MigrationDialog>
-    <BackupDialog ref="backupDialog"></BackupDialog>
-
+  <WaitingForRestart ref="wfr" />
+  <MigrationDialog ref="migrationDialog" />
+  <BackupDialog ref="backupDialog" />
 </template>
 
 <script setup lang="ts">

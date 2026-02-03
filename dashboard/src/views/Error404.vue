@@ -24,7 +24,7 @@ const goBack = () => {
         </v-icon>
 
         <h1 class="text-h1 font-weight-black text-primary gradient-text">
-            404
+          404
         </h1>
       </div>
 
@@ -48,8 +48,8 @@ const goBack = () => {
           color="primary"
           rounded="sm"
           prepend-icon="mdi-arrow-left"
-          @click="goBack"
           class="px-4 px-sm-8"
+          @click="goBack"
         >
           {{ t('core.common.error404.goBack') }}
         </v-btn>

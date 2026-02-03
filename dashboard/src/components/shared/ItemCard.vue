@@ -4,14 +4,30 @@
     elevation="0"
     v-bind="$attrs" 
   >
-    <v-card-title v-if="!hideHeader" class="d-flex justify-space-between align-center pb-1 pt-3 flex-shrink-0">
-      <div class="d-flex align-center ga-2 flex-grow-1" style="min-width: 0;">
-        <slot name="title-prepend" :item="item"></slot>
-        <span :class="['text-truncate', titleClass]" style="min-width: 0;" :title="getItemTitle()">{{ getItemTitle() }}</span>
+    <v-card-title
+      v-if="!hideHeader"
+      class="d-flex justify-space-between align-center pb-1 pt-3 flex-shrink-0"
+    >
+      <div
+        class="d-flex align-center ga-2 flex-grow-1"
+        style="min-width: 0;"
+      >
+        <slot
+          name="title-prepend"
+          :item="item"
+        />
+        <span
+          :class="['text-truncate', titleClass]"
+          style="min-width: 0;"
+          :title="getItemTitle()"
+        >{{ getItemTitle() }}</span>
       </div>
       
-      <v-tooltip location="top" v-if="showSwitch">
-        <template v-slot:activator="{ props }">
+      <v-tooltip
+        v-if="showSwitch"
+        location="top"
+      >
+        <template #activator="{ props }">
           <v-switch
             color="primary"
             hide-details
@@ -21,7 +37,7 @@
             :disabled="loading"
             v-bind="props"
             @update:model-value="toggleEnabled"
-          ></v-switch>
+          />
         </template>
         <span>{{ getItemEnabled() ? t('core.common.itemCard.enabled') : t('core.common.itemCard.disabled') }}</span>
       </v-tooltip>
@@ -31,7 +47,10 @@
       :class="[{ 'pa-0': noPadding }, pinActions ? 'flex-grow-1 d-flex flex-column' : '']"
       style="overflow: hidden; min-height: 0;"
     >
-      <slot name="item-details" :item="item"></slot>
+      <slot
+        name="item-details"
+        :item="item"
+      />
     </v-card-text>
 
     <v-card-actions
@@ -43,12 +62,17 @@
       ]"
       style="margin: 8px;"
     >
+      <slot
+        name="footer-start"
+        :item="item"
+      />
       
-      <slot name="footer-start" :item="item"></slot>
+      <v-spacer v-if="actionsAlign !== 'start'" />
       
-      <v-spacer v-if="actionsAlign !== 'start'"></v-spacer>
-      
-      <slot name="actions" :item="item"></slot>
+      <slot
+        name="actions"
+        :item="item"
+      />
       
       <v-btn
         v-if="showCopyButton"
@@ -87,13 +111,17 @@
       </v-btn>
     </v-card-actions>
 
-    <div class="d-flex justify-end align-center" style="position: absolute; bottom: 16px; right: 16px; opacity: 0.2; pointer-events: none;" v-if="bglogo">
+    <div
+      v-if="bglogo"
+      class="d-flex justify-end align-center"
+      style="position: absolute; bottom: 16px; right: 16px; opacity: 0.2; pointer-events: none;"
+    >
       <v-img
         :src="bglogo"
         contain
         width="120"
         height="120"
-      ></v-img>
+      />
     </div>
   </v-card>
 </template>
@@ -103,10 +131,6 @@ import { useI18n } from '@/i18n/composables';
 
 export default {
   name: 'ItemCard',
-  setup() {
-    const { t } = useI18n();
-    return { t };
-  },
   props: {
     item: { type: Object, required: true },
     titleField: { type: String, default: 'id' },
@@ -129,6 +153,10 @@ export default {
     }
   },
   emits: ['toggle-enabled', 'delete', 'edit', 'copy'],
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
   methods: {
     getItemTitle() { return this.item[this.titleField]; },
     getItemEnabled() { return this.item[this.enabledField]; },

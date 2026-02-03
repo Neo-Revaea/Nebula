@@ -60,7 +60,8 @@ onMounted(() => {
 
 <template>
   <v-locale-provider>
-    <v-app :theme="useCustomizerStore().uiTheme"
+    <v-app
+      :theme="useCustomizerStore().uiTheme"
       :class="[customizer.fontTheme, customizer.mini_sidebar ? 'mini-sidebar' : '', customizer.inputBg ? 'inputWithbg' : '']"
     >
       <!-- 路由切换进度条 -->
@@ -75,10 +76,12 @@ onMounted(() => {
       />
       <VerticalHeaderVue />
       <VerticalSidebarVue v-if="showSidebar" />
-      <v-main :style="{ 
-        height: showChatPage ? 'calc(100vh - 55px)' : undefined,
-        overflow: showChatPage ? 'hidden' : undefined
-      }">
+      <v-main
+        :style="{ 
+          height: showChatPage ? 'calc(100vh - 55px)' : undefined,
+          overflow: showChatPage ? 'hidden' : undefined
+        }"
+      >
         <v-container 
           fluid 
           class="page-wrapper" 
@@ -87,9 +90,13 @@ onMounted(() => {
             height: showChatPage ? '100%' : 'calc(100% - 8px)',
             padding: (isChatPage || showChatPage) ? '0' : undefined,
             minHeight: showChatPage ? 'unset' : undefined
-          }">
+          }"
+        >
           <div :style="{ height: '100%', width: '100%', overflow: showChatPage ? 'hidden' : undefined }">
-            <div v-if="showChatPage" style="height: 100%; width: 100%; overflow: hidden;">
+            <div
+              v-if="showChatPage"
+              style="height: 100%; width: 100%; overflow: hidden;"
+            >
               <Chat />
             </div>
             <RouterView v-else />

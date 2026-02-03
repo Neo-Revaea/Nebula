@@ -1,27 +1,66 @@
 <template>
-
   <div style="display: flex; flex-direction: column; align-items: center;">
-    <div v-if="selectedConfigID || isSystemConfig" class="mt-4 config-panel"
-      style="display: flex; flex-direction: column; align-items: start;">
-
+    <div
+      v-if="selectedConfigID || isSystemConfig"
+      class="mt-4 config-panel"
+      style="display: flex; flex-direction: column; align-items: start;"
+    >
       <!-- 普通配置选择区域 -->
-      <div class="d-flex flex-row pr-4"
-        style="margin-bottom: 16px; align-items: center; gap: 12px; justify-content: space-between; width: 100%;">
-        <div class="d-flex flex-row align-center" style="gap: 12px;">
-          <v-select style="min-width: 130px;" v-model="selectedConfigID" :items="configSelectItems" item-title="name" :disabled="initialConfigId !== null"
-            v-if="!isSystemConfig" item-value="id" :label="tm('configSelection.selectConfig')" hide-details density="compact" rounded="md"
-            variant="outlined" @update:model-value="onConfigSelect">
-          </v-select>
-          <a style="color: inherit;" href="https://blog.astrbot.app/posts/what-is-changed-in-4.0.0/#%E5%A4%9A%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6" target="_blank"><v-btn icon="mdi-help-circle" size="small" variant="plain"></v-btn></a>
-
+      <div
+        class="d-flex flex-row pr-4"
+        style="margin-bottom: 16px; align-items: center; gap: 12px; justify-content: space-between; width: 100%;"
+      >
+        <div
+          class="d-flex flex-row align-center"
+          style="gap: 12px;"
+        >
+          <v-select
+            v-if="!isSystemConfig"
+            v-model="selectedConfigID"
+            style="min-width: 130px;"
+            :items="configSelectItems"
+            item-title="name"
+            :disabled="initialConfigId !== null"
+            item-value="id"
+            :label="tm('configSelection.selectConfig')"
+            hide-details
+            density="compact"
+            rounded="md"
+            variant="outlined"
+            @update:model-value="onConfigSelect"
+          />
+          <a
+            style="color: inherit;"
+            href="https://blog.astrbot.app/posts/what-is-changed-in-4.0.0/#%E5%A4%9A%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"
+            target="_blank"
+          ><v-btn
+            icon="mdi-help-circle"
+            size="small"
+            variant="plain"
+          /></a>
         </div>
 
-        <v-btn-toggle v-model="configType" mandatory color="primary" variant="outlined" density="comfortable"
-          rounded="md" @update:model-value="onConfigTypeToggle">
-          <v-btn value="normal" prepend-icon="mdi-cog" size="large">
+        <v-btn-toggle
+          v-model="configType"
+          mandatory
+          color="primary"
+          variant="outlined"
+          density="comfortable"
+          rounded="md"
+          @update:model-value="onConfigTypeToggle"
+        >
+          <v-btn
+            value="normal"
+            prepend-icon="mdi-cog"
+            size="large"
+          >
             {{ tm('configSelection.normalConfig') }}
           </v-btn>
-          <v-btn value="system" prepend-icon="mdi-cog-outline" size="large">
+          <v-btn
+            value="system"
+            prepend-icon="mdi-cog-outline"
+            size="large"
+          >
             {{ tm('configSelection.systemConfig') }}
           </v-btn>
         </v-btn-toggle>
@@ -30,15 +69,23 @@
       <!-- <v-progress-linear v-if="!fetched" indeterminate color="primary"></v-progress-linear> -->
 
       <v-slide-y-transition mode="out-in">
-        <div v-if="(selectedConfigID || isSystemConfig) && fetched" :key="configContentKey" class="config-content" style="width: 100%;">
+        <div
+          v-if="(selectedConfigID || isSystemConfig) && fetched"
+          :key="configContentKey"
+          class="config-content"
+          style="width: 100%;"
+        >
           <!-- 可视化编辑 -->
           <AstrBotCoreConfigWrapper 
             :metadata="metadata" 
             :config_data="config_data"
           />
 
-          <v-tooltip :text="tm('actions.save')" location="left">
-            <template v-slot:activator="{ props }">
+          <v-tooltip
+            :text="tm('actions.save')"
+            location="left"
+          >
+            <template #activator="{ props }">
               <v-btn
                 v-bind="props"
                 class="config-floating-btn config-floating-btn--save"
@@ -46,12 +93,15 @@
                 icon="mdi-content-save"
                 size="x-large"
                 @click="updateConfig"
-              ></v-btn>
+              />
             </template>
           </v-tooltip>
 
-          <v-tooltip :text="tm('codeEditor.title')" location="left">
-            <template v-slot:activator="{ props }">
+          <v-tooltip
+            :text="tm('codeEditor.title')"
+            location="left"
+          >
+            <template #activator="{ props }">
               <v-btn
                 v-bind="props"
                 class="config-floating-btn config-floating-btn--editor"
@@ -59,12 +109,16 @@
                 icon="mdi-code-json"
                 size="x-large"
                 @click="configToString(); codeEditorDialog = true"
-              ></v-btn>
+              />
             </template>
           </v-tooltip>
 
-          <v-tooltip text="测试当前配置" location="left" v-if="!isSystemConfig">
-            <template v-slot:activator="{ props }">
+          <v-tooltip
+            v-if="!isSystemConfig"
+            text="测试当前配置"
+            location="left"
+          >
+            <template #activator="{ props }">
               <v-btn
                 v-bind="props"
                 class="config-floating-btn config-floating-btn--test"
@@ -72,28 +126,40 @@
                 icon="mdi-chat-processing"
                 size="x-large"
                 @click="openTestChat"
-              ></v-btn>
+              />
             </template>
           </v-tooltip>
-
         </div>
       </v-slide-y-transition>
-
     </div>
   </div>
 
 
   <!-- Full Screen Editor Dialog -->
-  <v-dialog v-model="codeEditorDialog" fullscreen transition="dialog-bottom-transition" scrollable>
+  <v-dialog
+    v-model="codeEditorDialog"
+    fullscreen
+    transition="dialog-bottom-transition"
+    scrollable
+  >
     <v-card>
-      <v-toolbar color="primary" dark>
-        <v-btn icon @click="codeEditorDialog = false">
+      <v-toolbar
+        color="primary"
+        dark
+      >
+        <v-btn
+          icon
+          @click="codeEditorDialog = false"
+        >
           <v-icon>mdi-close</v-icon>
         </v-btn>
         <v-toolbar-title>{{ tm('codeEditor.title') }}</v-toolbar-title>
-        <v-spacer></v-spacer>
+        <v-spacer />
         <v-toolbar-items style="display: flex; align-items: center;">
-          <v-tooltip :text="tm('editor.revertCode')" location="bottom">
+          <v-tooltip
+            :text="tm('editor.revertCode')"
+            location="bottom"
+          >
             <template #activator="{ props }">
               <v-btn
                 v-bind="props"
@@ -108,7 +174,11 @@
               </v-btn>
             </template>
           </v-tooltip>
-          <v-tooltip v-if="config_data_has_changed" :text="tm('editor.applyConfig')" location="bottom">
+          <v-tooltip
+            v-if="config_data_has_changed"
+            :text="tm('editor.applyConfig')"
+            location="bottom"
+          >
             <template #activator="{ props }">
               <v-btn
                 v-bind="props"
@@ -123,7 +193,10 @@
               </v-btn>
             </template>
           </v-tooltip>
-          <v-tooltip :text="tm('editor.applyTip')" location="bottom">
+          <v-tooltip
+            :text="tm('editor.applyTip')"
+            location="bottom"
+          >
             <template #activator="{ props }">
               <v-btn
                 v-bind="props"
@@ -140,58 +213,114 @@
         </v-toolbar-items>
       </v-toolbar>
       <v-card-text class="pa-0">
-        <VueMonacoEditor language="json" theme="vs-dark" style="height: calc(100vh - 64px);"
-          v-model:value="config_data_str">
-        </VueMonacoEditor>
+        <VueMonacoEditor
+          v-model:value="config_data_str"
+          language="json"
+          theme="vs-dark"
+          style="height: calc(100vh - 64px);"
+        />
       </v-card-text>
     </v-card>
   </v-dialog>
 
   <!-- Config Management Dialog -->
-  <v-dialog v-model="configManageDialog" max-width="800px">
+  <v-dialog
+    v-model="configManageDialog"
+    max-width="800px"
+  >
     <v-card>
       <v-card-title class="d-flex align-center justify-space-between">
         <span class="text-h4">{{ tm('configManagement.title') }}</span>
-        <v-btn icon="mdi-close" variant="text" @click="configManageDialog = false"></v-btn>
+        <v-btn
+          icon="mdi-close"
+          variant="text"
+          @click="configManageDialog = false"
+        />
       </v-card-title>
 
       <v-card-text>
         <small>{{ tm('configManagement.description') }}</small>
         <div class="mt-6 mb-4">
-          <v-btn prepend-icon="mdi-plus" @click="startCreateConfig" variant="tonal" color="primary">
+          <v-btn
+            prepend-icon="mdi-plus"
+            variant="tonal"
+            color="primary"
+            @click="startCreateConfig"
+          >
             {{ tm('configManagement.newConfig') }}
           </v-btn>
         </div>
 
         <!-- Config List -->
         <v-list lines="two">
-          <v-list-item v-for="config in configInfoList" :key="config.id" :title="config.name">
-            <template v-slot:append v-if="config.id !== 'default'">
-              <div class="d-flex align-center" style="gap: 8px;">
-                <v-btn icon="mdi-pencil" size="small" variant="text" color="warning"
-                  @click="startEditConfig(config)"></v-btn>
-                <v-btn icon="mdi-delete" size="small" variant="text" color="error"
-                  @click="confirmDeleteConfig(config)"></v-btn>
+          <v-list-item
+            v-for="config in configInfoList"
+            :key="config.id"
+            :title="config.name"
+          >
+            <template
+              v-if="config.id !== 'default'"
+              #append
+            >
+              <div
+                class="d-flex align-center"
+                style="gap: 8px;"
+              >
+                <v-btn
+                  icon="mdi-pencil"
+                  size="small"
+                  variant="text"
+                  color="warning"
+                  @click="startEditConfig(config)"
+                />
+                <v-btn
+                  icon="mdi-delete"
+                  size="small"
+                  variant="text"
+                  color="error"
+                  @click="confirmDeleteConfig(config)"
+                />
               </div>
             </template>
           </v-list-item>
         </v-list>
 
         <!-- Create/Edit Form -->
-        <v-divider v-if="showConfigForm" class="my-6"></v-divider>
+        <v-divider
+          v-if="showConfigForm"
+          class="my-6"
+        />
 
         <div v-if="showConfigForm">
-          <h3 class="mb-4">{{ isEditingConfig ? tm('configManagement.editConfig') : tm('configManagement.newConfig') }}</h3>
+          <h3 class="mb-4">
+            {{ isEditingConfig ? tm('configManagement.editConfig') : tm('configManagement.newConfig') }}
+          </h3>
 
           <h4>{{ tm('configManagement.configName') }}</h4>
 
-          <v-text-field v-model="configFormData.name" :label="tm('configManagement.fillConfigName')" variant="outlined" class="mt-4 mb-4"
-            hide-details></v-text-field>
+          <v-text-field
+            v-model="configFormData.name"
+            :label="tm('configManagement.fillConfigName')"
+            variant="outlined"
+            class="mt-4 mb-4"
+            hide-details
+          />
 
-          <div class="d-flex justify-end mt-4" style="gap: 8px;">
-            <v-btn variant="text" @click="cancelConfigForm">{{ tm('buttons.cancel') }}</v-btn>
-            <v-btn color="primary" @click="saveConfigForm"
-              :disabled="!configFormData.name">
+          <div
+            class="d-flex justify-end mt-4"
+            style="gap: 8px;"
+          >
+            <v-btn
+              variant="text"
+              @click="cancelConfigForm"
+            >
+              {{ tm('buttons.cancel') }}
+            </v-btn>
+            <v-btn
+              color="primary"
+              :disabled="!configFormData.name"
+              @click="saveConfigForm"
+            >
               {{ isEditingConfig ? tm('buttons.update') : tm('buttons.create') }}
             </v-btn>
           </div>
@@ -200,11 +329,16 @@
     </v-card>
   </v-dialog>
 
-  <v-snackbar :timeout="3000" elevation="24" :color="save_message_success" v-model="save_message_snack">
+  <v-snackbar
+    v-model="save_message_snack"
+    :timeout="3000"
+    elevation="24"
+    :color="save_message_success"
+  >
     {{ save_message }}
   </v-snackbar>
 
-  <WaitingForRestart ref="wfr"></WaitingForRestart>
+  <WaitingForRestart ref="wfr" />
 
   <!-- 测试聊天抽屉 -->
   <v-overlay
@@ -215,21 +349,34 @@
     :scrim="true"
     @click:outside="closeTestChat"
   >
-    <v-card class="test-chat-card" elevation="12">
+    <v-card
+      class="test-chat-card"
+      elevation="12"
+    >
       <div class="test-chat-header">
         <div>
           <span class="text-h6">测试配置</span>
-          <div v-if="selectedConfigInfo.name" class="text-caption text-grey">
+          <div
+            v-if="selectedConfigInfo.name"
+            class="text-caption text-grey"
+          >
             {{ selectedConfigInfo.name }} ({{ testConfigId }})
           </div>
         </div>
-        <v-btn icon variant="text" @click="closeTestChat">
+        <v-btn
+          icon
+          variant="text"
+          @click="closeTestChat"
+        >
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </div>
-      <v-divider></v-divider>
+      <v-divider />
       <div class="test-chat-content">
-        <StandaloneChat v-if="testChatDrawer" :configId="testConfigId" />
+        <StandaloneChat
+          v-if="testChatDrawer"
+          :config-id="testConfigId"
+        />
       </div>
     </v-card>
   </v-overlay>
@@ -276,6 +423,43 @@ export default {
       tm
     };
   },
+  data() {
+    return {
+      codeEditorDialog: false,
+      configManageDialog: false,
+      showConfigForm: false,
+      isEditingConfig: false,
+      config_data_has_changed: false,
+      config_data_str: "",
+      config_data: {
+        config: {}
+      },
+      fetched: false,
+        metadata: {} as AnyRecord,
+      save_message_snack: false,
+      save_message: "",
+      save_message_success: "",
+  configContentKey: 0,
+
+      // 配置类型切换
+      configType: 'normal', // 'normal' 或 'system'
+
+      // 系统配置开关
+      isSystemConfig: false,
+
+      // 多配置文件管理
+      selectedConfigID: null as string | null, // 用于存储当前选中的配置项信息
+      configInfoList: [] as ConfigInfo[],
+      configFormData: {
+        name: '',
+      },
+      editingConfigId: null as string | null,
+
+      // 测试聊天
+      testChatDrawer: false,
+      testConfigId: null as string | null,
+    }
+  },
 
   computed: {
     messages() {
@@ -314,43 +498,6 @@ export default {
       if (this.selectedConfigID !== newVal) {
         this.getConfigInfoList(newVal);
       }
-    }
-  },
-  data() {
-    return {
-      codeEditorDialog: false,
-      configManageDialog: false,
-      showConfigForm: false,
-      isEditingConfig: false,
-      config_data_has_changed: false,
-      config_data_str: "",
-      config_data: {
-        config: {}
-      },
-      fetched: false,
-        metadata: {} as AnyRecord,
-      save_message_snack: false,
-      save_message: "",
-      save_message_success: "",
-  configContentKey: 0,
-
-      // 配置类型切换
-      configType: 'normal', // 'normal' 或 'system'
-
-      // 系统配置开关
-      isSystemConfig: false,
-
-      // 多配置文件管理
-      selectedConfigID: null as string | null, // 用于存储当前选中的配置项信息
-      configInfoList: [] as ConfigInfo[],
-      configFormData: {
-        name: '',
-      },
-      editingConfigId: null as string | null,
-
-      // 测试聊天
-      testChatDrawer: false,
-      testConfigId: null as string | null,
     }
   },
   mounted() {

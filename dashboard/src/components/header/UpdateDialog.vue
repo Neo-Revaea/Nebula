@@ -272,17 +272,33 @@ const dialogModel = computed({
       >
         <div class="pa-6">
           <div class="d-flex align-center mb-6">
-            <v-avatar color="primary" rounded="md" size="64" class="mr-4">
-              <v-icon size="42" color="white">mdi-autorenew</v-icon>
+            <v-avatar
+              color="primary"
+              rounded="md"
+              size="64"
+              class="mr-4"
+            >
+              <v-icon
+                size="42"
+                color="white"
+              >
+                mdi-autorenew
+              </v-icon>
             </v-avatar>
             <div>
               <div class="text-subtitle-6 font-weight-bold text-uppercase text-medium-emphasis mb-1">
                 {{ t('core.header.updateDialog.title') }}
               </div>
-              <div class="text-body-2 text-medium-emphasis mb-1" style="line-height: 1.2">
+              <div
+                class="text-body-2 text-medium-emphasis mb-1"
+                style="line-height: 1.2"
+              >
                 {{ t('core.header.updateDialog.tabs.source') }}: {{ props.botCurrVersion }}
               </div>
-              <div class="text-body-2 text-medium-emphasis mb-1" style="line-height: 1.2">
+              <div
+                class="text-body-2 text-medium-emphasis mb-1"
+                style="line-height: 1.2"
+              >
                 {{ t('core.header.updateDialog.tabs.dashboard') }}: {{ props.dashboardCurrentVersion }}
               </div>
             </div>
@@ -341,10 +357,23 @@ const dialogModel = computed({
         </div>
       </v-sheet>
 
-      <div class="flex-grow-1 d-flex flex-column right-pane" style="min-width: 0">
-        <div v-if="isPhoneLayout" class="pa-4 border-b d-flex align-center justify-space-between bg-surface">
+      <div
+        class="flex-grow-1 d-flex flex-column right-pane"
+        style="min-width: 0"
+      >
+        <div
+          v-if="isPhoneLayout"
+          class="pa-4 border-b d-flex align-center justify-space-between bg-surface"
+        >
           <span class="text-h5 font-weight-bold">{{ t('core.header.updateDialog.title') }}</span>
-          <v-btn icon size="small" variant="text" @click="dialogModel = false"><v-icon>mdi-close</v-icon></v-btn>
+          <v-btn
+            icon
+            size="small"
+            variant="text"
+            @click="dialogModel = false"
+          >
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
         </div>
 
         <v-tabs
@@ -355,20 +384,44 @@ const dialogModel = computed({
           class="update-dialog-tabs"
           height="48"
         >
-          <v-tab value="source">{{ t('core.header.updateDialog.tabs.source') }}</v-tab>
-          <v-tab value="dashboard">{{ t('core.header.updateDialog.tabs.dashboard') }}</v-tab>
+          <v-tab value="source">
+            {{ t('core.header.updateDialog.tabs.source') }}
+          </v-tab>
+          <v-tab value="dashboard">
+            {{ t('core.header.updateDialog.tabs.dashboard') }}
+          </v-tab>
         </v-tabs>
 
         <div class="update-dialog-main">
-          <v-window v-model="updateTab" class="update-dialog-window">
-            <v-window-item value="source" class="update-dialog-window-item">
+          <v-window
+            v-model="updateTab"
+            class="update-dialog-window"
+          >
+            <v-window-item
+              value="source"
+              class="update-dialog-window-item"
+            >
               <div class="update-pane">
                 <template v-if="sourceUpdateChannel === 'official'">
                   <div class="update-pane__head">
-                    <div class="d-flex align-center justify-space-between" style="gap: 12px">
-                      <h3 class="text-h4 font-weight-bold">{{ t('core.header.updateDialog.channel.official') }}</h3>
-                      <v-card v-if="!isPhoneLayout" border flat rounded="lg" class="pa-3 update-status-card">
-                        <div class="d-flex align-center" style="gap: 12px">
+                    <div
+                      class="d-flex align-center justify-space-between"
+                      style="gap: 12px"
+                    >
+                      <h3 class="text-h4 font-weight-bold">
+                        {{ t('core.header.updateDialog.channel.official') }}
+                      </h3>
+                      <v-card
+                        v-if="!isPhoneLayout"
+                        border
+                        flat
+                        rounded="lg"
+                        class="pa-3 update-status-card"
+                      >
+                        <div
+                          class="d-flex align-center"
+                          style="gap: 12px"
+                        >
                           <span class="font-weight-bold text-medium-emphasis update-status-text">{{ displayUpdateStatus }}</span>
                           <v-progress-circular
                             v-if="installLoading || updatingDashboardLoading"
@@ -377,7 +430,11 @@ const dialogModel = computed({
                             size="20"
                             width="2"
                           />
-                          <v-icon v-else :color="activeHasNewVersion ? 'warning' : 'success'" size="20">
+                          <v-icon
+                            v-else
+                            :color="activeHasNewVersion ? 'warning' : 'success'"
+                            size="20"
+                          >
                             {{ activeHasNewVersion ? 'mdi-alert-circle' : 'mdi-check-circle' }}
                           </v-icon>
                         </div>
@@ -389,8 +446,17 @@ const dialogModel = computed({
                       class="d-flex align-center justify-space-between mt-3 update-mobile-actions"
                       style="gap: 12px"
                     >
-                      <v-card border flat rounded="lg" class="pa-3 update-status-card" style="min-width: 0">
-                        <div class="d-flex align-center" style="gap: 12px; min-width: 0">
+                      <v-card
+                        border
+                        flat
+                        rounded="lg"
+                        class="pa-3 update-status-card"
+                        style="min-width: 0"
+                      >
+                        <div
+                          class="d-flex align-center"
+                          style="gap: 12px; min-width: 0"
+                        >
                           <span class="font-weight-bold text-medium-emphasis update-status-text">{{ displayUpdateStatus }}</span>
                           <v-progress-circular
                             v-if="installLoading || updatingDashboardLoading"
@@ -399,7 +465,11 @@ const dialogModel = computed({
                             size="20"
                             width="2"
                           />
-                          <v-icon v-else :color="activeHasNewVersion ? 'warning' : 'success'" size="20">
+                          <v-icon
+                            v-else
+                            :color="activeHasNewVersion ? 'warning' : 'success'"
+                            size="20"
+                          >
                             {{ activeHasNewVersion ? 'mdi-alert-circle' : 'mdi-check-circle' }}
                           </v-icon>
                         </div>
@@ -428,7 +498,10 @@ const dialogModel = computed({
                     closable
                     rounded="lg"
                   >
-                    <div style="max-height: 200px; overflow-y: auto" class="text-body-2">
+                    <div
+                      style="max-height: 200px; overflow-y: auto"
+                      class="text-body-2"
+                    >
                       <MarkdownRender
                         :key="shikiWasmReady ? 'shiki' : 'pre'"
                         :content="releaseMessage"
@@ -461,20 +534,29 @@ const dialogModel = computed({
                     class="mb-4 update-pre-release-alert"
                     rounded="lg"
                   >
-                    <template v-slot:prepend>
+                    <template #prepend>
                       <v-icon>mdi-alert-circle-outline</v-icon>
                     </template>
                     <div class="text-body-2 update-pre-release-body">
                       <strong>{{ t('core.header.updateDialog.preReleaseWarning.title') }}</strong>
-                      <br />
+                      <br>
                       {{ t('core.header.updateDialog.preReleaseWarning.description') }}
-                      <a href="https://github.com/AstrBotDevs/AstrBot/issues" target="_blank" class="text-decoration-none">
+                      <a
+                        href="https://github.com/AstrBotDevs/AstrBot/issues"
+                        target="_blank"
+                        class="text-decoration-none"
+                      >
                         {{ t('core.header.updateDialog.preReleaseWarning.issueLink') }}
                       </a>
                     </div>
                   </v-alert>
 
-                  <v-card border flat rounded="lg" class="releases-table-card">
+                  <v-card
+                    border
+                    flat
+                    rounded="lg"
+                    class="releases-table-card"
+                  >
                     <v-data-table
                       class="releases-table"
                       :headers="releasesHeader"
@@ -484,7 +566,7 @@ const dialogModel = computed({
                       :fixed-header="!isPhoneLayout"
                       :height="isPhoneLayout ? undefined : '100%'"
                     >
-                      <template v-slot:item.tag_name="{ item }: { item: any }">
+                      <template #item.tag_name="{ item }: { item: any }">
                         <span class="font-weight-medium">{{ item.tag_name }}</span>
                         <v-chip
                           v-if="isPreRelease(item.tag_name)"
@@ -496,7 +578,7 @@ const dialogModel = computed({
                           {{ t('core.header.updateDialog.preRelease') }}
                         </v-chip>
                       </template>
-                      <template v-slot:item.zipball_url="{ item }: { item: { zipball_url?: string } }">
+                      <template #item.zipball_url="{ item }: { item: { zipball_url?: string } }">
                         <v-btn
                           v-if="item.zipball_url"
                           :href="item.zipball_url"
@@ -509,20 +591,29 @@ const dialogModel = computed({
                         >
                           {{ t('core.header.updateDialog.table.view') }}
                         </v-btn>
-                        <span v-else class="text-medium-emphasis">-</span>
+                        <span
+                          v-else
+                          class="text-medium-emphasis"
+                        >-</span>
                       </template>
-                      <template v-slot:item.body="{ item }: { item: { body: string; tag_name: string } }">
+                      <template #item.body="{ item }: { item: { body: string; tag_name: string } }">
                         <v-btn
-                          @click="openReleaseNotesDialog(item.body, item.tag_name)"
                           variant="text"
                           size="small"
                           color="primary"
+                          @click="openReleaseNotesDialog(item.body, item.tag_name)"
                         >
                           {{ t('core.header.updateDialog.table.view') }}
                         </v-btn>
                       </template>
-                      <template v-slot:item.switch="{ item }: { item: { tag_name: string } }">
-                        <v-btn @click="switchVersion(item.tag_name)" variant="flat" size="small" color="primary" class="text-none">
+                      <template #item.switch="{ item }: { item: { tag_name: string } }">
+                        <v-btn
+                          variant="flat"
+                          size="small"
+                          color="primary"
+                          class="text-none"
+                          @click="switchVersion(item.tag_name)"
+                        >
                           {{ t('core.header.updateDialog.table.switch') }}
                         </v-btn>
                       </template>
@@ -531,10 +622,17 @@ const dialogModel = computed({
                 </template>
 
                 <template v-else>
-                  <div class="d-flex align-center justify-space-between mb-6" style="gap: 12px">
+                  <div
+                    class="d-flex align-center justify-space-between mb-6"
+                    style="gap: 12px"
+                  >
                     <div>
-                      <h3 class="text-h4 font-weight-bold mb-1">{{ t('core.header.updateDialog.channel.nebula') }}</h3>
-                      <div class="text-body-2 text-medium-emphasis">{{ t('core.header.updateDialog.channel.nebulaTip') }}</div>
+                      <h3 class="text-h4 font-weight-bold mb-1">
+                        {{ t('core.header.updateDialog.channel.nebula') }}
+                      </h3>
+                      <div class="text-body-2 text-medium-emphasis">
+                        {{ t('core.header.updateDialog.channel.nebulaTip') }}
+                      </div>
                     </div>
                     <v-select
                       v-if="isPhoneLayout"
@@ -550,16 +648,32 @@ const dialogModel = computed({
                     />
                   </div>
 
-                  <v-card border flat class="d-flex flex-column flex-sm-row align-start align-sm-center pa-6">
-                    <v-avatar color="primary" variant="tonal" size="64" class="mr-6 mb-4 mb-sm-0">
-                      <v-icon size="32">mdi-git</v-icon>
+                  <v-card
+                    border
+                    flat
+                    class="d-flex flex-column flex-sm-row align-start align-sm-center pa-6"
+                  >
+                    <v-avatar
+                      color="primary"
+                      variant="tonal"
+                      size="64"
+                      class="mr-6 mb-4 mb-sm-0"
+                    >
+                      <v-icon size="32">
+                        mdi-git
+                      </v-icon>
                     </v-avatar>
                     <div class="flex-grow-1 mr-4">
-                      <div class="text-h4 font-weight-bold mb-1">{{ t('core.header.updateDialog.channel.updateLatest') }}</div>
+                      <div class="text-h4 font-weight-bold mb-1">
+                        {{ t('core.header.updateDialog.channel.updateLatest') }}
+                      </div>
                       <div class="text-body-1 text-medium-emphasis mb-2">
                         {{ t('core.header.updateDialog.channel.nebulaTip') }}
                       </div>
-                      <div v-if="lastCheckedAt" class="text-caption text-medium-emphasis">
+                      <div
+                        v-if="lastCheckedAt"
+                        class="text-caption text-medium-emphasis"
+                      >
                         {{ lastCheckedAt.toLocaleString() }}
                       </div>
                     </div>
@@ -568,9 +682,9 @@ const dialogModel = computed({
                         size="large"
                         color="primary"
                         prepend-icon="mdi-cloud-download"
-                        @click="updateToLatestFromChannel"
                         :loading="installLoading"
                         elevation="1"
+                        @click="updateToLatestFromChannel"
                       >
                         {{ t('core.header.updateDialog.channel.updateLatest') }}
                       </v-btn>
@@ -580,11 +694,19 @@ const dialogModel = computed({
               </div>
             </v-window-item>
 
-            <v-window-item value="dashboard" class="update-dialog-window-item">
+            <v-window-item
+              value="dashboard"
+              class="update-dialog-window-item"
+            >
               <div class="update-pane">
                 <div class="update-pane__head">
-                  <div class="d-flex align-center justify-space-between" style="gap: 12px">
-                    <h3 class="text-h4 font-weight-bold">{{ t('core.header.updateDialog.tabs.dashboard') }}</h3>
+                  <div
+                    class="d-flex align-center justify-space-between"
+                    style="gap: 12px"
+                  >
+                    <h3 class="text-h4 font-weight-bold">
+                      {{ t('core.header.updateDialog.tabs.dashboard') }}
+                    </h3>
                   </div>
 
                   <div
@@ -605,7 +727,11 @@ const dialogModel = computed({
                   </div>
                 </div>
 
-                <v-card border flat class="pa-6 dashboard-update-card">
+                <v-card
+                  border
+                  flat
+                  class="pa-6 dashboard-update-card"
+                >
                   <div class="dashboard-update-top">
                     <div class="dashboard-update-label">
                       <div class="text-body-4 text-medium-emphasis font-weight-bold mb-0">
@@ -637,10 +763,10 @@ const dialogModel = computed({
                       color="primary"
                       min-width="120"
                       prepend-icon="mdi-update"
-                      @click="updateDashboard()"
                       :loading="updatingDashboardLoading"
                       :block="$vuetify.display.xs"
                       class="dashboard-update-btn"
+                      @click="updateDashboard()"
                     >
                       {{ t('core.header.updateDialog.dashboardUpdate.downloadAndUpdate') }}
                     </v-btn>
@@ -651,8 +777,16 @@ const dialogModel = computed({
           </v-window>
         </div>
 
-        <div v-if="!isPhoneLayout" class="pa-4 border-t d-flex justify-end bg-surface">
-          <v-btn color="medium-emphasis" variant="text" size="large" @click="dialogModel = false">
+        <div
+          v-if="!isPhoneLayout"
+          class="pa-4 border-t d-flex justify-end bg-surface"
+        >
+          <v-btn
+            color="medium-emphasis"
+            variant="text"
+            size="large"
+            @click="dialogModel = false"
+          >
             {{ t('core.common.close') }}
           </v-btn>
         </div>
@@ -660,16 +794,26 @@ const dialogModel = computed({
     </v-card>
   </v-dialog>
 
-  <v-dialog v-model="releaseNotesDialog" max-width="800">
+  <v-dialog
+    v-model="releaseNotesDialog"
+    max-width="800"
+  >
     <v-card>
       <v-card-title class="d-flex align-center justify-space-between px-6 py-4">
         <span class="text-h6 font-weight-medium">
           {{ t('core.header.updateDialog.releaseNotes.title') }}: {{ releaseNotesTitle }}
         </span>
-        <v-btn icon="mdi-close" variant="text" @click="releaseNotesDialog = false" />
+        <v-btn
+          icon="mdi-close"
+          variant="text"
+          @click="releaseNotesDialog = false"
+        />
       </v-card-title>
       <v-divider />
-      <v-card-text class="pa-6" style="font-size: 16px; max-height: 500px; overflow-y: auto; line-height: 1.6">
+      <v-card-text
+        class="pa-6"
+        style="font-size: 16px; max-height: 500px; overflow-y: auto; line-height: 1.6"
+      >
         <MarkdownRender
           :key="shikiWasmReady ? 'shiki' : 'pre'"
           :content="releaseNotesContent"

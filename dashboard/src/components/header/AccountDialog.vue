@@ -98,26 +98,54 @@ async function accountEdit() {
 </script>
 
 <template>
-  <v-dialog v-model="dialogModel" persistent :max-width="display.xs.value ? '90%' : '500'">
+  <v-dialog
+    v-model="dialogModel"
+    persistent
+    :max-width="display.xs.value ? '90%' : '500'"
+  >
     <v-card class="account-dialog">
       <v-card-text class="py-6">
         <div class="d-flex flex-column align-center mb-6">
-          <Logo :title="t('core.header.logoTitle')" :subtitle="t('core.header.accountDialog.title')" />
+          <Logo
+            :title="t('core.header.logoTitle')"
+            :subtitle="t('core.header.accountDialog.title')"
+          />
         </div>
 
-        <v-alert v-if="warning" type="warning" variant="tonal" border="start" class="mb-4">
+        <v-alert
+          v-if="warning"
+          type="warning"
+          variant="tonal"
+          border="start"
+          class="mb-4"
+        >
           <strong>{{ t('core.header.accountDialog.securityWarning') }}</strong>
         </v-alert>
 
-        <v-alert v-if="accountEditStatus.success" type="success" variant="tonal" border="start" class="mb-4">
+        <v-alert
+          v-if="accountEditStatus.success"
+          type="success"
+          variant="tonal"
+          border="start"
+          class="mb-4"
+        >
           {{ accountEditStatus.message }}
         </v-alert>
 
-        <v-alert v-if="accountEditStatus.error" type="error" variant="tonal" border="start" class="mb-4">
+        <v-alert
+          v-if="accountEditStatus.error"
+          type="error"
+          variant="tonal"
+          border="start"
+          class="mb-4"
+        >
           {{ accountEditStatus.message }}
         </v-alert>
 
-        <v-form v-model="formValid" @submit.prevent="accountEdit">
+        <v-form
+          v-model="formValid"
+          @submit.prevent="accountEdit"
+        >
           <v-text-field
             v-model="password"
             :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
@@ -126,10 +154,10 @@ async function accountEdit() {
             variant="outlined"
             required
             clearable
-            @click:append-inner="showPassword = !showPassword"
             prepend-inner-icon="mdi-lock-outline"
             hide-details="auto"
             class="mb-4"
+            @click:append-inner="showPassword = !showPassword"
           />
 
           <v-text-field
@@ -141,11 +169,11 @@ async function accountEdit() {
             variant="outlined"
             required
             clearable
-            @click:append-inner="showNewPassword = !showNewPassword"
             prepend-inner-icon="mdi-lock-plus-outline"
             :hint="t('core.header.accountDialog.form.passwordHint')"
             persistent-hint
             class="mb-4"
+            @click:append-inner="showNewPassword = !showNewPassword"
           />
 
           <v-text-field
@@ -170,15 +198,21 @@ async function accountEdit() {
 
       <v-card-actions class="pa-4">
         <v-spacer />
-        <v-btn v-if="!warning" variant="tonal" color="secondary" @click="dialogModel = false" :disabled="accountEditStatus.loading">
+        <v-btn
+          v-if="!warning"
+          variant="tonal"
+          color="secondary"
+          :disabled="accountEditStatus.loading"
+          @click="dialogModel = false"
+        >
           {{ t('core.header.accountDialog.actions.cancel') }}
         </v-btn>
         <v-btn
           color="primary"
-          @click="accountEdit"
           :loading="accountEditStatus.loading"
           :disabled="!formValid"
           prepend-icon="mdi-content-save"
+          @click="accountEdit"
         >
           {{ t('core.header.accountDialog.actions.save') }}
         </v-btn>
