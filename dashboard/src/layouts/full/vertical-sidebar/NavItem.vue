@@ -2,6 +2,7 @@
 import { useI18n } from '@/i18n/composables';
 import { useCustomizerStore } from '@/stores/customizer';
 import { computed } from 'vue';
+import { useRoute } from 'vue-router';
 
 type SidebarNavItem = {
   title?: string
@@ -22,11 +23,22 @@ type SidebarNavItem = {
 const props = defineProps<{ item: SidebarNavItem; level?: number }>();
 const { t } = useI18n();
 const customizer = useCustomizerStore();
+const route = useRoute();
 
 const itemStyle = computed(() => {
   const lvl = props.level ?? 0;
   const indent = customizer.mini_sidebar ? '0px' : `${lvl * 24}px`;
   return { '--indent-padding': indent };
+});
+
+const isItemActive = computed(() => {
+  if (!props.item || props.item.type === 'external' || !props.item.to) return false;
+  if (typeof props.item.to !== 'string') return false;
+  if (props.item.to.includes('#')) {
+    const [path, hash] = props.item.to.split('#');
+    return route.path === path && route.hash === `#${hash}`;
+  }
+  return route.path === props.item.to;
 });
 </script>
 
@@ -73,6 +85,7 @@ const itemStyle = computed(() => {
     :disabled="item.disabled"
     :target="item.type === 'external' ? '_blank' : ''"
     :style="itemStyle"
+    :active="isItemActive"
     :exact="item.type !== 'external' && item.to === '/'"
   >
     <template #prepend>

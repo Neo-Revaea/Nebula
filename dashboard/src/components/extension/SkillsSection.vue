@@ -27,6 +27,10 @@
         </div>
       </v-row>
 
+      <div class="px-2 pb-2">
+        <small style="color: grey;">{{ tm('skills.runtimeHint') }}</small>
+      </div>
+
       <v-progress-linear
         v-if="loading"
         indeterminate
@@ -241,9 +245,16 @@ export default defineComponent({
       const minLoadingMs = 800;
       loading.value = true;
       try {
-        const res = await axios.get<ApiResponse<SkillItem[]>>("/api/skills");
+        const res = await axios.get<ApiResponse<{ skills: SkillItem[] } | SkillItem[]>>(
+          "/api/skills"
+        );
         const data = assertOk(res);
-        skills.value = data.data || [];
+        const payload = data.data;
+        if (Array.isArray(payload)) {
+          skills.value = payload;
+        } else {
+          skills.value = payload?.skills || [];
+        }
       } catch (err) {
         showMessage((err as any)?.message || tm("skills.loadFailed"), "error");
       }

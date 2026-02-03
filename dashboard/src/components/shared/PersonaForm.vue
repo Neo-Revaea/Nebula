@@ -802,8 +802,9 @@ export default defineComponent({
             try {
                 const response = await axios.get('/api/skills');
                 if (response.data.status === 'ok') {
-                    const skills = (response.data.data || []) as SkillInfo[];
-                    this.availableSkills = skills.filter((skill) => skill.active !== false);
+                  const payload = response.data.data || [];
+                  const skills = Array.isArray(payload) ? payload : (payload.skills || []);
+                  this.availableSkills = (skills as SkillInfo[]).filter((skill) => skill.active !== false);
                 } else {
                     this.$emit('error', response.data.message || 'Failed to load skills');
                 }

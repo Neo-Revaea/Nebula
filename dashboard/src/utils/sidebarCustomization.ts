@@ -70,7 +70,7 @@ export function resolveSidebarItems(
 
   // 收集所有条目，按 title 建索引
   defaultItems.forEach((item) => {
-    if (item.children) {
+    if (item.children && item.title === 'core.navigation.groups.more') {
       item.children.forEach((child) => {
         if (typeof child.title !== 'string' || !child.title) return
         all.set(child.title, cloneItems ? ({ ...child } as SidebarItem) : child)

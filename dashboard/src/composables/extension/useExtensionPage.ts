@@ -1,4 +1,5 @@
 ﻿import { computed, onMounted, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
 import { useModuleI18n } from '@/i18n/composables'
 import { useCommonStore } from '@/stores/common'
@@ -21,7 +22,56 @@ export function useExtensionPage() {
   const commonStore = useCommonStore()
   const { tm } = useModuleI18n('features/extension')
 
+  const route = useRoute()
+  const router = useRouter()
+
   const activeTab = ref<ExtensionActiveTab>('installed')
+
+  const tabToHash: Record<ExtensionActiveTab, string> = {
+    installed: '#installed',
+    mcp: '#mcp',
+    skills: '#skills',
+    market: '#market',
+    components: '#components'
+  }
+
+  const hashToTab: Record<string, ExtensionActiveTab> = {
+    '#installed': 'installed',
+    '#mcp': 'mcp',
+    '#skills': 'skills',
+    '#market': 'market',
+    '#components': 'components'
+  }
+
+  const normalizeHash = (hash: string) => {
+    const trimmed = (hash ?? '').trim()
+    if (!trimmed) return ''
+    return trimmed.startsWith('#') ? trimmed.toLowerCase() : `#${trimmed.toLowerCase()}`
+  }
+
+  watch(
+    () => route.hash,
+    hash => {
+      if (route.name !== 'Extensions') return
+      const normalized = normalizeHash(hash)
+      const nextTab = hashToTab[normalized]
+      if (nextTab && activeTab.value !== nextTab) {
+        activeTab.value = nextTab
+      }
+    },
+    { immediate: true }
+  )
+
+  watch(activeTab, tab => {
+    if (route.name !== 'Extensions') return
+    const desired = tabToHash[tab]
+    if (!desired) return
+    if (route.hash === desired) return
+
+    void router
+      .replace({ name: 'Extensions', query: route.query, hash: desired })
+      .catch(() => undefined)
+  })
 
   const marketLoading = ref(false)
 

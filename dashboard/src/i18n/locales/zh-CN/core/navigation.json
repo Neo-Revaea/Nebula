@@ -6,7 +6,14 @@
   "persona": "人格设定",
   "subagent": "SubAgent 编排",
   "toolUse": "MCP",
-  "extension": "插件",
+  "extension": "扩展功能",
+  "extensionTabs": {
+    "installed": "插件",
+    "market": "插件市场",
+    "mcp": "MCP",
+    "skills": "Skills",
+    "components": "管理行为"
+  },
   "config": "配置文件",
   "chat": "聊天",
   "cron": "未来任务",
