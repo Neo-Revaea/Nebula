@@ -105,6 +105,10 @@
               </div>
             </div>
           </template>
+
+          <template #item.session="{ item }">
+            {{ item.session || tm('table.notAvailable') }}
+          </template>
           <template #item.next_run_time="{ item }">
             {{ formatTime(item.next_run_time) }}
           </template>
@@ -114,6 +118,7 @@
           <template #item.note="{ item }">
             {{ item.note || tm('table.notAvailable') }}
           </template>
+
           <template #item.actions="{ item }">
             <div
               class="d-flex"
@@ -269,6 +274,7 @@ const headers = computed(() => [
   { title: tm('table.headers.name'), key: 'name', minWidth: '200px' },
   { title: tm('table.headers.type'), key: 'type', width: 110 },
   { title: tm('table.headers.cron'), key: 'cron_expression', minWidth: '160px' },
+  { title: tm('table.headers.session'), key: 'session', minWidth: '200px' },
   { title: tm('table.headers.nextRun'), key: 'next_run_time', minWidth: '160px' },
   { title: tm('table.headers.lastRun'), key: 'last_run_at', minWidth: '160px' },
   { title: tm('table.headers.note'), key: 'note', minWidth: '220px' },
@@ -303,7 +309,11 @@ async function loadJobs() {
   try {
     const res = await axios.get('/api/cron/jobs')
     if (res.data.status === 'ok') {
-      jobs.value = Array.isArray(res.data.data) ? res.data.data : []
+      const data = Array.isArray(res.data.data) ? res.data.data : []
+      jobs.value = data.map((job: any) => ({
+        ...job,
+        session: job?.payload?.session || job?.session || ''
+      }))
     } else {
       toast(res.data.message || tm('messages.loadFailed'), 'error')
     }
