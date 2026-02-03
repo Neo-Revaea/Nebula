@@ -75,7 +75,8 @@
   },
   "editor": {
     "fullscreen": "全屏编辑",
-    "editingTitle": "编辑内容"
+    "editingTitle": "编辑内容",
+    "invalidJson": "JSON 格式不合法，请修正后再保存。"
   },
   "templateList": {
     "addEntry": "添加条目",

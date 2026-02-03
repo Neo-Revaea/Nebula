@@ -75,7 +75,8 @@
   },
   "editor": {
     "fullscreen": "Fullscreen Edit",
-    "editingTitle": "Editing Content"
+    "editingTitle": "Editing Content",
+    "invalidJson": "Invalid JSON. Please fix the syntax before saving."
   },
   "templateList": {
     "addEntry": "Add Entry",

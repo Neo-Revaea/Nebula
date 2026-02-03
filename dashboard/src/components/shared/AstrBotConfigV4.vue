@@ -48,6 +48,8 @@ const dialog = ref(false)
 const currentEditingKey = ref('')
 const currentEditingLanguage = ref('json')
 const currentEditingTheme = ref('vs-light')
+const editingValue = ref('')
+const editorError = ref('')
 let currentEditingKeyIterable: AnyRecord = {}
 
 function getValueBySelector(obj: unknown, selector: string): unknown {
@@ -97,11 +99,41 @@ function openEditorDialog(key: string, value: unknown, theme?: string, language?
   currentEditingLanguage.value = language || 'json'
   currentEditingTheme.value = theme || 'vs-light'
   currentEditingKeyIterable = value && typeof value === 'object' ? (value as AnyRecord) : {}
+  editorError.value = ''
+
+  const rawValue = getValueBySelector(currentEditingKeyIterable, key)
+  if (rawValue === null || rawValue === undefined) {
+    editingValue.value = ''
+  } else if (typeof rawValue === 'object') {
+    editingValue.value = JSON.stringify(rawValue, null, 2)
+  } else {
+    editingValue.value = String(rawValue)
+  }
   dialog.value = true
 }
 
 function saveEditedContent() {
+  editorError.value = ''
+
+  let finalValue: unknown = editingValue.value
+  if (currentEditingLanguage.value === 'json') {
+    try {
+      finalValue = JSON.parse(editingValue.value)
+    } catch {
+      editorError.value = String(t('core.common.editor.invalidJson') || 'Invalid JSON')
+      return
+    }
+  }
+
+  setValueBySelector(props.iterable as AnyRecord, currentEditingKey.value, finalValue)
   dialog.value = false
+  editingValue.value = ''
+}
+
+function closeEditorDialog() {
+  dialog.value = false
+  editorError.value = ''
+  editingValue.value = ''
 }
 
 function shouldShowItem(itemMeta: unknown, _itemKey: string) {
@@ -286,7 +318,7 @@ function hasVisibleItemsAfter(items: Record<string, unknown>, currentIndex: numb
         >
           <v-btn
             icon
-            @click="dialog = false"
+            @click="closeEditorDialog"
           >
             <v-icon>mdi-close</v-icon>
           </v-btn>
@@ -302,8 +334,17 @@ function hasVisibleItemsAfter(items: Record<string, unknown>, currentIndex: numb
           </v-toolbar-items>
         </v-toolbar>
         <v-card-text class="pa-0">
+          <v-alert
+            v-if="editorError"
+            type="error"
+            variant="tonal"
+            density="compact"
+            class="ma-4"
+          >
+            {{ editorError }}
+          </v-alert>
           <VueMonacoEditor
-            v-model:value="currentEditingKeyIterable[currentEditingKey]"
+            v-model:value="editingValue"
             :theme="currentEditingTheme"
             :language="currentEditingLanguage"
             style="height: calc(100vh - 64px);"
