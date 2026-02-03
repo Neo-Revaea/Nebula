@@ -8,7 +8,7 @@
     <template #activator="{ props: menuProps }">
       <v-chip
         v-bind="menuProps"
-        class="text-none provider-chip"
+        :class="['text-none', 'provider-chip', { 'provider-chip--mobile': mobile }]"
         variant="tonal"
         :size="chipSize"
       >
@@ -18,9 +18,20 @@
         >
           mdi-creation
         </v-icon>
-        <span v-if="selectedProviderId">
-          {{ selectedProviderId }}
-        </span>
+        <v-tooltip
+          v-if="selectedProviderId"
+          :text="selectedProviderTooltip"
+          location="top"
+        >
+          <template #activator="{ props: tipProps }">
+            <span
+              v-bind="tipProps"
+              class="provider-chip-label"
+            >
+              {{ selectedProviderId }}
+            </span>
+          </template>
+        </v-tooltip>
         <span v-else>Model</span>
       </v-chip>
     </template>
@@ -142,6 +153,17 @@ const menuOpen = ref(false);
 
 const chipSize = computed(() => mobile.value ? 'x-small' : 'small');
 
+const selectedProvider = computed(() => {
+  if (!selectedProviderId.value) return null;
+  return providerConfigs.value.find(p => p.id === selectedProviderId.value) || null;
+});
+
+const selectedProviderTooltip = computed(() => {
+  if (!selectedProviderId.value) return '';
+  if (!selectedProvider.value?.model) return selectedProviderId.value;
+  return `${selectedProviderId.value} · ${selectedProvider.value.model}`;
+});
+
 const filteredProviders = computed(() => {
     if (!searchQuery.value) {
         return providerConfigs.value;
@@ -227,6 +249,19 @@ defineExpose({
 <style scoped>
 .provider-chip {
     cursor: pointer;
+}
+
+.provider-chip-label {
+  display: inline-block;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: bottom;
+}
+
+.provider-chip--mobile .provider-chip-label {
+  max-width: 110px;
 }
 
 .provider-menu-card {
