@@ -24,8 +24,10 @@
     <!-- 选择对话框 -->
     <v-dialog
       v-model="dialog"
-      max-width="1000px"
-      min-width="800px"
+      :max-width="isMobile ? '100vw' : '1000px'"
+      :width="isMobile ? '100vw' : undefined"
+      :fullscreen="isMobile"
+      :scrollable="isMobile"
     >
       <v-card class="selector-dialog-card">
         <v-card-title class="dialog-title d-flex align-center py-4 px-5">
@@ -40,13 +42,13 @@
 
         <v-divider />
 
-        <v-card-text
-          class="pa-0"
-          style="height: 600px; max-height: 80vh; overflow: hidden;"
-        >
+        <v-card-text class="selector-body pa-0">
           <div class="selector-layout">
             <!-- 左侧文件夹树 -->
-            <div class="folder-sidebar">
+            <div
+              v-if="!isMobile"
+              class="folder-sidebar"
+            >
               <div class="sidebar-header pa-3 pb-2">
                 <span class="text-caption text-medium-emphasis font-weight-medium">
                   <v-icon
@@ -384,8 +386,42 @@ export default defineComponent({
             dialog: false,
             selectedItemId: '' as string,
             currentFolderId: null as string | null,
-            breadcrumbPath: [] as FolderTreeNode[]
+        breadcrumbPath: [] as FolderTreeNode[],
+        isMobile: false,
+        mql: null as MediaQueryList | null,
+        mqlListener: null as ((e: MediaQueryListEvent) => void) | null
         };
+    },
+    mounted() {
+      if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+        return;
+      }
+      this.mql = window.matchMedia('(max-width: 960px)');
+      this.isMobile = this.mql.matches;
+
+      this.mqlListener = (e: MediaQueryListEvent) => {
+        this.isMobile = e.matches;
+      };
+
+      if (typeof this.mql.addEventListener === 'function') {
+        this.mql.addEventListener('change', this.mqlListener);
+      } else {
+        // Safari < 14
+        (this.mql as any).addListener(this.mqlListener);
+      }
+    },
+    beforeUnmount() {
+      if (!this.mql || !this.mqlListener) {
+        return;
+      }
+      if (typeof this.mql.removeEventListener === 'function') {
+        this.mql.removeEventListener('change', this.mqlListener);
+      } else {
+        // Safari < 14
+        (this.mql as any).removeListener(this.mqlListener);
+      }
+      this.mql = null;
+      this.mqlListener = null;
     },
     computed: {
         displayValue(): string {
@@ -549,6 +585,12 @@ export default defineComponent({
     overflow: hidden;
 }
 
+.selector-body {
+  height: 600px;
+  max-height: 80vh;
+  overflow: hidden;
+}
+
 .dialog-title {
     font-size: 1.25rem;
     font-weight: 500;
@@ -660,11 +702,20 @@ export default defineComponent({
     background-color: rgba(var(--v-theme-primary), 0.08);
 }
 
-@media (max-width: 600px) {
+@media (max-width: 960px) {
+  .selector-dialog-card {
+    border-radius: 0;
+  }
+
+  .selector-body {
+    height: calc(100dvh - 140px);
+    max-height: none;
+  }
+
     .selector-layout {
         flex-direction: column;
-        height: auto;
-        max-height: 500px;
+    height: 100%;
+    max-height: none;
     }
 
     .folder-sidebar {
@@ -675,7 +726,7 @@ export default defineComponent({
     }
 
     .items-list {
-        max-height: 300px;
+      max-height: none;
     }
 }
 </style>
