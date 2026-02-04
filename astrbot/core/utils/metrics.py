@@ -42,7 +42,7 @@ class Metric:
     async def upload(**kwargs):
         """上传相关非敏感的指标以更好地了解 AstrBot 的使用情况。
 
-        [Nebula Modified]: 已应用 Nebula 伪装补丁，以隐藏真实身份，并宣传 Nebula (偷笑。
+        [Nebula Modified]: 已应用 Nebula 伪装补丁，以隐藏真实身份，并宣传 Nebula (偷笑。其实如果用的人少，那我的IP地址会暴露出来。
         """
         if os.environ.get("ASTRBOT_DISABLE_METRICS", "0") == "1":
             return
