@@ -41,24 +41,14 @@
     </div>
 
     <!-- 知识库网格 -->
-    <div
-      v-if="loading && kbList.length === 0"
-      class="loading-container"
-    >
-      <v-progress-circular
-        indeterminate
-        color="primary"
-        size="64"
-      />
+    <div v-if="loading && kbList.length === 0" class="loading-container">
+      <v-progress-circular indeterminate color="primary" size="64" />
       <p class="mt-4 text-medium-emphasis">
         {{ t('list.loading') }}
       </p>
     </div>
 
-    <div
-      v-else-if="kbList.length > 0"
-      class="kb-grid"
-    >
+    <div v-else-if="kbList.length > 0" class="kb-grid">
       <ItemCard
         v-for="kb in kbList"
         :key="kb.kb_id"
@@ -87,21 +77,13 @@
 
             <div class="kb-stats mt-4">
               <div class="stat-item">
-                <v-icon
-                  size="small"
-                  color="primary"
-                >
+                <v-icon size="small" color="primary">
                   mdi-file-document
                 </v-icon>
                 <span>{{ item.doc_count || 0 }} {{ t('list.documents') }}</span>
               </div>
               <div class="stat-item">
-                <v-icon
-                  size="small"
-                  color="secondary"
-                >
-                  mdi-text-box
-                </v-icon>
+                <v-icon size="small" color="secondary"> mdi-text-box </v-icon>
                 <span>{{ item.chunk_count || 0 }} {{ t('list.chunks') }}</span>
               </div>
             </div>
@@ -128,16 +110,8 @@
     </div>
 
     <!-- 空状态 -->
-    <div
-      v-else
-      class="empty-state"
-    >
-      <v-icon
-        size="100"
-        color="grey-lighten-2"
-      >
-        mdi-book-open-variant
-      </v-icon>
+    <div v-else class="empty-state">
+      <v-icon size="100" color="grey-lighten-2"> mdi-book-open-variant </v-icon>
       <h2 class="mt-4">
         {{ t('list.empty') }}
       </h2>
@@ -154,20 +128,14 @@
     </div>
 
     <!-- 创建/编辑对话框 -->
-    <v-dialog
-      v-model="showCreateDialog"
-      max-width="600px"
-      persistent
-    >
+    <v-dialog v-model="showCreateDialog" max-width="600px" persistent>
       <v-card>
         <v-card-title class="d-flex align-center">
-          <span class="text-h5">{{ editingKB ? t('edit.title') : t('create.title') }}</span>
+          <span class="text-h5">{{
+            editingKB ? t('edit.title') : t('create.title')
+          }}</span>
           <v-spacer />
-          <v-btn
-            icon="mdi-close"
-            variant="text"
-            @click="closeCreateDialog"
-          />
+          <v-btn icon="mdi-close" variant="text" @click="closeCreateDialog" />
         </v-card-title>
 
         <v-divider />
@@ -175,10 +143,7 @@
         <v-card-text class="pa-6">
           <!-- Emoji 选择器 -->
           <div class="text-center mb-6">
-            <div
-              class="emoji-display"
-              @click="showEmojiPicker = true"
-            >
+            <div class="emoji-display" @click="showEmojiPicker = true">
               {{ formData.emoji }}
             </div>
             <p class="text-caption text-medium-emphasis mt-2">
@@ -187,16 +152,13 @@
           </div>
 
           <!-- 表单 -->
-          <v-form
-            ref="formRef"
-            @submit.prevent="submitForm"
-          >
+          <v-form ref="formRef" @submit.prevent="submitForm">
             <v-text-field
               v-model="formData.kb_name"
               :label="t('create.nameLabel')"
               :placeholder="t('create.namePlaceholder')"
               variant="outlined"
-              :rules="[v => !!v || t('create.nameRequired')]"
+              :rules="[(v) => !!v || t('create.nameRequired')]"
               required
               class="mb-4"
               hint="后续如修改知识库名称，需重新在配置文件更新。"
@@ -215,7 +177,7 @@
             <v-select
               v-model="formData.embedding_provider_id"
               :items="embeddingProviders"
-              :item-title="item => item.embedding_model || item.id"
+              :item-title="(item) => item.embedding_model || item.id"
               :item-value="'id'"
               :label="t('create.embeddingModelLabel')"
               variant="outlined"
@@ -227,10 +189,12 @@
               <template #item="{ props, item }">
                 <v-list-item v-bind="props">
                   <template #subtitle>
-                    {{ t('create.providerInfo', {
-                      id: item.raw.id,
-                      dimensions: item.raw.embedding_dimensions || 'N/A'
-                    }) }}
+                    {{
+                      t('create.providerInfo', {
+                        id: item.raw.id,
+                        dimensions: item.raw.embedding_dimensions || 'N/A',
+                      })
+                    }}
                   </template>
                 </v-list-item>
               </template>
@@ -239,7 +203,7 @@
             <v-select
               v-model="formData.rerank_provider_id"
               :items="rerankProviders"
-              :item-title="item => item.rerank_model || item.id"
+              :item-title="(item) => item.rerank_model || item.id"
               :item-value="'id'"
               :label="t('create.rerankModelLabel')"
               variant="outlined"
@@ -261,10 +225,7 @@
 
         <v-card-actions class="pa-4">
           <v-spacer />
-          <v-btn
-            variant="text"
-            @click="closeCreateDialog"
-          >
+          <v-btn variant="text" @click="closeCreateDialog">
             {{ t('create.cancel') }}
           </v-btn>
           <v-btn
@@ -280,10 +241,7 @@
     </v-dialog>
 
     <!-- Emoji 选择器对话框 -->
-    <v-dialog
-      v-model="showEmojiPicker"
-      max-width="500px"
-    >
+    <v-dialog v-model="showEmojiPicker" max-width="500px">
       <v-card class="emoji-dialog-card">
         <v-card-title class="pa-4 emoji-dialog-title">
           {{ t('emoji.title') }}
@@ -315,10 +273,7 @@
         <v-divider />
         <v-card-actions class="pa-4 emoji-dialog-actions">
           <v-spacer />
-          <v-btn
-            variant="text"
-            @click="showEmojiPicker = false"
-          >
+          <v-btn variant="text" @click="showEmojiPicker = false">
             {{ t('emoji.close') }}
           </v-btn>
         </v-card-actions>
@@ -326,34 +281,24 @@
     </v-dialog>
 
     <!-- 删除确认对话框 -->
-    <v-dialog
-      v-model="showDeleteDialog"
-      max-width="450px"
-      persistent
-    >
+    <v-dialog v-model="showDeleteDialog" max-width="450px" persistent>
       <v-card>
         <v-card-title class="pa-4 text-h6">
           {{ t('delete.title') }}
         </v-card-title>
         <v-divider />
         <v-card-text class="pa-6">
-          <p>{{ t('delete.confirmText', { name: deleteTarget?.kb_name || '' }) }}</p>
-          <v-alert
-            type="error"
-            variant="tonal"
-            density="compact"
-            class="mt-4"
-          >
+          <p>
+            {{ t('delete.confirmText', { name: deleteTarget?.kb_name || '' }) }}
+          </p>
+          <v-alert type="error" variant="tonal" density="compact" class="mt-4">
             {{ t('delete.warning') }}
           </v-alert>
         </v-card-text>
         <v-divider />
         <v-card-actions class="pa-4">
           <v-spacer />
-          <v-btn
-            variant="text"
-            @click="cancelDelete"
-          >
+          <v-btn variant="text" @click="cancelDelete">
             {{ t('delete.cancel') }}
           </v-btn>
           <v-btn
@@ -369,263 +314,341 @@
     </v-dialog>
 
     <!-- 消息提示 -->
-    <v-snackbar
-      v-model="snackbar.show"
-      :color="snackbar.color"
-    >
+    <v-snackbar v-model="snackbar.show" :color="snackbar.color">
       {{ snackbar.text }}
     </v-snackbar>
 
-    <div
-      class="position-absolute"
-      style="bottom: 0px; right: 16px;"
-    >
-      <small @click="router.push('/alkaid/knowledge-base')"><a style="text-decoration: underline; cursor: pointer;">切换到旧版知识库</a></small>
+    <div class="position-absolute" style="bottom: 0px; right: 16px">
+      <small @click="router.push('/alkaid/knowledge-base')"
+        ><a style="text-decoration: underline; cursor: pointer"
+          >切换到旧版知识库</a
+        ></small
+      >
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import axios from 'axios'
-import { useModuleI18n } from '@/i18n/composables'
-import ItemCard from '@/components/shared/ItemCard.vue'
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import axios from 'axios';
+import { useModuleI18n } from '@/i18n/composables';
+import ItemCard from '@/components/shared/ItemCard.vue';
 
-const { tm: t } = useModuleI18n('features/knowledge-base/index')
-const router = useRouter()
+const { tm: t } = useModuleI18n('features/knowledge-base/index');
+const router = useRouter();
 
 // 状态
-const loading = ref(false)
-const saving = ref(false)
-const deleting = ref(false)
-const kbList = ref<any[]>([])
-const embeddingProviders = ref<any[]>([])
-const rerankProviders = ref<any[]>([])
-const originalEmbeddingProvider = ref<string | null>(null)
-const showEmbeddingWarning = ref(false)
-const pendingEmbeddingProvider = ref<string | null>(null)
+const loading = ref(false);
+const saving = ref(false);
+const deleting = ref(false);
+const kbList = ref<any[]>([]);
+const embeddingProviders = ref<any[]>([]);
+const rerankProviders = ref<any[]>([]);
+const originalEmbeddingProvider = ref<string | null>(null);
+const showEmbeddingWarning = ref(false);
+const pendingEmbeddingProvider = ref<string | null>(null);
 
 // 对话框
-const showCreateDialog = ref(false)
-const showEmojiPicker = ref(false)
-const showDeleteDialog = ref(false)
+const showCreateDialog = ref(false);
+const showEmojiPicker = ref(false);
+const showDeleteDialog = ref(false);
 
 // Snackbar 通知
 const snackbar = ref({
   show: false,
   text: '',
-  color: 'success'
-})
+  color: 'success',
+});
 
 // 表单
-const formRef = ref()
-const editingKB = ref<any>(null)
-const deleteTarget = ref<any>(null)
+const formRef = ref();
+const editingKB = ref<any>(null);
+const deleteTarget = ref<any>(null);
 const formData = ref({
   kb_name: '',
   description: '',
   emoji: '📚',
   embedding_provider_id: null,
-  rerank_provider_id: null
-})
+  rerank_provider_id: null,
+});
 
 // Emoji 分类
 const emojiCategories = [
   {
     key: 'books',
-    emojis: ['📚', '📖', '📕', '📗', '📘', '📙', '📓', '📔', '📒', '📑', '🗂️', '📂', '📁', '🗃️', '🗄️']
+    emojis: [
+      '📚',
+      '📖',
+      '📕',
+      '📗',
+      '📘',
+      '📙',
+      '📓',
+      '📔',
+      '📒',
+      '📑',
+      '🗂️',
+      '📂',
+      '📁',
+      '🗃️',
+      '🗄️',
+    ],
   },
   {
     key: 'emotions',
-    emojis: ['😀', '😃', '😄', '😁', '😆', '😅', '🤣', '😂', '🙂', '🙃', '😉', '😊', '😇', '🥰', '😍']
+    emojis: [
+      '😀',
+      '😃',
+      '😄',
+      '😁',
+      '😆',
+      '😅',
+      '🤣',
+      '😂',
+      '🙂',
+      '🙃',
+      '😉',
+      '😊',
+      '😇',
+      '🥰',
+      '😍',
+    ],
   },
   {
     key: 'objects',
-    emojis: ['💡', '🔬', '🔭', '🗿', '🏆', '🎯', '🎓', '🔑', '🔒', '🔓', '🔔', '🔕', '🔨', '🛠️', '⚙️']
+    emojis: [
+      '💡',
+      '🔬',
+      '🔭',
+      '🗿',
+      '🏆',
+      '🎯',
+      '🎓',
+      '🔑',
+      '🔒',
+      '🔓',
+      '🔔',
+      '🔕',
+      '🔨',
+      '🛠️',
+      '⚙️',
+    ],
   },
   {
     key: 'symbols',
-    emojis: ['❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '🤎', '⭐', '🌟', '✨', '💫', '⚡', '🔥']
-  }
-]
+    emojis: [
+      '❤️',
+      '🧡',
+      '💛',
+      '💚',
+      '💙',
+      '💜',
+      '🖤',
+      '🤍',
+      '🤎',
+      '⭐',
+      '🌟',
+      '✨',
+      '💫',
+      '⚡',
+      '🔥',
+    ],
+  },
+];
 
 // 加载知识库列表
 const loadKnowledgeBases = async (refreshStats = false) => {
-  loading.value = true
+  loading.value = true;
   try {
-    const params: any = {}
+    const params: any = {};
     if (refreshStats) {
-      params.refresh_stats = 'true'
+      params.refresh_stats = 'true';
     }
 
-    const response = await axios.get('/api/kb/list', { params })
+    const response = await axios.get('/api/kb/list', { params });
     if (response.data.status === 'ok') {
-      kbList.value = response.data.data.items || []
+      kbList.value = response.data.data.items || [];
     } else {
-      showSnackbar(response.data.message || t('messages.loadError'), 'error')
+      showSnackbar(response.data.message || t('messages.loadError'), 'error');
     }
   } catch (error) {
-    console.error('Failed to load knowledge bases:', error)
-    showSnackbar(t('messages.loadError'), 'error')
+    console.error('Failed to load knowledge bases:', error);
+    showSnackbar(t('messages.loadError'), 'error');
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 // 加载提供商配置
 const loadProviders = async () => {
   try {
     const response = await axios.get('/api/config/provider/list', {
-      params: { provider_type: 'embedding,rerank' }
-    })
+      params: { provider_type: 'embedding,rerank' },
+    });
     if (response.data.status === 'ok') {
       embeddingProviders.value = response.data.data.filter(
-        (p: any) => p.provider_type === 'embedding'
-      )
+        (p: any) => p.provider_type === 'embedding',
+      );
       rerankProviders.value = response.data.data.filter(
-        (p: any) => p.provider_type === 'rerank'
-      )
+        (p: any) => p.provider_type === 'rerank',
+      );
     }
   } catch (error) {
-    console.error('Failed to load providers:', error)
+    console.error('Failed to load providers:', error);
   }
-}
+};
 
 // 导航到详情页
 const navigateToDetail = (kbId: string) => {
-  router.push({ name: 'NativeKBDetail', params: { kbId } })
-}
+  router.push({ name: 'NativeKBDetail', params: { kbId } });
+};
 
 // 编辑知识库
 const editKB = (kb: any) => {
-  editingKB.value = kb
-  originalEmbeddingProvider.value = kb.embedding_provider_id
+  editingKB.value = kb;
+  originalEmbeddingProvider.value = kb.embedding_provider_id;
   formData.value = {
     kb_name: kb.kb_name,
     description: kb.description || '',
     emoji: kb.emoji || '📚',
     embedding_provider_id: kb.embedding_provider_id,
-    rerank_provider_id: kb.rerank_provider_id
-  }
-  showCreateDialog.value = true
-}
+    rerank_provider_id: kb.rerank_provider_id,
+  };
+  showCreateDialog.value = true;
+};
 
 // 确认删除
 const confirmDelete = (kb: any) => {
-  deleteTarget.value = kb
-  showDeleteDialog.value = true
-}
+  deleteTarget.value = kb;
+  showDeleteDialog.value = true;
+};
 
 // 取消删除
 const cancelDelete = () => {
-  showDeleteDialog.value = false
-  deleteTarget.value = null
-}
+  showDeleteDialog.value = false;
+  deleteTarget.value = null;
+};
 
 // 删除知识库
 const deleteKB = async () => {
-  if (!deleteTarget.value) return
+  if (!deleteTarget.value) return;
 
-  deleting.value = true
+  deleting.value = true;
   try {
     const response = await axios.post('/api/kb/delete', {
-      kb_id: deleteTarget.value.kb_id
-    })
+      kb_id: deleteTarget.value.kb_id,
+    });
 
-    console.log('Delete response:', response.data) // 调试日志
+    console.log('Delete response:', response.data); // 调试日志
 
     if (response.data.status === 'ok') {
-      showSnackbar(t('messages.deleteSuccess'))
+      showSnackbar(t('messages.deleteSuccess'));
       // 先刷新列表，再关闭对话框
-      await loadKnowledgeBases()
-      showDeleteDialog.value = false
-      deleteTarget.value = null
+      await loadKnowledgeBases();
+      showDeleteDialog.value = false;
+      deleteTarget.value = null;
     } else {
-      showSnackbar(response.data.message || t('messages.deleteFailed'), 'error')
+      showSnackbar(
+        response.data.message || t('messages.deleteFailed'),
+        'error',
+      );
     }
   } catch (error) {
-    console.error('Failed to delete knowledge base:', error)
-    showSnackbar(t('messages.deleteFailed'), 'error')
+    console.error('Failed to delete knowledge base:', error);
+    showSnackbar(t('messages.deleteFailed'), 'error');
   } finally {
-    deleting.value = false
+    deleting.value = false;
   }
-}
+};
 
 // 提交表单
 const submitForm = async () => {
-  const { valid } = await formRef.value.validate()
-  if (!valid) return
+  const { valid } = await formRef.value.validate();
+  if (!valid) return;
 
-  saving.value = true
+  saving.value = true;
   try {
     const payload = {
       kb_name: formData.value.kb_name,
       description: formData.value.description,
       emoji: formData.value.emoji,
       embedding_provider_id: formData.value.embedding_provider_id,
-      rerank_provider_id: formData.value.rerank_provider_id
-    }
+      rerank_provider_id: formData.value.rerank_provider_id,
+    };
 
-    let response
+    let response;
     if (editingKB.value) {
       response = await axios.post('/api/kb/update', {
         kb_id: editingKB.value.kb_id,
-        ...payload
-      })
+        ...payload,
+      });
     } else {
-      response = await axios.post('/api/kb/create', payload)
+      response = await axios.post('/api/kb/create', payload);
     }
 
     if (response.data.status === 'ok') {
-      showSnackbar(editingKB.value ? t('messages.updateSuccess') : t('messages.createSuccess'))
-      closeCreateDialog()
-      await loadKnowledgeBases()
+      showSnackbar(
+        editingKB.value
+          ? t('messages.updateSuccess')
+          : t('messages.createSuccess'),
+      );
+      closeCreateDialog();
+      await loadKnowledgeBases();
     } else {
-      showSnackbar(response.data.message || (editingKB.value ? t('messages.updateFailed') : t('messages.createFailed')), 'error')
+      showSnackbar(
+        response.data.message ||
+          (editingKB.value
+            ? t('messages.updateFailed')
+            : t('messages.createFailed')),
+        'error',
+      );
     }
   } catch (error) {
-    console.error('Failed to save knowledge base:', error)
-    showSnackbar(editingKB.value ? t('messages.updateFailed') : t('messages.createFailed'), 'error')
+    console.error('Failed to save knowledge base:', error);
+    showSnackbar(
+      editingKB.value ? t('messages.updateFailed') : t('messages.createFailed'),
+      'error',
+    );
   } finally {
-    saving.value = false
+    saving.value = false;
   }
-}
+};
 
 // 关闭创建对话框
 const closeCreateDialog = () => {
-  showCreateDialog.value = false
-  editingKB.value = null
-  originalEmbeddingProvider.value = null
-  showEmbeddingWarning.value = false
-  pendingEmbeddingProvider.value = null
+  showCreateDialog.value = false;
+  editingKB.value = null;
+  originalEmbeddingProvider.value = null;
+  showEmbeddingWarning.value = false;
+  pendingEmbeddingProvider.value = null;
   formData.value = {
     kb_name: '',
     description: '',
     emoji: '📚',
     embedding_provider_id: null,
-    rerank_provider_id: null
-  }
-  formRef.value?.reset()
-}
+    rerank_provider_id: null,
+  };
+  formRef.value?.reset();
+};
 
 // 选择 emoji
 const selectEmoji = (emoji: string) => {
-  formData.value.emoji = emoji
-  showEmojiPicker.value = false
-}
+  formData.value.emoji = emoji;
+  showEmojiPicker.value = false;
+};
 
 // 显示通知
 const showSnackbar = (text: string, color: string = 'success') => {
-  snackbar.value.text = text
-  snackbar.value.color = color
-  snackbar.value.show = true
-}
+  snackbar.value.text = text;
+  snackbar.value.color = color;
+  snackbar.value.show = true;
+};
 
 onMounted(() => {
-  loadKnowledgeBases(true)  // 首次加载时刷新统计信息
-  loadProviders()
-})
+  loadKnowledgeBases(true); // 首次加载时刷新统计信息
+  loadProviders();
+});
 </script>
 
 <style scoped>

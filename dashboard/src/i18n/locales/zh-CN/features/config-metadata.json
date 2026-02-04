@@ -11,12 +11,7 @@
         },
         "agent_runner_type": {
           "description": "执行器",
-          "labels": [
-            "内置 Agent",
-            "Dify",
-            "Coze",
-            "阿里云百炼应用"
-          ]
+          "labels": ["内置 Agent", "Dify", "Coze", "阿里云百炼应用"]
         },
         "coze_agent_runner_provider_id": {
           "description": "Coze Agent 执行器提供商 ID"
@@ -252,10 +247,7 @@
         "tool_schema_mode": {
           "description": "工具调用模式",
           "hint": "skills-like 先下发工具名称与描述，再下发参数；full 一次性下发完整参数。",
-          "labels": [
-            "Skills-like（两阶段）",
-            "Full（完整参数）"
-          ]
+          "labels": ["Skills-like（两阶段）", "Full（完整参数）"]
         },
         "streaming_response": {
           "description": "流式输出"
@@ -263,10 +255,7 @@
         "unsupported_streaming_strategy": {
           "description": "不支持流式回复的平台",
           "hint": "选择在不支持流式回复的平台上的处理方式。实时分段回复会在系统接收流式响应检测到诸如标点符号等分段点时,立即发送当前已接收的内容",
-          "labels": [
-            "实时分段回复",
-            "关闭流式回复"
-          ]
+          "labels": ["实时分段回复", "关闭流式回复"]
         },
 
         "wake_prefix": {
@@ -488,10 +477,7 @@
           "split_mode": {
             "description": "分段模式",
             "hint": "用于分隔一段消息。默认情况下会根据句号、问号等标点符号分隔。如填写 `[。？！]` 将移除所有的句号、问号、感叹号。re.findall(r'<regex>', text)",
-            "labels": [
-              "正则表达式",
-              "分段词列表"
-            ]
+            "labels": ["正则表达式", "分段词列表"]
           },
           "regex": {
             "description": "分段正则表达式",
@@ -552,10 +538,7 @@
         "channel": {
           "description": "WebUI 下载渠道",
           "hint": "用于启动时自动下载/更新 WebUI。official 为官方发布版；nebula 为 Nebula 版本。",
-          "labels": [
-            "AstrBot 官方渠道",
-            "Nebula 渠道"
-          ]
+          "labels": ["AstrBot 官方渠道", "Nebula 渠道"]
         }
       },
       "t2i_strategy": {

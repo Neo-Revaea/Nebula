@@ -28,7 +28,9 @@
 // Soft elevated card (PlatformStat-like)
 .soft-stat-card {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 
 .soft-stat-card:hover {

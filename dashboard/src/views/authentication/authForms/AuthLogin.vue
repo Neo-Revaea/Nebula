@@ -25,25 +25,31 @@ type LoginFormErrors = {
   apiError?: string;
 };
 
-async function validate(_values: LoginFormValues, { setErrors }: { setErrors: (errors: LoginFormErrors) => void }) {
+async function validate(
+  _values: LoginFormValues,
+  { setErrors }: { setErrors: (errors: LoginFormErrors) => void },
+) {
   loading.value = true;
 
   // md5加密
-  const password_ = password.value !== '' ? md5.md5(password.value) : password.value;
+  const password_ =
+    password.value !== '' ? md5.md5(password.value) : password.value;
 
   const authStore = useAuthStore();
   const redirect = route.query.redirect;
   authStore.returnUrl = typeof redirect === 'string' ? redirect : null;
-  return authStore.login(username.value, password_).then(async () => {
-    await router.push(authStore.returnUrl || '/');
-    loading.value = false;
-  }).catch((err: unknown) => {
-    const message = err instanceof Error ? err.message : String(err);
-    setErrors({ apiError: message });
-    loading.value = false;
-  });
+  return authStore
+    .login(username.value, password_)
+    .then(async () => {
+      await router.push(authStore.returnUrl || '/');
+      loading.value = false;
+    })
+    .catch((err: unknown) => {
+      const message = err instanceof Error ? err.message : String(err);
+      setErrors({ apiError: message });
+      loading.value = false;
+    });
 }
-
 </script>
 
 <template>
@@ -78,9 +84,8 @@ async function validate(_values: LoginFormValues, { setErrors }: { setErrors: (e
     />
 
     <div class="mt-2">
-      <small style="color: grey;">{{ t('defaultHint') }}</small>
+      <small style="color: grey">{{ t('defaultHint') }}</small>
     </div>
-
 
     <v-btn
       color="secondary"
@@ -95,10 +100,7 @@ async function validate(_values: LoginFormValues, { setErrors }: { setErrors: (e
       <span class="login-btn-text">{{ t('login') }}</span>
     </v-btn>
 
-    <div
-      v-if="errors.apiError"
-      class="mt-4 error-container"
-    >
+    <div v-if="errors.apiError" class="mt-4 error-container">
       <v-alert
         color="error"
         variant="tonal"

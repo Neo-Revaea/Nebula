@@ -16,12 +16,7 @@
     @drop.prevent="handleDrop"
   >
     <template #title-prepend>
-      <v-icon
-        size="20"
-        color="amber-darken-2"
-      >
-        mdi-folder
-      </v-icon>
+      <v-icon size="20" color="amber-darken-2"> mdi-folder </v-icon>
     </template>
 
     <template #item-details>
@@ -58,10 +53,14 @@
         </template>
         <v-list density="compact">
           <v-list-item @click="$emit('rename')">
-            <v-list-item-title>{{ tm('folder.contextMenu.rename') }}</v-list-item-title>
+            <v-list-item-title>{{
+              tm('folder.contextMenu.rename')
+            }}</v-list-item-title>
           </v-list-item>
           <v-list-item @click="$emit('move')">
-            <v-list-item-title>{{ tm('folder.contextMenu.moveTo') }}</v-list-item-title>
+            <v-list-item-title>{{
+              tm('folder.contextMenu.moveTo')
+            }}</v-list-item-title>
           </v-list-item>
           <v-list-item @click="$emit('delete')">
             <v-list-item-title class="text-error">
@@ -81,89 +80,97 @@ import type { Folder } from '@/components/folder/types';
 import ItemCard from '@/components/shared/ItemCard.vue';
 
 export default defineComponent({
-    name: 'FolderCard',
-    components: { ItemCard },
-    props: {
-        folder: {
-            type: Object as PropType<Folder>,
-            required: true
+  name: 'FolderCard',
+  components: { ItemCard },
+  props: {
+    folder: {
+      type: Object as PropType<Folder>,
+      required: true,
+    },
+  },
+  emits: [
+    'click',
+    'contextmenu',
+    'open',
+    'rename',
+    'move',
+    'delete',
+    'persona-dropped',
+  ],
+  setup() {
+    const { tm } = useModuleI18n('features/persona');
+    return { tm };
+  },
+  data() {
+    return {
+      isDragOver: false,
+    };
+  },
+  methods: {
+    handleDragOver(event: DragEvent) {
+      if (event.dataTransfer) {
+        event.dataTransfer.dropEffect = 'move';
+      }
+      this.isDragOver = true;
+    },
+    handleDragLeave() {
+      this.isDragOver = false;
+    },
+    handleDrop(event: DragEvent) {
+      this.isDragOver = false;
+      if (!event.dataTransfer) return;
+
+      try {
+        const data = JSON.parse(event.dataTransfer.getData('application/json'));
+        if (data.type === 'persona') {
+          this.$emit('persona-dropped', {
+            persona_id: data.persona_id,
+            target_folder_id: this.folder.folder_id,
+          });
         }
+      } catch (e) {
+        console.error('Failed to parse drop data:', e);
+      }
     },
-    emits: ['click', 'contextmenu', 'open', 'rename', 'move', 'delete', 'persona-dropped'],
-    setup() {
-        const { tm } = useModuleI18n('features/persona');
-        return { tm };
-    },
-    data() {
-        return {
-            isDragOver: false
-        };
-    },
-    methods: {
-        handleDragOver(event: DragEvent) {
-            if (event.dataTransfer) {
-                event.dataTransfer.dropEffect = 'move';
-            }
-            this.isDragOver = true;
-        },
-        handleDragLeave() {
-            this.isDragOver = false;
-        },
-        handleDrop(event: DragEvent) {
-            this.isDragOver = false;
-            if (!event.dataTransfer) return;
-            
-            try {
-                const data = JSON.parse(event.dataTransfer.getData('application/json'));
-                if (data.type === 'persona') {
-                    this.$emit('persona-dropped', {
-                        persona_id: data.persona_id,
-                        target_folder_id: this.folder.folder_id
-                    });
-                }
-            } catch (e) {
-                console.error('Failed to parse drop data:', e);
-            }
-        }
-    }
+  },
 });
 </script>
 
 <style scoped>
 .folder-card-fixed {
-    height: 160px !important;
-    max-height: 160px !important;
-    min-height: 160px !important;
-    cursor: pointer;
+  height: 160px !important;
+  max-height: 160px !important;
+  min-height: 160px !important;
+  cursor: pointer;
 }
 
 .folder-card-fixed :deep(.v-card-actions) {
-    margin: 4px !important;
+  margin: 4px !important;
 }
 
 .folder-card-fixed.drag-over {
-    background-color: rgba(var(--v-theme-primary), 0.15);
-    border: 3px dashed rgb(var(--v-theme-primary));
-    transform: scale(1.02);
+  background-color: rgba(var(--v-theme-primary), 0.15);
+  border: 3px dashed rgb(var(--v-theme-primary));
+  transform: scale(1.02);
 }
 
 .folder-content-container {
-    display: flex;
-    flex-direction: column;
-    padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  padding: 8px 12px;
 }
 
 .folder-description {
-    word-break: break-word;
-    white-space: normal;
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    -webkit-box-orient: vertical;
+  word-break: break-word;
+  white-space: normal;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .folder-info {
-    min-width: 0;
+  min-width: 0;
 }
 </style>

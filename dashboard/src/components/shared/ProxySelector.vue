@@ -1,19 +1,12 @@
 <template>
   <h5>{{ tm('network.proxySelector.title') }}</h5>
-  <v-radio-group
-    v-model="radioValue"
-    class="mt-2"
-    :hide-details="true"
-  >
+  <v-radio-group v-model="radioValue" class="mt-2" :hide-details="true">
     <v-radio
       :label="tm('network.proxySelector.noProxy')"
       value="0"
       color="primary"
     />
-    <v-radio
-      value="1"
-      color="primary"
-    >
+    <v-radio value="1" color="primary">
       <template #label>
         <span>{{ tm('network.proxySelector.useProxy') }}</span>
         <v-btn
@@ -30,10 +23,7 @@
     </v-radio>
   </v-radio-group>
   <v-expand-transition>
-    <div
-      v-if="radioValue === '1'"
-      style="margin-left: 16px;"
-    >
+    <div v-if="radioValue === '1'" style="margin-left: 16px">
       <v-radio-group
         v-model="githubProxyRadioControl"
         class="mt-2"
@@ -53,7 +43,11 @@
                   size="x-small"
                   class="mr-1"
                 >
-                  {{ proxyStatus[idx].available ? tm('network.proxySelector.available') : tm('network.proxySelector.unavailable') }}
+                  {{
+                    proxyStatus[idx].available
+                      ? tm('network.proxySelector.available')
+                      : tm('network.proxySelector.unavailable')
+                  }}
                 </v-chip>
                 <v-chip
                   v-if="proxyStatus[idx].available"
@@ -66,19 +60,13 @@
             </div>
           </template>
         </v-radio>
-        <v-radio
-          :value="-1"
-          :label="tm('network.proxySelector.custom')"
-        >
-          <template
-            v-if="githubProxyRadioControl === -1"
-            #label
-          >
+        <v-radio :value="-1" :label="tm('network.proxySelector.custom')">
+          <template v-if="githubProxyRadioControl === -1" #label>
             <v-text-field
               v-model="selectedGitHubProxy"
               density="compact"
               variant="outlined"
-              style="width: 100vw;"
+              style="width: 100vw"
               :placeholder="tm('network.proxySelector.custom')"
               :hide-details="true"
             />
@@ -89,125 +77,132 @@
   </v-expand-transition>
 </template>
 
-
 <script lang="ts">
 import axios from 'axios';
 import { useModuleI18n } from '@/i18n/composables';
 
 type ProxyTestStatus = {
-    available: boolean;
-    latency: number;
+  available: boolean;
+  latency: number;
 };
 
 export default {
-    setup() {
-        const { tm } = useModuleI18n('features/settings');
-        return { tm };
+  setup() {
+    const { tm } = useModuleI18n('features/settings');
+    return { tm };
+  },
+  data() {
+    return {
+      githubProxies: [
+        'https://edgeone.gh-proxy.com',
+        'https://hk.gh-proxy.com/',
+        'https://gh-proxy.com/',
+        'https://gh.llkk.cc',
+      ],
+      githubProxyRadioControl: 0, // the index of the selected proxy, -1 for custom
+      selectedGitHubProxy: '',
+      radioValue: '0', // 0: 不使用, 1: 使用
+      loadingTestingConnection: false,
+      testingProxies: {} as Record<number, boolean>,
+      proxyStatus: {} as Record<number, ProxyTestStatus>,
+    };
+  },
+  watch: {
+    selectedGitHubProxy: function (newVal: string) {
+      if (!newVal) {
+        newVal = '';
+      }
+      localStorage.setItem('selectedGitHubProxy', newVal);
     },
-    data() {
-        return {
-            githubProxies: [
-                "https://edgeone.gh-proxy.com",
-                "https://hk.gh-proxy.com/",
-                "https://gh-proxy.com/",
-                "https://gh.llkk.cc",
-            ],
-            githubProxyRadioControl: 0, // the index of the selected proxy, -1 for custom
-            selectedGitHubProxy: "",
-            radioValue: "0", // 0: 不使用, 1: 使用
-            loadingTestingConnection: false,
-            testingProxies: {} as Record<number, boolean>,
-            proxyStatus: {} as Record<number, ProxyTestStatus>,
-        }
+    radioValue: function (newVal: string) {
+      localStorage.setItem('githubProxyRadioValue', newVal);
+      if (newVal === '0') {
+        this.selectedGitHubProxy = '';
+      } else if (this.githubProxyRadioControl !== -1) {
+        this.selectedGitHubProxy =
+          this.githubProxies[this.githubProxyRadioControl] || '';
+      }
     },
-    watch: {
-        selectedGitHubProxy: function (newVal: string) {
-            if (!newVal) {
-                newVal = ""
-            }
-            localStorage.setItem('selectedGitHubProxy', newVal);
-        },
-        radioValue: function (newVal: string) {
-            localStorage.setItem('githubProxyRadioValue', newVal);
-            if (newVal === "0") {
-                this.selectedGitHubProxy = "";
-            } else if (this.githubProxyRadioControl !== -1) {
-                this.selectedGitHubProxy = this.githubProxies[this.githubProxyRadioControl] || "";
-            }
-        },
-        githubProxyRadioControl: function (newVal: number) {
-            localStorage.setItem('githubProxyRadioControl', String(newVal));
-            if (this.radioValue !== "1") {
-                this.selectedGitHubProxy = "";
-                return;
-            }
-            if (newVal !== -1) {
-                this.selectedGitHubProxy = this.githubProxies[newVal] || "";
-            } else {
-                this.selectedGitHubProxy = "";
-            }
-        }
+    githubProxyRadioControl: function (newVal: number) {
+      localStorage.setItem('githubProxyRadioControl', String(newVal));
+      if (this.radioValue !== '1') {
+        this.selectedGitHubProxy = '';
+        return;
+      }
+      if (newVal !== -1) {
+        this.selectedGitHubProxy = this.githubProxies[newVal] || '';
+      } else {
+        this.selectedGitHubProxy = '';
+      }
     },
-    mounted() {
-        this.selectedGitHubProxy = localStorage.getItem('selectedGitHubProxy') || "";
-        this.radioValue = localStorage.getItem('githubProxyRadioValue') || "0";
-        const storedControl = localStorage.getItem('githubProxyRadioControl') || "0";
-        const parsedControl = Number.parseInt(storedControl, 10);
-        this.githubProxyRadioControl = Number.isFinite(parsedControl) ? parsedControl : 0;
-        if (this.radioValue === "1") {
-            if (this.githubProxyRadioControl !== -1) {
-                this.selectedGitHubProxy = this.githubProxies[this.githubProxyRadioControl] || "";
-            }
-        } else {
-            this.selectedGitHubProxy = "";
-        }
-    },
-    methods: {
-        async testSingleProxy(idx: number) {
-            this.testingProxies[idx] = true;
-            
-            const proxy = this.githubProxies[idx];
-            
-            try {
-                const response = await axios.post('/api/stat/test-ghproxy-connection', {
-                    proxy_url: proxy
-                });
-                console.log(response.data);
-                if (response.status === 200) {
-                    this.proxyStatus[idx] = {
-                        available: true,
-                        latency: Math.round(response.data.data.latency)
-                    };
-                } else {
-                    this.proxyStatus[idx] = {
-                        available: false,
-                        latency: 0
-                    };
-                }
-            } catch (_error) {
-                this.proxyStatus[idx] = {
-                    available: false,
-                    latency: 0
-                };
-            } finally {
-                this.testingProxies[idx] = false;
-            }
-        },
-        
-        async testAllProxies() {
-            this.loadingTestingConnection = true;
-            
-            const promises = this.githubProxies.map((_, idx) => this.testSingleProxy(idx));
-            
-            await Promise.all(promises);
-            this.loadingTestingConnection = false;
-        },
+  },
+  mounted() {
+    this.selectedGitHubProxy =
+      localStorage.getItem('selectedGitHubProxy') || '';
+    this.radioValue = localStorage.getItem('githubProxyRadioValue') || '0';
+    const storedControl =
+      localStorage.getItem('githubProxyRadioControl') || '0';
+    const parsedControl = Number.parseInt(storedControl, 10);
+    this.githubProxyRadioControl = Number.isFinite(parsedControl)
+      ? parsedControl
+      : 0;
+    if (this.radioValue === '1') {
+      if (this.githubProxyRadioControl !== -1) {
+        this.selectedGitHubProxy =
+          this.githubProxies[this.githubProxyRadioControl] || '';
+      }
+    } else {
+      this.selectedGitHubProxy = '';
     }
-}
+  },
+  methods: {
+    async testSingleProxy(idx: number) {
+      this.testingProxies[idx] = true;
+
+      const proxy = this.githubProxies[idx];
+
+      try {
+        const response = await axios.post('/api/stat/test-ghproxy-connection', {
+          proxy_url: proxy,
+        });
+        console.log(response.data);
+        if (response.status === 200) {
+          this.proxyStatus[idx] = {
+            available: true,
+            latency: Math.round(response.data.data.latency),
+          };
+        } else {
+          this.proxyStatus[idx] = {
+            available: false,
+            latency: 0,
+          };
+        }
+      } catch (_error) {
+        this.proxyStatus[idx] = {
+          available: false,
+          latency: 0,
+        };
+      } finally {
+        this.testingProxies[idx] = false;
+      }
+    },
+
+    async testAllProxies() {
+      this.loadingTestingConnection = true;
+
+      const promises = this.githubProxies.map((_, idx) =>
+        this.testSingleProxy(idx),
+      );
+
+      await Promise.all(promises);
+      this.loadingTestingConnection = false;
+    },
+  },
+};
 </script>
 
 <style>
 .v-label {
-    font-size: 0.875rem;
+  font-size: 0.875rem;
 }
 </style>

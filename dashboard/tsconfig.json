@@ -13,22 +13,22 @@
     // === 严格模式 ===
     "strict": true,
     "noImplicitAny": true, // 这一行其实包含在 strict 里了，但写出来提醒自己
-    
+
     // === 宽容度设置 ===
     "allowJs": false,
-    "skipLibCheck": true,      
-    "useUnknownInCatchVariables": false, 
+    "skipLibCheck": true,
+    "useUnknownInCatchVariables": false,
 
     // === 模块解析 ===
     "module": "ESNext",
-    "moduleResolution": "bundler", 
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "esModuleInterop": true,
 
     // === 构建性能 ===
     "noEmit": true,
-    "incremental": true,       
+    "incremental": true,
 
     // === Vue 特有 ===
     "jsx": "preserve",

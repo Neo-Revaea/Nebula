@@ -9,12 +9,9 @@
     <template #item-details>
       <div class="d-flex align-start content-wrapper">
         <div class="icon-wrapper">
-          <v-icon
-            icon="mdi-clock-outline"
-            size="24"
-          />
+          <v-icon icon="mdi-clock-outline" size="24" />
         </div>
-        
+
         <div class="stat-content">
           <div class="stat-title">
             {{ t('stats.runningTime.title') }}
@@ -60,16 +57,16 @@ export default {
       return this.t('stats.runningTime.format', {
         hours,
         minutes,
-        seconds
+        seconds,
       });
-    }
-  }
+    },
+  },
 };
 </script>
 
 <style scoped>
 .stat-card {
-  --card-text: #2e7d32; 
+  --card-text: #2e7d32;
   --card-border: rgba(76, 175, 80, 0.2);
   --icon-bg: rgba(76, 175, 80, 0.1);
   --hover-border: rgba(76, 175, 79, 0.988);
@@ -90,7 +87,7 @@ export default {
   border: 3px solid var(--card-border) !important;
   background: transparent !important;
   color: var(--card-text) !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   transition: all 0.2s ease;
   overflow: hidden;
 }
@@ -103,7 +100,7 @@ export default {
 }
 
 .content-wrapper {
-  padding: 16px; 
+  padding: 16px;
   height: 100%;
 }
 
@@ -149,7 +146,7 @@ export default {
   opacity: 0.7;
   color: var(--card-text);
 }
-  
+
 .uptime-card :deep(.v-card-title),
 .uptime-card :deep(.v-card-actions) {
   display: none;

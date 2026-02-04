@@ -1,7 +1,7 @@
 <script lang="ts">
-import axios from "axios";
-import { EventSourcePolyfill } from "event-source-polyfill";
-import { defineComponent } from "vue";
+import axios from 'axios';
+import { EventSourcePolyfill } from 'event-source-polyfill';
+import { defineComponent } from 'vue';
 
 type TracePayload = {
   type?: string;
@@ -41,7 +41,7 @@ type HighlightMap = Record<string, true>;
 type HighlightTimers = Record<string, ReturnType<typeof setTimeout>>;
 
 export default defineComponent({
-  name: "TraceDisplayer",
+  name: 'TraceDisplayer',
   props: {
     autoScroll: {
       type: Boolean,
@@ -64,14 +64,14 @@ export default defineComponent({
       maxRetryAttempts: 10,
       baseRetryDelay: 1000,
       lastEventId: null as string | null,
-      tableHeight: "auto" as string,
+      tableHeight: 'auto' as string,
     };
   },
   async mounted() {
     await this.fetchTraceHistory();
     this.connectSSE();
     this.updateTableHeight();
-    window.addEventListener("resize", this.updateTableHeight);
+    window.addEventListener('resize', this.updateTableHeight);
   },
   beforeUnmount() {
     if (this.eventSource) {
@@ -83,19 +83,20 @@ export default defineComponent({
       this.retryTimer = null;
     }
     this.retryAttempts = 0;
-    window.removeEventListener("resize", this.updateTableHeight);
+    window.removeEventListener('resize', this.updateTableHeight);
   },
   methods: {
     toTitle(text: unknown, maxLen = 2000): string {
-      const value = String(text ?? "");
+      const value = String(text ?? '');
       if (value.length <= maxLen) return value;
       return `${value.slice(0, maxLen)}…`;
     },
     updateTableHeight() {
       this.$nextTick(() => {
         const el = this.$refs.scrollEl as HTMLElement | undefined;
-        if (!el || typeof window === "undefined") return;
-        const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+        if (!el || typeof window === 'undefined') return;
+        const viewportHeight =
+          window.innerHeight || document.documentElement.clientHeight;
         const offsetTop = el.getBoundingClientRect().top;
         const height = Math.max(viewportHeight - offsetTop, 0);
         this.tableHeight = `${height}px`;
@@ -103,12 +104,14 @@ export default defineComponent({
     },
     async fetchTraceHistory() {
       try {
-        const res = await axios.get("/api/log-history");
+        const res = await axios.get('/api/log-history');
         const logs = (res as any)?.data?.data?.logs || [];
-        const traces = (logs as TracePayload[]).filter((item) => item.type === "trace");
+        const traces = (logs as TracePayload[]).filter(
+          (item) => item.type === 'trace',
+        );
         this.processNewTraces(traces);
       } catch (err) {
-        console.error("Failed to fetch trace history:", err);
+        console.error('Failed to fetch trace history:', err);
       }
     },
     connectSSE() {
@@ -117,11 +120,11 @@ export default defineComponent({
         this.eventSource = null;
       }
 
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
 
-      this.eventSource = new EventSourcePolyfill("/api/live-log", {
+      this.eventSource = new EventSourcePolyfill('/api/live-log', {
         headers: {
-          Authorization: token ? `Bearer ${token}` : "",
+          Authorization: token ? `Bearer ${token}` : '',
         },
         heartbeatTimeout: 300000,
         withCredentials: true,
@@ -134,19 +137,21 @@ export default defineComponent({
         }
       };
 
-      this.eventSource.onmessage = (event: MessageEvent<string> & { lastEventId?: string }) => {
+      this.eventSource.onmessage = (
+        event: MessageEvent<string> & { lastEventId?: string },
+      ) => {
         try {
           if (event.lastEventId) {
             this.lastEventId = event.lastEventId;
           }
 
           const payload = JSON.parse(event.data) as TracePayload;
-          if (payload?.type !== "trace") {
+          if (payload?.type !== 'trace') {
             return;
           }
           this.processNewTraces([payload]);
         } catch (e) {
-          console.error("Failed to parse trace payload:", e);
+          console.error('Failed to parse trace payload:', e);
         }
       };
 
@@ -157,11 +162,14 @@ export default defineComponent({
         }
 
         if (this.retryAttempts >= this.maxRetryAttempts) {
-          console.error("Trace stream reached max retry attempts.");
+          console.error('Trace stream reached max retry attempts.');
           return;
         }
 
-        const delay = Math.min(this.baseRetryDelay * Math.pow(2, this.retryAttempts), 30000);
+        const delay = Math.min(
+          this.baseRetryDelay * Math.pow(2, this.retryAttempts),
+          30000,
+        );
 
         if (this.retryTimer) {
           clearTimeout(this.retryTimer);
@@ -198,7 +206,7 @@ export default defineComponent({
             collapsed: true,
             visibleCount: 20,
             records: [],
-            hasAgentPrepare: trace.action === "astr_agent_prepare",
+            hasAgentPrepare: trace.action === 'astr_agent_prepare',
           };
           this.eventIndex[trace.span_id] = event;
           this.events.push(event);
@@ -215,7 +223,7 @@ export default defineComponent({
           timeLabel: this.formatTime(trace.time),
           key: recordKey,
         });
-        if (trace.action === "astr_agent_prepare") {
+        if (trace.action === 'astr_agent_prepare') {
           event.hasAgentPrepare = true;
         }
         if (!event.first_time || trace.time < event.first_time) {
@@ -264,7 +272,10 @@ export default defineComponent({
     showMore(spanId: string) {
       const event = this.eventIndex[spanId];
       if (!event) return;
-      event.visibleCount = Math.min(event.records.length, event.visibleCount + 20);
+      event.visibleCount = Math.min(
+        event.records.length,
+        event.visibleCount + 20,
+      );
     },
     pulseEvent(spanId: string) {
       if (!spanId) return;
@@ -287,18 +298,18 @@ export default defineComponent({
       return event.records.slice(0, event.visibleCount);
     },
     formatTime(ts?: number): string {
-      if (!ts) return "";
+      if (!ts) return '';
       const date = new Date(ts * 1000);
       const base = date.toLocaleString();
-      const ms = String(date.getMilliseconds()).padStart(3, "0");
+      const ms = String(date.getMilliseconds()).padStart(3, '0');
       return `${base}.${ms}`;
     },
     shortSpan(spanId?: string): string {
-      if (!spanId) return "";
+      if (!spanId) return '';
       return spanId.slice(0, 8);
     },
     formatFields(fields: unknown): string {
-      if (!fields) return "";
+      if (!fields) return '';
       try {
         const text = JSON.stringify(fields, null, 2);
         if (text.length > 2000) {
@@ -315,29 +326,15 @@ export default defineComponent({
 
 <template>
   <div class="trace-wrapper">
-    <div
-      ref="scrollEl"
-      class="trace-table"
-      :style="{ height: tableHeight }"
-    >
+    <div ref="scrollEl" class="trace-table" :style="{ height: tableHeight }">
       <div class="trace-row trace-header">
-        <div class="trace-cell time">
-          Time
-        </div>
-        <div class="trace-cell span">
-          Event ID
-        </div>
-        <div class="trace-cell umo">
-          UMO
-        </div>
+        <div class="trace-cell time">Time</div>
+        <div class="trace-cell span">Event ID</div>
+        <div class="trace-cell umo">UMO</div>
         <!-- <div class="trace-cell count">Records</div> -->
         <!-- <div class="trace-cell last">Last</div> -->
-        <div class="trace-cell sender">
-          Sender
-        </div>
-        <div class="trace-cell outline">
-          Outline
-        </div>
+        <div class="trace-cell sender">Sender</div>
+        <div class="trace-cell outline">Outline</div>
         <div class="trace-cell fields" />
       </div>
       <div
@@ -347,10 +344,7 @@ export default defineComponent({
         :class="{ highlight: highlightMap[event.span_id] }"
       >
         <div class="trace-row trace-event">
-          <div
-            class="trace-cell time"
-            data-label="Time"
-          >
+          <div class="trace-cell time" data-label="Time">
             {{ formatTime(event.first_time) }}
           </div>
           <div
@@ -362,11 +356,7 @@ export default defineComponent({
               {{ shortSpan(event.span_id) }}
             </div>
           </div>
-          <div
-            class="trace-cell umo"
-            data-label="UMO"
-            :title="event.umo || ''"
-          >
+          <div class="trace-cell umo" data-label="UMO" :title="event.umo || ''">
             {{ event.umo }}
           </div>
           <!-- <div class="trace-cell count">
@@ -375,10 +365,7 @@ export default defineComponent({
           <!-- <div class="trace-cell last">
             <div class="event-meta">{{ formatTime(event.last_time) }}</div>
           </div> -->
-          <div
-            class="trace-cell sender"
-            data-label="Sender"
-          >
+          <div class="trace-cell sender" data-label="Sender">
             <div
               class="event-sub sender-text"
               :title="event.sender_name || '-'"
@@ -386,10 +373,7 @@ export default defineComponent({
               {{ event.sender_name || '-' }}
             </div>
           </div>
-          <div
-            class="trace-cell outline"
-            data-label="Outline"
-          >
+          <div class="trace-cell outline" data-label="Outline">
             <div
               class="event-sub outline"
               :title="event.message_outline || '-'"
@@ -397,10 +381,7 @@ export default defineComponent({
               {{ event.message_outline || '-' }}
             </div>
           </div>
-          <div
-            class="trace-cell fields event-controls"
-            data-label="Controls"
-          >
+          <div class="trace-cell fields event-controls" data-label="Controls">
             <v-btn
               class="toggle-btn"
               size="x-small"
@@ -409,17 +390,11 @@ export default defineComponent({
               @click="toggleEvent(event.span_id)"
             >
               {{ event.collapsed ? 'Expand' : 'Collapse' }}
-              <span
-                v-if="event.hasAgentPrepare"
-                class="agent-dot"
-              />
+              <span v-if="event.hasAgentPrepare" class="agent-dot" />
             </v-btn>
           </div>
         </div>
-        <div
-          v-if="!event.collapsed"
-          class="trace-records"
-        >
+        <div v-if="!event.collapsed" class="trace-records">
           <div
             v-for="record in getVisibleRecords(event)"
             :key="record.key"
@@ -428,16 +403,14 @@ export default defineComponent({
             <div class="trace-record-time">
               {{ record.timeLabel }}
             </div>
-            <div
-              class="trace-record-action"
-              :title="toTitle(record.action)"
-            >
+            <div class="trace-record-action" :title="toTitle(record.action)">
               {{ record.action }}
             </div>
             <pre
               class="trace-record-fields"
               :title="toTitle(record.fieldsText)"
-            >{{ record.fieldsText }}</pre>
+              >{{ record.fieldsText }}</pre
+            >
           </div>
           <div
             v-if="event.visibleCount < event.records.length"
@@ -454,16 +427,12 @@ export default defineComponent({
           </div>
         </div>
       </div>
-      <div
-        v-if="events.length === 0"
-        class="trace-empty"
-      >
+      <div v-if="events.length === 0" class="trace-empty">
         No trace data yet.
       </div>
     </div>
   </div>
 </template>
-
 
 <style scoped>
 .trace-wrapper {
@@ -547,8 +516,6 @@ export default defineComponent({
   display: flex;
   justify-content: flex-end;
 }
-
-
 
 .agent-dot {
   display: inline-block;

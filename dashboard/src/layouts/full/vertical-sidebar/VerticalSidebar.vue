@@ -14,9 +14,15 @@ const sidebarMenu = shallowRef(sidebarItems);
 
 // 侧边栏分组展开状态持久化
 const openedItems = ref<string[]>(
-  JSON.parse(localStorage.getItem('sidebar_openedItems') || '[]') as string[]
+  JSON.parse(localStorage.getItem('sidebar_openedItems') || '[]') as string[],
 );
-watch(openedItems, (val) => localStorage.setItem('sidebar_openedItems', JSON.stringify(val)), { deep: true });
+watch(
+  openedItems,
+  (val) => localStorage.setItem('sidebar_openedItems', JSON.stringify(val)),
+  {
+    deep: true,
+  },
+);
 
 // Apply customization on mount and listen for storage changes
 const handleStorageChange = (e: StorageEvent) => {
@@ -31,14 +37,17 @@ const handleCustomEvent = () => {
 
 onMounted(() => {
   sidebarMenu.value = applySidebarCustomization(sidebarItems);
-   
+
   window.addEventListener('storage', handleStorageChange);
   window.addEventListener('sidebar-customization-changed', handleCustomEvent);
 });
 
 onUnmounted(() => {
   window.removeEventListener('storage', handleStorageChange);
-  window.removeEventListener('sidebar-customization-changed', handleCustomEvent);
+  window.removeEventListener(
+    'sidebar-customization-changed',
+    handleCustomEvent,
+  );
 });
 
 const starCount = ref<number | null>(null);
@@ -51,15 +60,14 @@ const minSidebarWidth = 200;
 const maxSidebarWidth = 300;
 const isResizing = ref(false);
 
-
 if (window.innerWidth < 768) {
   customizer.Sidebar_drawer = false;
 }
 
 function openLink(url?: string) {
   if (typeof window !== 'undefined') {
-    let url_ = url || "https://docs.astrbot.app";
-    window.open(url_, "_blank");
+    let url_ = url || 'https://docs.astrbot.app';
+    window.open(url_, '_blank');
   }
 }
 
@@ -67,18 +75,21 @@ function startSidebarResize(event: MouseEvent) {
   isResizing.value = true;
   document.body.style.userSelect = 'none';
   document.body.style.cursor = 'ew-resize';
-   
+
   const startX = event.clientX;
   const startWidth = sidebarWidth.value;
-   
+
   function onMouseMoveResize(event: MouseEvent) {
     if (!isResizing.value) return;
-     
+
     const deltaX = event.clientX - startX;
-    const newWidth = Math.max(minSidebarWidth, Math.min(maxSidebarWidth, startWidth + deltaX));
+    const newWidth = Math.max(
+      minSidebarWidth,
+      Math.min(maxSidebarWidth, startWidth + deltaX),
+    );
     sidebarWidth.value = newWidth;
   }
-   
+
   function onMouseUpResize() {
     isResizing.value = false;
     document.body.style.userSelect = '';
@@ -86,7 +97,7 @@ function startSidebarResize(event: MouseEvent) {
     document.removeEventListener('mousemove', onMouseMoveResize);
     document.removeEventListener('mouseup', onMouseUpResize);
   }
-   
+
   document.addEventListener('mousemove', onMouseMoveResize);
   document.addEventListener('mouseup', onMouseUpResize);
 }
@@ -103,9 +114,11 @@ function formatNumber(num: number) {
 
 async function fetchStarCount() {
   try {
-    const response = await fetch('https://api.github.com/repos/AstrBotDevs/AstrBot');
+    const response = await fetch(
+      'https://api.github.com/repos/AstrBotDevs/AstrBot',
+    );
     const data = await response.json();
-    
+
     if (data && typeof data.stargazers_count === 'number') {
       starCount.value = data.stargazers_count;
       console.debug('Fetched star count:', starCount.value);
@@ -121,7 +134,6 @@ fetchStarCount();
 function openChangelogDialog() {
   changelogDialog.value = true;
 }
-
 </script>
 
 <template>
@@ -141,20 +153,11 @@ function openChangelogDialog() {
         class="pa-4 listitem flex-grow-1"
         :open-strategy="'multiple'"
       >
-        <template
-          v-for="(item, i) in sidebarMenu"
-          :key="i"
-        >
-          <NavItem
-            :item="item"
-            class="leftPadding"
-          />
+        <template v-for="(item, i) in sidebarMenu" :key="i">
+          <NavItem :item="item" class="leftPadding" />
         </template>
       </v-list>
-      <div
-        v-if="!customizer.mini_sidebar"
-        class="sidebar-footer"
-      >
+      <div v-if="!customizer.mini_sidebar" class="sidebar-footer">
         <v-btn
           class="sidebar-action-btn"
           size="small"
@@ -165,7 +168,7 @@ function openChangelogDialog() {
         >
           {{ t('core.navigation.settings') }}
         </v-btn>
-        
+
         <v-btn
           class="sidebar-action-btn"
           size="small"
@@ -199,22 +202,22 @@ function openChangelogDialog() {
             size="x-small"
             variant="outlined"
             class="ml-2"
-            style="font-weight: normal;"
+            style="font-weight: normal"
           >
             {{ formatNumber(starCount) }}
           </v-chip>
         </v-btn>
       </div>
     </div>
-     
-    <div 
+
+    <div
       v-if="!customizer.mini_sidebar && customizer.Sidebar_drawer"
       class="sidebar-resize-handle"
-      :class="{ 'resizing': isResizing }"
+      :class="{ resizing: isResizing }"
       @mousedown="startSidebarResize"
     />
   </v-navigation-drawer>
-   
+
   <ChangelogDialog v-model="changelogDialog" />
 </template>
 

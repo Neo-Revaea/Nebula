@@ -1,18 +1,15 @@
 <template>
-  <item-card 
-    :item="stat" 
+  <item-card
+    :item="stat"
     class="stat-card message-card stat-item-card"
-    :class="{ 'is-dark': isDark }" 
+    :class="{ 'is-dark': isDark }"
     :hide-header="true"
-    variant="text" 
+    variant="text"
   >
     <template #item-details>
       <div class="d-flex align-start content-wrapper">
         <div class="icon-wrapper">
-          <v-icon
-            icon="mdi-message-text-outline"
-            size="24"
-          />
+          <v-icon icon="mdi-message-text-outline" size="24" />
         </div>
 
         <div class="stat-content">
@@ -63,14 +60,14 @@ export default {
     formattedCount() {
       const count = this.stat?.message_count;
       return count ? count.toLocaleString() : '0';
-    }
-  }
+    },
+  },
 };
 </script>
 
 <style scoped>
 .stat-card {
-  --card-text: rgb(var(--v-theme-darkprimary)); 
+  --card-text: rgb(var(--v-theme-darkprimary));
   --card-border: rgba(var(--v-theme-primary), 0.15);
   --icon-bg: rgba(var(--v-theme-primary), 0.1);
   --hover-border: rgba(var(--v-theme-primary), 1);
@@ -90,7 +87,7 @@ export default {
   border: 3px solid var(--card-border) !important;
   background: transparent !important;
   color: var(--card-text) !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   transition: all 0.2s ease;
   overflow: hidden;
 }
@@ -103,7 +100,7 @@ export default {
 }
 
 .content-wrapper {
-  padding: 16px; 
+  padding: 16px;
   height: 100%;
 }
 
@@ -119,34 +116,40 @@ export default {
   color: rgb(var(--v-theme-primary));
 }
 
-.stat-content { flex: 1; }
+.stat-content {
+  flex: 1;
+}
 
-.stat-title { 
-  font-size: 14px; 
-  font-weight: 500; 
-  opacity: 0.9; 
+.stat-title {
+  font-size: 14px;
+  font-weight: 500;
+  opacity: 0.9;
   margin-bottom: 4px;
   color: var(--card-text);
 }
 
-.stat-value-wrapper { display: flex; align-items: baseline; margin-bottom: 4px; }
+.stat-value-wrapper {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 4px;
+}
 
-.stat-value { 
-  font-size: 32px; 
-  font-weight: 600; 
-  line-height: 1.2; 
-  margin-right: 8px; 
+.stat-value {
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.2;
+  margin-right: 8px;
   color: var(--card-text);
 }
 
-.stat-subtitle { 
-  font-size: 12px; 
-  opacity: 0.7; 
+.stat-subtitle {
+  font-size: 12px;
+  opacity: 0.7;
   color: var(--card-text);
 }
 
-.stat-item-card :deep(.v-card-title), 
-.stat-item-card :deep(.v-card-actions) { 
-  display: none; 
+.stat-item-card :deep(.v-card-title),
+.stat-item-card :deep(.v-card-actions) {
+  display: none;
 }
 </style>

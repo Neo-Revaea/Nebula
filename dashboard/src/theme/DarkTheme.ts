@@ -5,7 +5,7 @@ const PurpleThemeDark: ThemeTypes = {
   dark: true,
   variables: {
     'border-color': '#38bdf8',
-    'carousel-control-size': 10
+    'carousel-control-size': 10,
   },
   colors: {
     primary: '#38bdf8',
@@ -43,7 +43,7 @@ const PurpleThemeDark: ThemeTypes = {
     code: '#ffffffdd',
     chatMessageBubble: '#1e293b',
     mcpCardBg: '#172554',
-  }
+  },
 };
 
 export { PurpleThemeDark };

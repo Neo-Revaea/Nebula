@@ -2,21 +2,13 @@
   <div class="folder-item-selector">
     <!-- 触发按钮区域 -->
     <div class="d-flex align-center justify-space-between">
-      <span
-        v-if="!modelValue"
-        style="color: rgb(var(--v-theme-primaryText));"
-      >
+      <span v-if="!modelValue" style="color: rgb(var(--v-theme-primaryText))">
         {{ labels.notSelected || '未选择' }}
       </span>
       <span v-else>
         {{ displayValue }}
       </span>
-      <v-btn
-        size="small"
-        color="primary"
-        variant="tonal"
-        @click="openDialog"
-      >
+      <v-btn size="small" color="primary" variant="tonal" @click="openDialog">
         {{ labels.buttonText || '选择...' }}
       </v-btn>
     </div>
@@ -31,12 +23,7 @@
     >
       <v-card class="selector-dialog-card">
         <v-card-title class="dialog-title d-flex align-center py-4 px-5">
-          <v-icon
-            class="mr-3"
-            color="primary"
-          >
-            mdi-account-circle
-          </v-icon>
+          <v-icon class="mr-3" color="primary"> mdi-account-circle </v-icon>
           <span>{{ labels.dialogTitle || '选择项目' }}</span>
         </v-card-title>
 
@@ -45,16 +32,12 @@
         <v-card-text class="selector-body pa-0">
           <div class="selector-layout">
             <!-- 左侧文件夹树 -->
-            <div
-              v-if="!isMobile"
-              class="folder-sidebar"
-            >
+            <div v-if="!isMobile" class="folder-sidebar">
               <div class="sidebar-header pa-3 pb-2">
-                <span class="text-caption text-medium-emphasis font-weight-medium">
-                  <v-icon
-                    size="small"
-                    class="mr-1"
-                  >mdi-folder-multiple</v-icon>
+                <span
+                  class="text-caption text-medium-emphasis font-weight-medium"
+                >
+                  <v-icon size="small" class="mr-1">mdi-folder-multiple</v-icon>
                   文件夹
                 </span>
               </div>
@@ -97,10 +80,7 @@
                   />
                 </template>
 
-                <div
-                  v-if="treeLoading"
-                  class="text-center pa-4"
-                >
+                <div v-if="treeLoading" class="text-center pa-4">
                   <v-progress-circular
                     indeterminate
                     size="20"
@@ -123,7 +103,10 @@
                     <v-breadcrumbs-item
                       :disabled="(item as any).disabled"
                       :class="{ 'breadcrumb-link': !(item as any).disabled }"
-                      @click="!(item as any).disabled && navigateToFolder((item as any).folderId)"
+                      @click="
+                        !(item as any).disabled &&
+                        navigateToFolder((item as any).folderId)
+                      "
                     >
                       <v-icon
                         v-if="(item as any).isRoot"
@@ -136,10 +119,7 @@
                     </v-breadcrumbs-item>
                   </template>
                   <template #divider>
-                    <v-icon
-                      size="small"
-                      color="grey"
-                    >
+                    <v-icon size="small" color="grey">
                       mdi-chevron-right
                     </v-icon>
                   </template>
@@ -164,7 +144,9 @@
                   class="pa-3 items-content"
                 >
                   <template v-if="currentSubFolders.length > 0">
-                    <div class="section-label text-caption text-medium-emphasis mb-2 px-2">
+                    <div
+                      class="section-label text-caption text-medium-emphasis mb-2 px-2"
+                    >
                       子文件夹
                     </div>
                     <v-list-item
@@ -180,10 +162,7 @@
                           color="amber-lighten-4"
                           class="mr-3"
                         >
-                          <v-icon
-                            color="amber-darken-2"
-                            size="20"
-                          >
+                          <v-icon color="amber-darken-2" size="20">
                             mdi-folder
                           </v-icon>
                         </v-avatar>
@@ -192,10 +171,7 @@
                         {{ folder.name }}
                       </v-list-item-title>
                       <template #append>
-                        <v-icon
-                          size="20"
-                          color="grey"
-                        >
+                        <v-icon size="20" color="grey">
                           mdi-chevron-right
                         </v-icon>
                       </template>
@@ -217,17 +193,27 @@
                       :active="selectedItemId === getItemId(item)"
                       rounded="lg"
                       class="mb-1 persona-item"
-                      :class="{ 'selected-item': selectedItemId === getItemId(item) }"
+                      :class="{
+                        'selected-item': selectedItemId === getItemId(item),
+                      }"
                       @click="selectItem(item)"
                     >
                       <template #prepend>
                         <v-avatar
                           size="36"
-                          :color="selectedItemId === getItemId(item) ? 'primary-lighten-4' : 'grey-lighten-3'"
+                          :color="
+                            selectedItemId === getItemId(item)
+                              ? 'primary-lighten-4'
+                              : 'grey-lighten-3'
+                          "
                           class="mr-3"
                         >
                           <v-icon
-                            :color="selectedItemId === getItemId(item) ? 'primary' : 'grey-darken-1'"
+                            :color="
+                              selectedItemId === getItemId(item)
+                                ? 'primary'
+                                : 'grey-darken-1'
+                            "
                             size="20"
                           >
                             mdi-account
@@ -258,17 +244,19 @@
 
                   <!-- 空状态 -->
                   <div
-                    v-if="currentSubFolders.length === 0 && currentItems.length === 0"
+                    v-if="
+                      currentSubFolders.length === 0 &&
+                      currentItems.length === 0
+                    "
                     class="empty-state text-center py-12"
                   >
-                    <v-icon
-                      size="64"
-                      color="grey-lighten-2"
-                    >
+                    <v-icon size="64" color="grey-lighten-2">
                       mdi-folder-open-outline
                     </v-icon>
                     <p class="text-grey mt-4 text-body-2">
-                      {{ labels.emptyFolder || labels.noItems || '此文件夹为空' }}
+                      {{
+                        labels.emptyFolder || labels.noItems || '此文件夹为空'
+                      }}
                     </p>
                   </div>
                 </v-list>
@@ -288,10 +276,7 @@
             {{ labels.createButton || '新建' }}
           </v-btn>
           <v-spacer />
-          <v-btn
-            variant="text"
-            @click="cancelSelection"
-          >
+          <v-btn variant="text" @click="cancelSelection">
             {{ labels.cancelButton || '取消' }}
           </v-btn>
           <v-btn
@@ -310,279 +295,294 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
 import BaseMoveTargetNode from './BaseMoveTargetNode.vue';
-import type { FolderTreeNode, FolderItemSelectorLabels, SelectableItem } from './types';
+import type {
+  FolderTreeNode,
+  FolderItemSelectorLabels,
+  SelectableItem,
+} from './types';
 
 export default defineComponent({
-    name: 'BaseFolderItemSelector',
-    components: {
-        BaseMoveTargetNode
+  name: 'BaseFolderItemSelector',
+  components: {
+    BaseMoveTargetNode,
+  },
+  props: {
+    modelValue: {
+      type: String,
+      default: '',
     },
-    props: {
-        modelValue: {
-            type: String,
-            default: ''
-        },
-        // 文件夹树数据
-        folderTree: {
-            type: Array as PropType<FolderTreeNode[]>,
-            default: () => []
-        },
-        // 当前项目列表
-        items: {
-            type: Array as PropType<SelectableItem[]>,
-            default: () => []
-        },
-        // 加载状态
-        treeLoading: {
-            type: Boolean,
-            default: false
-        },
-        itemsLoading: {
-            type: Boolean,
-            default: false
-        },
-        // 标签配置
-        labels: {
-            type: Object as PropType<Partial<FolderItemSelectorLabels>>,
-            default: () => ({})
-        },
-        // 是否显示创建按钮
-        showCreateButton: {
-            type: Boolean,
-            default: false
-        },
-        // 是否显示编辑按钮
-        showEditButton: {
-            type: Boolean,
-            default: false
-        },
-        // 默认项（如 "默认人格"）
-        defaultItem: {
-            type: Object as PropType<SelectableItem | null>,
-            default: null
-        },
-        // 项目字段映射
-        itemIdField: {
-            type: String,
-            default: 'id'
-        },
-        itemNameField: {
-            type: String,
-            default: 'name'
-        },
-        itemDescriptionField: {
-            type: String,
-            default: 'description'
-        },
-        // 显示值的格式化函数（用于显示选中项的名称）
-        displayValueFormatter: {
-            type: Function as unknown as PropType<((value: string) => string) | null>,
-            default: null
-        }
+    // 文件夹树数据
+    folderTree: {
+      type: Array as PropType<FolderTreeNode[]>,
+      default: () => [],
     },
-    emits: ['update:modelValue', 'navigate', 'create', 'edit'],
-    data() {
-        return {
-            dialog: false,
-            selectedItemId: '' as string,
-            currentFolderId: null as string | null,
-        breadcrumbPath: [] as FolderTreeNode[],
-        isMobile: false,
-        mql: null as MediaQueryList | null,
-        mqlListener: null as ((e: MediaQueryListEvent) => void) | null
-        };
+    // 当前项目列表
+    items: {
+      type: Array as PropType<SelectableItem[]>,
+      default: () => [],
     },
-    mounted() {
-      if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
-        return;
-      }
-      this.mql = window.matchMedia('(max-width: 960px)');
-      this.isMobile = this.mql.matches;
-
-      this.mqlListener = (e: MediaQueryListEvent) => {
-        this.isMobile = e.matches;
-      };
-
-      if (typeof this.mql.addEventListener === 'function') {
-        this.mql.addEventListener('change', this.mqlListener);
-      } else {
-        // Safari < 14
-        (this.mql as any).addListener(this.mqlListener);
-      }
+    // 加载状态
+    treeLoading: {
+      type: Boolean,
+      default: false,
     },
-    beforeUnmount() {
-      if (!this.mql || !this.mqlListener) {
-        return;
-      }
-      if (typeof this.mql.removeEventListener === 'function') {
-        this.mql.removeEventListener('change', this.mqlListener);
-      } else {
-        // Safari < 14
-        (this.mql as any).removeListener(this.mqlListener);
-      }
-      this.mql = null;
-      this.mqlListener = null;
+    itemsLoading: {
+      type: Boolean,
+      default: false,
     },
-    computed: {
-        displayValue(): string {
-            if (this.displayValueFormatter) {
-                return this.displayValueFormatter(this.modelValue);
-            }
-            // 如果是默认项
-            if (this.defaultItem && this.modelValue === this.getItemId(this.defaultItem)) {
-                return this.labels.defaultItem || this.getItemName(this.defaultItem);
-            }
-            return this.modelValue;
-        },
-
-        currentItems(): SelectableItem[] {
-            const items: SelectableItem[] = [];
-
-            // 如果在根目录且有默认项，添加到列表开头
-            if (this.currentFolderId === null && this.defaultItem) {
-                items.push(this.defaultItem);
-            }
-
-            // 添加当前文件夹的项目
-            items.push(...this.items);
-
-            return items;
-        },
-
-        currentSubFolders(): FolderTreeNode[] {
-            if (this.currentFolderId === null) {
-                return this.folderTree;
-            }
-            const folder = this.findFolderInTree(this.currentFolderId);
-            return folder?.children || [];
-        },
-
-        breadcrumbItems(): any[] {
-            const items: any[] = [
-                {
-                    title: this.labels.rootFolder || '根目录',
-                    folderId: null,
-                    disabled: this.currentFolderId === null,
-                    isRoot: true
-                }
-            ];
-
-            this.breadcrumbPath.forEach((folder, index) => {
-                items.push({
-                    title: folder.name,
-                    folderId: folder.folder_id,
-                    disabled: index === this.breadcrumbPath.length - 1,
-                    isRoot: false
-                });
-            });
-
-            return items;
-        }
+    // 标签配置
+    labels: {
+      type: Object as PropType<Partial<FolderItemSelectorLabels>>,
+      default: () => ({}),
     },
-    methods: {
-        getItemId(item: SelectableItem): string {
-            return String(item[this.itemIdField] || item.id || '');
-        },
-
-        getItemName(item: SelectableItem): string {
-            return String(item[this.itemNameField] || item.name || '');
-        },
-
-        getItemDescription(item: SelectableItem): string {
-            return String(item[this.itemDescriptionField] || item.description || '');
-        },
-
-        truncateText(text: string, maxLength: number): string {
-            if (!text) return '';
-            return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
-        },
-
-        openDialog() {
-            this.selectedItemId = this.modelValue || '';
-            this.currentFolderId = null;
-            this.breadcrumbPath = [];
-            this.dialog = true;
-            this.$emit('navigate', null);
-        },
-
-        navigateToFolder(folderId: string | null) {
-            this.currentFolderId = folderId;
-            this.updateBreadcrumb(folderId);
-            this.$emit('navigate', folderId);
-        },
-
-        findFolderInTree(folderId: string): FolderTreeNode | null {
-            const findNode = (nodes: FolderTreeNode[]): FolderTreeNode | null => {
-                for (const node of nodes) {
-                    if (node.folder_id === folderId) {
-                        return node;
-                    }
-                    if (node.children && node.children.length > 0) {
-                        const found = findNode(node.children);
-                        if (found) return found;
-                    }
-                }
-                return null;
-            };
-            return findNode(this.folderTree);
-        },
-
-        findPathToFolder(folderId: string): FolderTreeNode[] {
-            const findPath = (nodes: FolderTreeNode[], path: FolderTreeNode[]): FolderTreeNode[] | null => {
-                for (const node of nodes) {
-                    if (node.folder_id === folderId) {
-                        return [...path, node];
-                    }
-                    if (node.children && node.children.length > 0) {
-                        const result = findPath(node.children, [...path, node]);
-                        if (result) return result;
-                    }
-                }
-                return null;
-            };
-            return findPath(this.folderTree, []) || [];
-        },
-
-        updateBreadcrumb(folderId: string | null) {
-            if (folderId === null) {
-                this.breadcrumbPath = [];
-            } else {
-                this.breadcrumbPath = this.findPathToFolder(folderId);
-            }
-        },
-
-        selectItem(item: SelectableItem) {
-            this.selectedItemId = this.getItemId(item);
-        },
-
-        confirmSelection() {
-            this.$emit('update:modelValue', this.selectedItemId);
-            this.dialog = false;
-        },
-
-        cancelSelection() {
-            this.selectedItemId = this.modelValue || '';
-            this.dialog = false;
-        },
-
-        isDefaultItem(item: SelectableItem): boolean {
-            if (this.defaultItem === null) {
-                return false;
-            }
-            return this.getItemId(item) === this.getItemId(this.defaultItem);
-        },
-
-        handleEditItem(item: SelectableItem) {
-            this.$emit('edit', item);
-        }
+    // 是否显示创建按钮
+    showCreateButton: {
+      type: Boolean,
+      default: false,
+    },
+    // 是否显示编辑按钮
+    showEditButton: {
+      type: Boolean,
+      default: false,
+    },
+    // 默认项（如 "默认人格"）
+    defaultItem: {
+      type: Object as PropType<SelectableItem | null>,
+      default: null,
+    },
+    // 项目字段映射
+    itemIdField: {
+      type: String,
+      default: 'id',
+    },
+    itemNameField: {
+      type: String,
+      default: 'name',
+    },
+    itemDescriptionField: {
+      type: String,
+      default: 'description',
+    },
+    // 显示值的格式化函数（用于显示选中项的名称）
+    displayValueFormatter: {
+      type: Function as unknown as PropType<((value: string) => string) | null>,
+      default: null,
+    },
+  },
+  emits: ['update:modelValue', 'navigate', 'create', 'edit'],
+  data() {
+    return {
+      dialog: false,
+      selectedItemId: '' as string,
+      currentFolderId: null as string | null,
+      breadcrumbPath: [] as FolderTreeNode[],
+      isMobile: false,
+      mql: null as MediaQueryList | null,
+      mqlListener: null as ((e: MediaQueryListEvent) => void) | null,
+    };
+  },
+  mounted() {
+    if (
+      typeof window === 'undefined' ||
+      typeof window.matchMedia !== 'function'
+    ) {
+      return;
     }
+    this.mql = window.matchMedia('(max-width: 960px)');
+    this.isMobile = this.mql.matches;
+
+    this.mqlListener = (e: MediaQueryListEvent) => {
+      this.isMobile = e.matches;
+    };
+
+    if (typeof this.mql.addEventListener === 'function') {
+      this.mql.addEventListener('change', this.mqlListener);
+    } else {
+      // Safari < 14
+      (this.mql as any).addListener(this.mqlListener);
+    }
+  },
+  beforeUnmount() {
+    if (!this.mql || !this.mqlListener) {
+      return;
+    }
+    if (typeof this.mql.removeEventListener === 'function') {
+      this.mql.removeEventListener('change', this.mqlListener);
+    } else {
+      // Safari < 14
+      (this.mql as any).removeListener(this.mqlListener);
+    }
+    this.mql = null;
+    this.mqlListener = null;
+  },
+  computed: {
+    displayValue(): string {
+      if (this.displayValueFormatter) {
+        return this.displayValueFormatter(this.modelValue);
+      }
+      // 如果是默认项
+      if (
+        this.defaultItem &&
+        this.modelValue === this.getItemId(this.defaultItem)
+      ) {
+        return this.labels.defaultItem || this.getItemName(this.defaultItem);
+      }
+      return this.modelValue;
+    },
+
+    currentItems(): SelectableItem[] {
+      const items: SelectableItem[] = [];
+
+      // 如果在根目录且有默认项，添加到列表开头
+      if (this.currentFolderId === null && this.defaultItem) {
+        items.push(this.defaultItem);
+      }
+
+      // 添加当前文件夹的项目
+      items.push(...this.items);
+
+      return items;
+    },
+
+    currentSubFolders(): FolderTreeNode[] {
+      if (this.currentFolderId === null) {
+        return this.folderTree;
+      }
+      const folder = this.findFolderInTree(this.currentFolderId);
+      return folder?.children || [];
+    },
+
+    breadcrumbItems(): any[] {
+      const items: any[] = [
+        {
+          title: this.labels.rootFolder || '根目录',
+          folderId: null,
+          disabled: this.currentFolderId === null,
+          isRoot: true,
+        },
+      ];
+
+      this.breadcrumbPath.forEach((folder, index) => {
+        items.push({
+          title: folder.name,
+          folderId: folder.folder_id,
+          disabled: index === this.breadcrumbPath.length - 1,
+          isRoot: false,
+        });
+      });
+
+      return items;
+    },
+  },
+  methods: {
+    getItemId(item: SelectableItem): string {
+      return String(item[this.itemIdField] || item.id || '');
+    },
+
+    getItemName(item: SelectableItem): string {
+      return String(item[this.itemNameField] || item.name || '');
+    },
+
+    getItemDescription(item: SelectableItem): string {
+      return String(item[this.itemDescriptionField] || item.description || '');
+    },
+
+    truncateText(text: string, maxLength: number): string {
+      if (!text) return '';
+      return text.length > maxLength
+        ? text.substring(0, maxLength) + '...'
+        : text;
+    },
+
+    openDialog() {
+      this.selectedItemId = this.modelValue || '';
+      this.currentFolderId = null;
+      this.breadcrumbPath = [];
+      this.dialog = true;
+      this.$emit('navigate', null);
+    },
+
+    navigateToFolder(folderId: string | null) {
+      this.currentFolderId = folderId;
+      this.updateBreadcrumb(folderId);
+      this.$emit('navigate', folderId);
+    },
+
+    findFolderInTree(folderId: string): FolderTreeNode | null {
+      const findNode = (nodes: FolderTreeNode[]): FolderTreeNode | null => {
+        for (const node of nodes) {
+          if (node.folder_id === folderId) {
+            return node;
+          }
+          if (node.children && node.children.length > 0) {
+            const found = findNode(node.children);
+            if (found) return found;
+          }
+        }
+        return null;
+      };
+      return findNode(this.folderTree);
+    },
+
+    findPathToFolder(folderId: string): FolderTreeNode[] {
+      const findPath = (
+        nodes: FolderTreeNode[],
+        path: FolderTreeNode[],
+      ): FolderTreeNode[] | null => {
+        for (const node of nodes) {
+          if (node.folder_id === folderId) {
+            return [...path, node];
+          }
+          if (node.children && node.children.length > 0) {
+            const result = findPath(node.children, [...path, node]);
+            if (result) return result;
+          }
+        }
+        return null;
+      };
+      return findPath(this.folderTree, []) || [];
+    },
+
+    updateBreadcrumb(folderId: string | null) {
+      if (folderId === null) {
+        this.breadcrumbPath = [];
+      } else {
+        this.breadcrumbPath = this.findPathToFolder(folderId);
+      }
+    },
+
+    selectItem(item: SelectableItem) {
+      this.selectedItemId = this.getItemId(item);
+    },
+
+    confirmSelection() {
+      this.$emit('update:modelValue', this.selectedItemId);
+      this.dialog = false;
+    },
+
+    cancelSelection() {
+      this.selectedItemId = this.modelValue || '';
+      this.dialog = false;
+    },
+
+    isDefaultItem(item: SelectableItem): boolean {
+      if (this.defaultItem === null) {
+        return false;
+      }
+      return this.getItemId(item) === this.getItemId(this.defaultItem);
+    },
+
+    handleEditItem(item: SelectableItem) {
+      this.$emit('edit', item);
+    },
+  },
 });
 </script>
 
 <style scoped>
 .selector-dialog-card {
-    border-radius: 12px;
-    overflow: hidden;
+  border-radius: 12px;
+  overflow: hidden;
 }
 
 .selector-body {
@@ -592,114 +592,114 @@ export default defineComponent({
 }
 
 .dialog-title {
-    font-size: 1.25rem;
-    font-weight: 500;
+  font-size: 1.25rem;
+  font-weight: 500;
 }
 
 .selector-layout {
-    display: flex;
-    height: 100%;
+  display: flex;
+  height: 100%;
 }
 
 .folder-sidebar {
-    width: 280px;
-    border-right: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
-    overflow-y: auto;
-    flex-shrink: 0;
-    background-color: transparent;
+  width: 280px;
+  border-right: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+  overflow-y: auto;
+  flex-shrink: 0;
+  background-color: transparent;
 }
 
 .sidebar-header {
-    border-bottom: 1px solid rgba(var(--v-border-color), 0.5);
+  border-bottom: 1px solid rgba(var(--v-border-color), 0.5);
 }
 
 .items-panel {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-    background-color: rgb(var(--v-theme-surface));
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background-color: rgb(var(--v-theme-surface));
 }
 
 .breadcrumb-bar {
-    background-color: transparent;
-    min-height: 56px;
-    display: flex;
-    align-items: center;
+  background-color: transparent;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
 }
 
 .items-list {
-    flex: 1;
-    overflow-y: auto;
+  flex: 1;
+  overflow-y: auto;
 }
 
 .items-content {
-    background-color: transparent;
+  background-color: transparent;
 }
 
 .tree-list {
-    padding: 0;
+  padding: 0;
 }
 
 .section-label {
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.7rem;
 }
 
 .breadcrumb-link {
-    cursor: pointer;
-    transition: color 0.2s;
+  cursor: pointer;
+  transition: color 0.2s;
 }
 
 .breadcrumb-link:hover {
-    color: rgb(var(--v-theme-primary));
+  color: rgb(var(--v-theme-primary));
 }
 
 .root-item {
-    margin-bottom: 4px;
+  margin-bottom: 4px;
 }
 
 .folder-item {
-    transition: all 0.15s ease;
+  transition: all 0.15s ease;
 }
 
 .folder-item:hover {
-    background-color: rgba(var(--v-theme-primary), 0.06);
+  background-color: rgba(var(--v-theme-primary), 0.06);
 }
 
 .persona-item {
-    transition: all 0.15s ease;
-    border: 1px solid transparent;
+  transition: all 0.15s ease;
+  border: 1px solid transparent;
 }
 
 .persona-item:hover {
-    background-color: rgba(var(--v-theme-primary), 0.04);
+  background-color: rgba(var(--v-theme-primary), 0.04);
 }
 
 .persona-item.selected-item {
-    background-color: rgba(var(--v-theme-primary), 0.08);
-    border-color: rgba(var(--v-theme-primary), 0.3);
+  background-color: rgba(var(--v-theme-primary), 0.08);
+  border-color: rgba(var(--v-theme-primary), 0.3);
 }
 
 .empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
 }
 
 .v-list-item {
-    transition: all 0.15s ease;
+  transition: all 0.15s ease;
 }
 
 .v-list-item:hover {
-    background-color: rgba(var(--v-theme-primary), 0.04);
+  background-color: rgba(var(--v-theme-primary), 0.04);
 }
 
 .v-list-item.v-list-item--active {
-    background-color: rgba(var(--v-theme-primary), 0.08);
+  background-color: rgba(var(--v-theme-primary), 0.08);
 }
 
 @media (max-width: 960px) {
@@ -712,21 +712,22 @@ export default defineComponent({
     max-height: none;
   }
 
-    .selector-layout {
-        flex-direction: column;
+  .selector-layout {
+    flex-direction: column;
     height: 100%;
     max-height: none;
-    }
+  }
 
-    .folder-sidebar {
-        width: 100%;
-        border-right: none;
-        border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
-        max-height: 150px;
-    }
+  .folder-sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid
+      rgba(var(--v-border-color), var(--v-border-opacity));
+    max-height: 150px;
+  }
 
-    .items-list {
-      max-height: none;
-    }
+  .items-list {
+    max-height: none;
+  }
 }
 </style>

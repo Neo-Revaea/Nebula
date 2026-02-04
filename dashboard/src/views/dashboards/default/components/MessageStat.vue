@@ -1,8 +1,5 @@
 <template>
-  <v-card
-    elevation="1"
-    class="chart-card"
-  >
+  <v-card elevation="1" class="chart-card">
     <v-card-text>
       <div class="chart-header">
         <div>
@@ -13,35 +10,30 @@
             {{ t('charts.messageTrend.subtitle') }}
           </div>
         </div>
-        
-        <v-select 
-          v-model="selectedTimeRange" 
+
+        <v-select
+          v-model="selectedTimeRange"
           color="primary"
           variant="outlined"
-          density="compact" 
-          hide-details 
-          :items="timeRanges" 
-          item-title="label" 
-          item-value="value" 
+          density="compact"
+          hide-details
+          :items="timeRanges"
+          item-title="label"
+          item-value="value"
           class="time-select"
           return-object
-          single-line 
+          single-line
           @update:model-value="fetchMessageSeries"
         >
           <template #selection="{ item }">
             <div class="d-flex align-center">
-              <v-icon
-                start
-                size="small"
-              >
-                mdi-calendar-range
-              </v-icon>
+              <v-icon start size="small"> mdi-calendar-range </v-icon>
               {{ item.raw.label }}
             </div>
           </template>
         </v-select>
       </div>
-      
+
       <div class="chart-stats">
         <div class="stat-box">
           <div class="stat-label">
@@ -51,7 +43,7 @@
             {{ totalMessages }}
           </div>
         </div>
-        
+
         <div class="stat-box">
           <div class="stat-label">
             {{ t('charts.messageTrend.dailyAverage') }}
@@ -60,10 +52,10 @@
             {{ dailyAverage }}
           </div>
         </div>
-        
+
         <div
           class="stat-box"
-          :class="{'trend-up': growthRate > 0, 'trend-down': growthRate < 0}"
+          :class="{ 'trend-up': growthRate > 0, 'trend-down': growthRate < 0 }"
         >
           <div class="stat-label">
             {{ t('charts.messageTrend.growthRate') }}
@@ -78,26 +70,24 @@
           </div>
         </div>
       </div>
-      
+
       <div class="chart-container">
-        <div
-          v-if="loading"
-          class="loading-overlay"
-        >
-          <v-progress-circular
-            indeterminate
-            color="primary"
-          />
+        <div v-if="loading" class="loading-overlay">
+          <v-progress-circular indeterminate color="primary" />
           <div class="loading-text">
             {{ t('status.loading') }}
           </div>
         </div>
-        <apexchart 
+        <apexchart
           v-if="chartOptions"
-          type="area" 
-          :height="chartOptions.chart && chartOptions.chart.height ? chartOptions.chart.height : 280"
-          :options="chartOptions" 
-          :series="chartSeries" 
+          type="area"
+          :height="
+            chartOptions.chart && chartOptions.chart.height
+              ? chartOptions.chart.height
+              : 280
+          "
+          :options="chartOptions"
+          :series="chartSeries"
         />
       </div>
     </v-card-text>
@@ -107,7 +97,7 @@
 <script lang="ts">
 import axios from 'axios';
 import { defineComponent, type PropType } from 'vue';
-import { useTheme } from 'vuetify'; 
+import { useTheme } from 'vuetify';
 import { useModuleI18n } from '@/i18n/composables';
 
 type TimeRange = {
@@ -141,7 +131,7 @@ export default defineComponent({
 
   setup() {
     const { tm: t } = useModuleI18n('features/dashboard');
-    const theme = useTheme(); 
+    const theme = useTheme();
     return { t, theme };
   },
 
@@ -162,13 +152,13 @@ export default defineComponent({
       messageTimeSeries: [] as MessageTimeSeriesItem[],
     };
   },
-  
+
   computed: {
     chartOptions() {
       const currentTheme = this.theme.current.value;
       const themeColors: any = currentTheme.colors || {};
       const isDark = currentTheme.dark;
-      
+
       return {
         chart: {
           type: 'area',
@@ -192,40 +182,40 @@ export default defineComponent({
             speed: 800,
           },
         },
-        colors: [themeColors.primary || '#5e35b1'], 
+        colors: [themeColors.primary || '#5e35b1'],
         fill: {
           type: 'solid',
           opacity: 0.3,
         },
         dataLabels: {
-          enabled: false
+          enabled: false,
         },
         stroke: {
           curve: 'smooth',
-          width: 2
+          width: 2,
         },
         markers: {
           size: 3,
           strokeWidth: 2,
           hover: {
             size: 5,
-          }
+          },
         },
         tooltip: {
           theme: isDark ? 'dark' : 'light',
           x: {
-            format: 'yyyy-MM-dd HH:mm'
+            format: 'yyyy-MM-dd HH:mm',
           },
           y: {
             title: {
-              formatter: () => this.t('charts.messageTrend.messageCount') + ' '
-            }
+              formatter: () => this.t('charts.messageTrend.messageCount') + ' ',
+            },
           },
         },
         xaxis: {
           type: 'datetime',
           title: {
-            text: this.t('charts.messageTrend.timeLabel')
+            text: this.t('charts.messageTrend.timeLabel'),
           },
           labels: {
             formatter: (value: string | number) => {
@@ -233,52 +223,55 @@ export default defineComponent({
                 month: 'short',
                 day: 'numeric',
                 hour: '2-digit',
-                minute: '2-digit'
+                minute: '2-digit',
               });
-            }
+            },
           },
           tooltip: {
-            enabled: false
-          }
+            enabled: false,
+          },
         },
         yaxis: {
           title: {
-            text: this.t('charts.messageTrend.messageCount')
+            text: this.t('charts.messageTrend.messageCount'),
           },
           min: (min: number) => {
             return min < 10 ? 0 : Math.floor(min * 0.8);
           },
         },
         grid: {
-          borderColor: themeColors.border || '#eeeeee', 
+          borderColor: themeColors.border || '#eeeeee',
           row: {
             colors: ['transparent', 'transparent'],
-            opacity: 0.2
+            opacity: 0.2,
           },
           column: {
             colors: ['transparent', 'transparent'],
           },
           padding: {
             left: 0,
-            right: 0
-          }
-        }
+            right: 0,
+          },
+        },
       };
-    }
+    },
   },
   mounted() {
     this.timeRanges = [
       { label: this.t('charts.messageTrend.timeRanges.1day'), value: 86400 },
       { label: this.t('charts.messageTrend.timeRanges.3days'), value: 259200 },
       { label: this.t('charts.messageTrend.timeRanges.1week'), value: 604800 },
-      { label: this.t('charts.messageTrend.timeRanges.1month'), value: 2592000 },
+      {
+        label: this.t('charts.messageTrend.timeRanges.1month'),
+        value: 2592000,
+      },
     ];
     this.selectedTimeRange = this.timeRanges[0];
 
     if (this.chartSeries[0]) {
       this.chartSeries[0].name = this.t('charts.messageTrend.messageCount');
     }
-    
+
     this.fetchMessageSeries();
   },
 
@@ -286,16 +279,18 @@ export default defineComponent({
     formatNumber(num: number) {
       return new Intl.NumberFormat('zh-CN').format(num);
     },
-    
+
     async fetchMessageSeries() {
       if (!this.selectedTimeRange) {
         return;
       }
       this.loading = true;
       try {
-        const response = await axios.get<StatApiResponse>(`/api/stat/get?offset_sec=${this.selectedTimeRange.value}`);
+        const response = await axios.get<StatApiResponse>(
+          `/api/stat/get?offset_sec=${this.selectedTimeRange.value}`,
+        );
         const data = response.data.data;
-        
+
         if (data && data.message_time_series) {
           this.messageTimeSeries = data.message_time_series;
           this.processTimeSeriesData();
@@ -306,15 +301,19 @@ export default defineComponent({
         this.loading = false;
       }
     },
-    
+
     processTimeSeriesData() {
-      this.chartSeries = [{
-        name: this.t('charts.messageTrend.messageCount'), 
-        data: this.messageTimeSeries.map((item: MessageTimeSeriesItem): ChartPoint => {
-          return [new Date(item[0]*1000).getTime(), item[1]];
-        })
-      }];
-  
+      this.chartSeries = [
+        {
+          name: this.t('charts.messageTrend.messageCount'),
+          data: this.messageTimeSeries.map(
+            (item: MessageTimeSeriesItem): ChartPoint => {
+              return [new Date(item[0] * 1000).getTime(), item[1]];
+            },
+          ),
+        },
+      ];
+
       let total = 0;
       this.messageTimeSeries.forEach((item: MessageTimeSeriesItem) => {
         total += item[1];
@@ -322,13 +321,13 @@ export default defineComponent({
       this.totalMessages = this.formatNumber(total);
 
       if (this.messageTimeSeries.length > 0 && this.selectedTimeRange) {
-        const daysSpan = this.selectedTimeRange.value / 86400; 
+        const daysSpan = this.selectedTimeRange.value / 86400;
         this.dailyAverage = this.formatNumber(Math.round(total / daysSpan));
       }
- 
+
       this.calculateGrowthRate();
     },
-    
+
     calculateGrowthRate() {
       if (this.messageTimeSeries.length < 4) {
         this.growthRate = 0;
@@ -336,22 +335,24 @@ export default defineComponent({
       }
 
       const halfIndex = Math.floor(this.messageTimeSeries.length / 2);
-      
+
       const firstHalf = this.messageTimeSeries
         .slice(0, halfIndex)
         .reduce((sum: number, item: MessageTimeSeriesItem) => sum + item[1], 0);
-        
+
       const secondHalf = this.messageTimeSeries
         .slice(halfIndex)
         .reduce((sum: number, item: MessageTimeSeriesItem) => sum + item[1], 0);
 
       if (firstHalf > 0) {
-        this.growthRate = Math.round(((secondHalf - firstHalf) / firstHalf) * 100);
+        this.growthRate = Math.round(
+          ((secondHalf - firstHalf) / firstHalf) * 100,
+        );
       } else {
         this.growthRate = secondHalf > 0 ? 100 : 0;
       }
-    }
-  }
+    },
+  },
 });
 </script>
 

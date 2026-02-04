@@ -11,14 +11,16 @@ const goBack = () => {
 </script>
 
 <template>
-  <v-container class="error-container d-flex align-center justify-center fill-height">
+  <v-container
+    class="error-container d-flex align-center justify-center fill-height"
+  >
     <div class="text-center">
       <div class="mb-10 d-flex align-center justify-center error-header">
-        <v-icon 
-          size="120" 
-          color="primary" 
-          class="error-icon animation-float mr-4" 
-          style="opacity: 0.8;"
+        <v-icon
+          size="120"
+          color="primary"
+          class="error-icon animation-float mr-4"
+          style="opacity: 0.8"
         >
           mdi-robot-confused-outline
         </v-icon>
@@ -37,7 +39,7 @@ const goBack = () => {
           prepend-icon="mdi-home"
           to="/"
           elevation="4"
-          class="px-4 px-sm-8" 
+          class="px-4 px-sm-8"
         >
           {{ t('core.common.error404.returnHome') }}
         </v-btn>
@@ -68,7 +70,11 @@ const goBack = () => {
 }
 
 .gradient-text {
-  background: linear-gradient(45deg, rgb(var(--v-theme-primary)), rgb(var(--v-theme-secondary, var(--v-theme-primary))));
+  background: linear-gradient(
+    45deg,
+    rgb(var(--v-theme-primary)),
+    rgb(var(--v-theme-secondary, var(--v-theme-primary)))
+  );
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -81,9 +87,15 @@ const goBack = () => {
 }
 
 @keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-20px); }
-  100% { transform: translateY(0px); }
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
 }
 
 @media (max-width: 600px) {
@@ -94,19 +106,19 @@ const goBack = () => {
   .action-buttons {
     flex-direction: row !important;
   }
-  
+
   .gradient-text {
     font-size: 5rem !important;
   }
-  
+
   .v-icon {
     margin-right: 0 !important;
     margin-bottom: 16px;
   }
-  
+
   .action-buttons .v-btn {
-    font-size: 0.9rem; 
-    min-width: auto; 
+    font-size: 0.9rem;
+    min-width: auto;
   }
 }
 </style>

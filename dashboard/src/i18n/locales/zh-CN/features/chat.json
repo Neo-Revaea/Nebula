@@ -70,7 +70,8 @@
   "modes": {
     "darkMode": "深色模式",
     "lightMode": "浅色模式"
-  },  "shortcuts": {
+  },
+  "shortcuts": {
     "help": "获取帮助",
     "voiceRecord": "录制语音",
     "pasteImage": "粘贴图片"
@@ -138,4 +139,4 @@
     "sessionNotFound": "会话不存在或已被删除",
     "sessionRunning": "该会话正在生成回复中，请稍候再发送。"
   }
-} 
+}

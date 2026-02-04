@@ -6,5 +6,8 @@ declare module 'markstream-vue' {
   export function enableMermaid(loader?: any): void;
 
   export function setCustomComponents(mapping: Record<string, any>): void;
-  export function setCustomComponents(customId: string, mapping: Record<string, any>): void;
+  export function setCustomComponents(
+    customId: string,
+    mapping: Record<string, any>,
+  ): void;
 }

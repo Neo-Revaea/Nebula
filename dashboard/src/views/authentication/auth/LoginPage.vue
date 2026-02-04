@@ -28,7 +28,9 @@ const headerTitle = computed(() => toI18nString(t('logo.title')));
 const welcomeTitle = computed(() => toI18nString(t('logo.subtitle')));
 
 const titleChars = computed(() =>
-  headerTitle.value.split('').map((char: string) => (char === ' ' ? '\u00A0' : char))
+  headerTitle.value
+    .split('')
+    .map((char: string) => (char === ' ' ? '\u00A0' : char)),
 );
 
 const isDarkTheme = computed(() => customizer.uiTheme === 'PurpleThemeDark');
@@ -40,10 +42,12 @@ const toggleTheme = () => {
 };
 
 const switchToDarkLabel = computed(() => toI18nString(t('theme.switchToDark')));
-const switchToLightLabel = computed(() => toI18nString(t('theme.switchToLight')));
+const switchToLightLabel = computed(() =>
+  toI18nString(t('theme.switchToLight')),
+);
 const themeIconColor = computed(() => 'primary');
-const BASE_API_URL = 'https://api.revaea.com/pc'; 
-const currentImageUrl = ref<string>(''); 
+const BASE_API_URL = 'https://api.revaea.com/pc';
+const currentImageUrl = ref<string>('');
 const carouselInterval = ref<any>(null);
 const heroImageLoaded = ref(false);
 const getFreshUrl = () => {
@@ -55,14 +59,14 @@ const getFreshUrl = () => {
 const loadNextImage = () => {
   const nextUrl = getFreshUrl();
   const img = new Image();
-  
+
   img.src = nextUrl;
-  
+
   img.onload = () => {
     currentImageUrl.value = nextUrl;
     heroImageLoaded.value = true;
   };
-  
+
   img.onerror = () => {
     console.warn('Image load failed, retrying in next cycle...');
   };
@@ -73,8 +77,8 @@ const startCarousel = () => {
   if (!currentImageUrl.value) {
     loadNextImage();
   }
-  
-  carouselInterval.value = setInterval(loadNextImage, 10000); 
+
+  carouselInterval.value = setInterval(loadNextImage, 10000);
 };
 
 const stopCarousel = () => {
@@ -99,7 +103,7 @@ onMounted(async () => {
   }
 
   lockBodyScroll();
-  startCarousel(); 
+  startCarousel();
 });
 
 onUnmounted(() => {
@@ -125,7 +129,7 @@ onUnmounted(() => {
             decoding="async"
             loading="eager"
             @load="onHeroImageLoad"
-          >
+          />
         </Transition>
 
         <div class="visual-overlay" />
@@ -139,10 +143,7 @@ onUnmounted(() => {
             class="visual-controls__language"
             :icon-color="themeIconColor"
           />
-          <v-divider
-            vertical
-            class="visual-controls__divider"
-          />
+          <v-divider vertical class="visual-controls__divider" />
           <v-btn
             class="visual-controls__theme-btn"
             icon
@@ -151,26 +152,19 @@ onUnmounted(() => {
             :aria-label="isDarkTheme ? switchToLightLabel : switchToDarkLabel"
             @click="toggleTheme"
           >
-            <v-icon
-              size="18"
-              :color="themeIconColor"
-            >
-              {{ isDarkTheme ? 'mdi-white-balance-sunny' : 'mdi-weather-night' }}
+            <v-icon size="18" :color="themeIconColor">
+              {{
+                isDarkTheme ? 'mdi-white-balance-sunny' : 'mdi-weather-night'
+              }}
             </v-icon>
-            <v-tooltip
-              activator="parent"
-              location="top"
-            >
+            <v-tooltip activator="parent" location="top">
               {{ isDarkTheme ? switchToLightLabel : switchToDarkLabel }}
             </v-tooltip>
           </v-btn>
         </div>
       </figure>
 
-      <section
-        class="mui-login__panel"
-        aria-labelledby="loginTitle"
-      >
+      <section class="mui-login__panel" aria-labelledby="loginTitle">
         <div class="mui-login__copy">
           <div class="mui-login__hero">
             <div class="header-title login-header-title">
@@ -182,7 +176,7 @@ onUnmounted(() => {
                 height="28"
                 decoding="async"
                 draggable="false"
-              >
+              />
               <div class="title-wrapper">
                 <div
                   class="animated-title"
@@ -195,26 +189,20 @@ onUnmounted(() => {
                     class="title-char"
                     :style="{ animationDelay: `${index * 0.06}s` }"
                     aria-hidden="true"
-                  >{{ char }}</span>
+                    >{{ char }}</span
+                  >
                 </div>
               </div>
             </div>
           </div>
 
-          <h1
-            id="loginTitle"
-            class="mui-login__title"
-          >
-            <v-icon
-              size="24"
-              class="title-icon"
-              color="primary"
-            >
+          <h1 id="loginTitle" class="mui-login__title">
+            <v-icon size="24" class="title-icon" color="primary">
               mdi-emoticon-happy-outline
             </v-icon>
             {{ welcomeTitle }}
           </h1>
-            
+
           <div class="mt-4">
             <AuthLogin />
           </div>
@@ -240,8 +228,17 @@ onUnmounted(() => {
   align-items: center;
   padding: 24px 12px;
   overflow: hidden;
-  background: radial-gradient(circle at top, rgba(var(--v-theme-primary), 0.15), transparent 55%),
-    radial-gradient(circle at bottom, rgba(var(--v-theme-primary), 0.1), transparent 60%),
+  background:
+    radial-gradient(
+      circle at top,
+      rgba(var(--v-theme-primary), 0.15),
+      transparent 55%
+    ),
+    radial-gradient(
+      circle at bottom,
+      rgba(var(--v-theme-primary), 0.1),
+      transparent 60%
+    ),
     rgb(var(--v-theme-background));
 }
 
@@ -264,14 +261,18 @@ onUnmounted(() => {
   flex: 1.1;
   margin: 0;
   overflow: hidden;
-  background: rgb(var(--v-theme-background)); 
+  background: rgb(var(--v-theme-background));
 }
 
 .visual-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(10, 22, 50, 0.4), rgba(3, 9, 20, 0.2));
-  z-index: 2; 
+  background: linear-gradient(
+    135deg,
+    rgba(10, 22, 50, 0.4),
+    rgba(3, 9, 20, 0.2)
+  );
+  z-index: 2;
   pointer-events: none;
 }
 
@@ -288,22 +289,24 @@ onUnmounted(() => {
 }
 
 .carousel-fade-enter-active {
-  transition: opacity 1.5s ease, transform 2s ease;
+  transition:
+    opacity 1.5s ease,
+    transform 2s ease;
   z-index: 1;
 }
 
 .carousel-fade-leave-active {
   transition: opacity 1.5s ease;
-  z-index: 0; 
+  z-index: 0;
 }
 
 .carousel-fade-enter-from {
   opacity: 0;
-  transform: scale(1.05); 
+  transform: scale(1.05);
 }
 
 .carousel-fade-leave-to {
-  opacity: 0; 
+  opacity: 0;
 }
 
 .carousel-fade-enter-to,
@@ -329,7 +332,8 @@ onUnmounted(() => {
   opacity: 0;
   transform: translate3d(0, 24px, 0) scale(0.985);
   filter: blur(14px);
-  animation: login-panel-reveal 0.9s cubic-bezier(0.17, 0.84, 0.44, 1) 0.08s forwards,
+  animation:
+    login-panel-reveal 0.9s cubic-bezier(0.17, 0.84, 0.44, 1) 0.08s forwards,
     login-panel-glow 2.4s cubic-bezier(0.4, 0, 0.2, 1) 0.08s forwards;
   will-change: transform, opacity, filter;
 }
@@ -355,7 +359,10 @@ onUnmounted(() => {
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
   backdrop-filter: blur(12px);
   z-index: 10;
-  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
 }
 
 .visual-controls:hover {
@@ -385,7 +392,9 @@ onUnmounted(() => {
 
 .visual-controls :deep(.language-switcher--default) {
   background: transparent !important;
-  transition: transform 0.25s ease, background-color 0.25s ease;
+  transition:
+    transform 0.25s ease,
+    background-color 0.25s ease;
 }
 
 .visual-controls :deep(.language-switcher--default:hover) {
@@ -556,11 +565,11 @@ onUnmounted(() => {
     z-index: 0;
 
     :deep(.v-btn--variant-elevated),
-    :deep(button[type="submit"]) {
-      width: 100% !important;      
-      display: flex !important;         
-      justify-content: center;   
-      margin-top: 20px !important;  
+    :deep(button[type='submit']) {
+      width: 100% !important;
+      display: flex !important;
+      justify-content: center;
+      margin-top: 20px !important;
     }
   }
 

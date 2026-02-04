@@ -5,21 +5,21 @@ export const useAuthStore = defineStore({
   id: 'auth',
   state: () => ({
     username: '' as string,
-    returnUrl: null as string | null
+    returnUrl: null as string | null,
   }),
   actions: {
     async login(username: string, password: string): Promise<void> {
       try {
         const res = await axios.post('/api/auth/login', {
           username: username,
-          password: password
+          password: password,
         });
-    
+
         if (res.data.status === 'error') {
           return Promise.reject(res.data.message);
         }
-    
-        this.username = res.data.data.username
+
+        this.username = res.data.data.username;
         localStorage.setItem('user', this.username);
         localStorage.setItem('token', res.data.data.token);
         localStorage.setItem('change_pwd_hint', res.data.data?.change_pwd_hint);
@@ -36,6 +36,6 @@ export const useAuthStore = defineStore({
     },
     has_token(): boolean {
       return !!localStorage.getItem('token');
-    }
-  }
+    },
+  },
 });

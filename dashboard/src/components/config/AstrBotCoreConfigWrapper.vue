@@ -28,7 +28,10 @@
       >
         <v-container fluid>
           <div
-            v-for="(val2, key2) in (metadata[key]['metadata'] as Record<string, any>)"
+            v-for="(val2, key2) in metadata[key]['metadata'] as Record<
+              string,
+              any
+            >"
             :key="key2"
           >
             <!-- Support both traditional and JSON selector metadata -->
@@ -41,18 +44,18 @@
         </v-container>
       </v-tabs-window-item>
 
-
       <div style="margin-left: 16px; padding-bottom: 16px">
-        <small>{{ tm('help.helpPrefix') }}
-          <a
-            href="https://docs.astrbot.app/"
-            target="_blank"
-          >{{ tm('help.documentation') }}</a>
+        <small
+          >{{ tm('help.helpPrefix') }}
+          <a href="https://docs.astrbot.app/" target="_blank">{{
+            tm('help.documentation')
+          }}</a>
           {{ tm('help.helpMiddle') }}
           <a
             href="https://qm.qq.com/cgi-bin/qm/qr?k=EYGsuUTfe00_iOu9JTXS7_TEpMkXOvwv&jump_from=webapi&authKey=uUEMKCROfsseS+8IzqPjzV3y1tzy4AkykwTib2jNkOFdzezF9s9XknqnIaf3CDft"
             target="_blank"
-          >{{ tm('help.support') }}</a>{{ tm('help.helpSuffix') }}
+            >{{ tm('help.support') }}</a
+          >{{ tm('help.helpSuffix') }}
         </small>
       </div>
     </v-tabs-window>
@@ -66,49 +69,52 @@ import { useModuleI18n } from '@/i18n/composables';
 export default {
   name: 'AstrBotCoreConfigWrapper',
   components: {
-    AstrBotConfigV4
+    AstrBotConfigV4,
   },
   props: {
     metadata: {
       type: Object,
       required: true,
-      default: () => ({})
+      default: () => ({}),
     },
     config_data: {
       type: Object,
       required: true,
-      default: () => ({})
+      default: () => ({}),
     },
     readonly: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   setup() {
     const { tm: tmConfig } = useModuleI18n('features/config');
     const { tm: tmMetadata } = useModuleI18n('features/config-metadata');
-    
+
     const tm = (key: string) => {
       const metadataResult = tmMetadata(key);
-      if (!metadataResult.startsWith('[MISSING:') && !metadataResult.startsWith('[INVALID:')) {
+      if (
+        !metadataResult.startsWith('[MISSING:') &&
+        !metadataResult.startsWith('[INVALID:')
+      ) {
         return metadataResult;
       }
       return tmConfig(key);
     };
-    
+
     return {
-      tm
+      tm,
     };
   },
   data() {
     return {
       tab: 0, // 用于切换配置标签页
-    }
+    };
   },
   methods: {
     // 如果需要添加其他方法，可以在这里添加
-  }
-}
+  },
+};
 </script>
 
 <style>

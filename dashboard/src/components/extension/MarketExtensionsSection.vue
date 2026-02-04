@@ -7,10 +7,7 @@
       location="top end"
       class="market-fab-badge"
     >
-      <v-tooltip
-        :text="tm('market.cart.title')"
-        location="left"
-      >
+      <v-tooltip :text="tm('market.cart.title')" location="left">
         <template #activator="{ props }">
           <v-btn
             v-bind="props"
@@ -20,18 +17,13 @@
             size="x-large"
             @click="cartDialog = true"
           >
-            <v-icon size="32">
-              mdi-cart
-            </v-icon>
+            <v-icon size="32"> mdi-cart </v-icon>
           </v-btn>
         </template>
       </v-tooltip>
     </v-badge>
 
-    <v-tooltip
-      :text="tm('market.installPlugin')"
-      location="left"
-    >
+    <v-tooltip :text="tm('market.installPlugin')" location="left">
       <template #activator="{ props }">
         <v-btn
           v-bind="props"
@@ -41,9 +33,7 @@
           size="x-large"
           @click="emit('open-install-dialog')"
         >
-          <v-icon size="32">
-            mdi-plus
-          </v-icon>
+          <v-icon size="32"> mdi-plus </v-icon>
         </v-btn>
       </template>
     </v-tooltip>
@@ -55,41 +45,27 @@
     scroll-strategy="block"
     scroll-target="body"
   >
-    <v-card style="height: 520px; display: flex; flex-direction: column;">
+    <v-card style="height: 520px; display: flex; flex-direction: column">
       <v-card-title class="d-flex align-center">
-        <v-icon
-          size="small"
-          class="mr-2"
-        >
-          mdi-source-branch
-        </v-icon>
-        <span class="text-subtitle-1 font-weight-medium">{{ tm('market.source') }}</span>
+        <v-icon size="small" class="mr-2"> mdi-source-branch </v-icon>
+        <span class="text-subtitle-1 font-weight-medium">{{
+          tm('market.source')
+        }}</span>
         <v-spacer />
       </v-card-title>
 
       <v-divider />
 
-      <v-card-text style="flex: 1; overflow-y: auto;">
-        <v-chip
-          color="primary"
-          variant="tonal"
-          size="small"
-          class="mb-3"
-        >
-          <v-icon
-            start
-            size="small"
-          >
-            mdi-check
-          </v-icon>
+      <v-card-text style="flex: 1; overflow-y: auto">
+        <v-chip color="primary" variant="tonal" size="small" class="mb-3">
+          <v-icon start size="small"> mdi-check </v-icon>
           {{ selectedSourceDisplay }}
         </v-chip>
 
-        <v-list
-          density="compact"
-          class="pa-0"
-        >
-          <v-list-subheader class="font-weight-bold text-caption text-uppercase mb-1">
+        <v-list density="compact" class="pa-0">
+          <v-list-subheader
+            class="font-weight-bold text-caption text-uppercase mb-1"
+          >
             {{ tm('market.availableSources') }}
           </v-list-subheader>
 
@@ -101,22 +77,17 @@
             @click="emit('select-plugin-source', null)"
           >
             <template #prepend>
-              <v-icon
-                icon="mdi-shield-check"
-                size="small"
-                class="mr-2"
-              />
+              <v-icon icon="mdi-shield-check" size="small" class="mr-2" />
             </template>
-            <v-list-item-title>{{ tm('market.defaultSource') }}</v-list-item-title>
+            <v-list-item-title>{{
+              tm('market.defaultSource')
+            }}</v-list-item-title>
             <v-list-item-subtitle class="text-caption">
               {{ tm('market.defaultOfficialSource') }}
             </v-list-item-subtitle>
           </v-list-item>
 
-          <v-divider
-            v-if="customSources.length > 0"
-            class="my-2"
-          />
+          <v-divider v-if="customSources.length > 0" class="my-2" />
 
           <v-list-item
             v-for="source in customSources"
@@ -128,11 +99,7 @@
             @click="emit('select-plugin-source', source.url)"
           >
             <template #prepend>
-              <v-icon
-                icon="mdi-link-variant"
-                size="small"
-                class="mr-2"
-              />
+              <v-icon icon="mdi-link-variant" size="small" class="mr-2" />
             </template>
             <v-list-item-title>{{ source.name }}</v-list-item-title>
             <v-list-item-subtitle class="text-caption">
@@ -143,23 +110,22 @@
 
         <div
           class="d-flex align-center justify-center mt-3"
-          style="border: 1px dashed rgba(var(--v-border-color), 0.4); border-radius: 8px; padding: 12px; cursor: pointer;"
+          style="
+            border: 1px dashed rgba(var(--v-border-color), 0.4);
+            border-radius: 8px;
+            padding: 12px;
+            cursor: pointer;
+          "
           @click="emit('add-custom-source')"
         >
-          <v-icon
-            size="small"
-            class="mr-2"
-          >
-            mdi-plus
-          </v-icon>
-          <span class="text-body-2 font-weight-medium">{{ tm('market.addSource') }}</span>
+          <v-icon size="small" class="mr-2"> mdi-plus </v-icon>
+          <span class="text-body-2 font-weight-medium">{{
+            tm('market.addSource')
+          }}</span>
         </div>
       </v-card-text>
 
-      <v-card-actions
-        class="d-flex align-center"
-        style="gap: 8px;"
-      >
+      <v-card-actions class="d-flex align-center" style="gap: 8px">
         <template v-if="selectedSourceObj">
           <v-btn
             variant="text"
@@ -167,12 +133,7 @@
             color="medium-emphasis"
             @click="emit('edit-custom-source', selectedSourceObj)"
           >
-            <v-icon
-              start
-              size="small"
-            >
-              mdi-pencil-outline
-            </v-icon>
+            <v-icon start size="small"> mdi-pencil-outline </v-icon>
             {{ tm('market.editSource') }}
           </v-btn>
           <v-btn
@@ -181,21 +142,12 @@
             color="error"
             @click="emit('remove-custom-source', selectedSourceObj)"
           >
-            <v-icon
-              start
-              size="small"
-            >
-              mdi-trash-can-outline
-            </v-icon>
+            <v-icon start size="small"> mdi-trash-can-outline </v-icon>
             {{ tm('market.removeSource') }}
           </v-btn>
         </template>
         <v-spacer />
-        <v-btn
-          variant="text"
-          color="primary"
-          @click="sourceDialog = false"
-        >
+        <v-btn variant="text" color="primary" @click="sourceDialog = false">
           {{ tm('buttons.close') }}
         </v-btn>
       </v-card-actions>
@@ -205,16 +157,10 @@
   <div class="mt-4 market-page">
     <div
       class="d-flex align-center mb-2"
-      style="justify-content: space-between; flex-wrap: wrap; gap: 8px;"
+      style="justify-content: space-between; flex-wrap: wrap; gap: 8px"
     >
-      <div
-        class="d-flex align-center"
-        style="gap: 6px;"
-      >
-        <h2
-          class="d-flex align-center"
-          style="gap: 8px;"
-        >
+      <div class="d-flex align-center" style="gap: 6px">
+        <h2 class="d-flex align-center" style="gap: 8px">
           <span>{{ tm('market.allPlugins') }}</span>
           <v-chip
             size="small"
@@ -236,28 +182,30 @@
         </v-btn>
       </div>
 
-      <div
-        class="d-flex align-center"
-        style="gap: 8px; flex-wrap: wrap;"
-      >
-        <v-tooltip
-          :text="selectedSourceTooltip"
-          location="top"
-        >
+      <div class="d-flex align-center" style="gap: 8px; flex-wrap: wrap">
+        <v-tooltip :text="selectedSourceTooltip" location="top">
           <template #activator="{ props }">
             <v-btn
               v-bind="props"
               color="secondary"
               variant="tonal"
               class="text-truncate"
-              style="max-width: 220px; height: 40px; padding: 0 12px; display: flex; align-items: center; gap: 8px; border-radius: 8px;"
+              style="
+                max-width: 220px;
+                height: 40px;
+                padding: 0 12px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                border-radius: 8px;
+              "
               height="40"
               @click="sourceDialog = true"
             >
-              <v-icon size="small">
-                mdi-source-branch
-              </v-icon>
-              <span class="text-body-2 font-weight-medium text-truncate">{{ selectedSourceDisplay }}</span>
+              <v-icon size="small"> mdi-source-branch </v-icon>
+              <span class="text-body-2 font-weight-medium text-truncate">{{
+                selectedSourceDisplay
+              }}</span>
             </v-btn>
           </template>
         </v-tooltip>
@@ -268,12 +216,10 @@
           density="compact"
           variant="outlined"
           hide-details
-          style="max-width: 150px;"
+          style="max-width: 150px"
         >
           <template #prepend-inner>
-            <v-icon size="small">
-              mdi-sort
-            </v-icon>
+            <v-icon size="small"> mdi-sort </v-icon>
           </template>
         </v-select>
 
@@ -285,13 +231,18 @@
           @click="toggleSortOrder"
         >
           <v-icon size="small">
-            {{ sortOrder === 'desc' ? 'mdi-sort-descending' : 'mdi-sort-ascending' }}
+            {{
+              sortOrder === 'desc'
+                ? 'mdi-sort-descending'
+                : 'mdi-sort-ascending'
+            }}
           </v-icon>
-          <v-tooltip
-            activator="parent"
-            location="top"
-          >
-            {{ sortOrder === 'desc' ? tm('sort.descending') : tm('sort.ascending') }}
+          <v-tooltip activator="parent" location="top">
+            {{
+              sortOrder === 'desc'
+                ? tm('sort.descending')
+                : tm('sort.ascending')
+            }}
           </v-tooltip>
         </v-btn>
       </div>
@@ -304,32 +255,22 @@
       scroll-target="body"
     >
       <v-card>
-        <v-card-title class="d-flex align-center justify-space-between px-4 py-3">
-          <div
-            class="d-flex align-center"
-            style="gap: 8px; min-width: 0;"
-          >
+        <v-card-title
+          class="d-flex align-center justify-space-between px-4 py-3"
+        >
+          <div class="d-flex align-center" style="gap: 8px; min-width: 0">
             <v-icon>mdi-cart</v-icon>
-            <span class="text-subtitle-1 font-weight-medium">{{ tm('market.cart.title') }}</span>
-            <v-chip
-              size="small"
-              color="primary"
-              variant="tonal"
-            >
+            <span class="text-subtitle-1 font-weight-medium">{{
+              tm('market.cart.title')
+            }}</span>
+            <v-chip size="small" color="primary" variant="tonal">
               {{ cartCount }}
             </v-chip>
           </div>
 
-          <v-btn
-            icon
-            variant="text"
-            @click="cartDialog = false"
-          >
+          <v-btn icon variant="text" @click="cartDialog = false">
             <v-icon>mdi-close</v-icon>
-            <v-tooltip
-              activator="parent"
-              location="top"
-            >
+            <v-tooltip activator="parent" location="top">
               {{ tm('buttons.close') }}
             </v-tooltip>
           </v-btn>
@@ -339,7 +280,7 @@
 
         <v-card-text
           class="px-4 py-4"
-          style="max-height: 60vh; overflow-y: auto;"
+          style="max-height: 60vh; overflow-y: auto"
         >
           <v-alert
             v-if="cartItems.length === 0"
@@ -350,14 +291,8 @@
             {{ tm('market.cart.empty') }}
           </v-alert>
 
-          <v-list
-            v-else
-            density="compact"
-          >
-            <v-list-item
-              v-for="plugin in cartItems"
-              :key="getCartKey(plugin)"
-            >
+          <v-list v-else density="compact">
+            <v-list-item v-for="plugin in cartItems" :key="getCartKey(plugin)">
               <v-list-item-title class="text-body-1 font-weight-medium">
                 {{ displayPluginName(plugin) }}
               </v-list-item-title>
@@ -373,24 +308,14 @@
                   @click="emit('view-readme', plugin)"
                 >
                   <v-icon>mdi-book-open-variant</v-icon>
-                  <v-tooltip
-                    activator="parent"
-                    location="top"
-                  >
+                  <v-tooltip activator="parent" location="top">
                     {{ tm('market.cart.viewReadme') }}
                   </v-tooltip>
                 </v-btn>
 
-                <v-btn
-                  icon
-                  variant="text"
-                  @click="emit('toggle-cart', plugin)"
-                >
+                <v-btn icon variant="text" @click="emit('toggle-cart', plugin)">
                   <v-icon>mdi-delete-outline</v-icon>
-                  <v-tooltip
-                    activator="parent"
-                    location="top"
-                  >
+                  <v-tooltip activator="parent" location="top">
                     {{ tm('market.cart.remove') }}
                   </v-tooltip>
                 </v-btn>
@@ -423,19 +348,10 @@
       </v-card>
     </v-dialog>
 
-    <v-row style="min-height: 26rem;">
+    <v-row style="min-height: 26rem">
       <template v-if="marketLoadingLatched">
-        <v-col
-          v-for="n in 6"
-          :key="`skeleton-${n}`"
-          cols="12"
-          md="6"
-          lg="4"
-        >
-          <v-skeleton-loader
-            type="card"
-            class="rounded-lg"
-          />
+        <v-col v-for="n in 6" :key="`skeleton-${n}`" cols="12" md="6" lg="4">
+          <v-skeleton-loader type="card" class="rounded-lg" />
         </v-col>
       </template>
 
@@ -456,7 +372,7 @@
             :show-delete-button="false"
             :no-padding="true"
             class="plugin-card"
-            style="height: 15rem;"
+            style="height: 15rem"
           >
             <template #item-details>
               <v-chip
@@ -464,54 +380,95 @@
                 color="warning"
                 size="small"
                 label
-                style="position: absolute; right: 8px; top: 8px; z-index: 10; height: 26px; padding: 0 10px; font-weight: bold;"
+                style="
+                  position: absolute;
+                  right: 8px;
+                  top: 8px;
+                  z-index: 10;
+                  height: 26px;
+                  padding: 0 10px;
+                  font-weight: bold;
+                "
               >
                 {{ tm('market.recommended') }}
               </v-chip>
 
-              <div style="padding: 12px; padding-bottom: 8px; display: flex; gap: 12px; width: 100%; height: 100%; overflow: hidden;">
-                <div style="flex-shrink: 0;">
+              <div
+                style="
+                  padding: 12px;
+                  padding-bottom: 8px;
+                  display: flex;
+                  gap: 12px;
+                  width: 100%;
+                  height: 100%;
+                  overflow: hidden;
+                "
+              >
+                <div style="flex-shrink: 0">
                   <img
                     :src="plugin?.logo || defaultPluginIcon"
                     :alt="plugin.name"
-                    style="height: 100px; width: 100px; border-radius: 8px; object-fit: cover;"
-                  >
+                    style="
+                      height: 100px;
+                      width: 100px;
+                      border-radius: 8px;
+                      object-fit: cover;
+                    "
+                  />
                 </div>
 
-                <div style="flex: 1; overflow: hidden; display: flex; flex-direction: column;">
+                <div
+                  style="
+                    flex: 1;
+                    overflow: hidden;
+                    display: flex;
+                    flex-direction: column;
+                  "
+                >
                   <div
                     class="d-flex align-center"
-                    style="gap: 4px; margin-bottom: 6px;"
+                    style="gap: 4px; margin-bottom: 6px"
                   >
                     <v-icon
                       icon="mdi-account"
                       size="x-small"
-                      style="color: rgba(var(--v-theme-on-surface), 0.5);"
+                      style="color: rgba(var(--v-theme-on-surface), 0.5)"
                     />
                     <a
                       v-if="plugin?.social_link"
                       :href="plugin.social_link"
                       target="_blank"
                       class="text-subtitle-2 font-weight-medium"
-                      style="text-decoration: none; color: rgb(var(--v-theme-primary)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+                      style="
+                        text-decoration: none;
+                        color: rgb(var(--v-theme-primary));
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                      "
                     >
                       {{ plugin.author }}
                     </a>
                     <span
                       v-else
                       class="text-subtitle-2 font-weight-medium"
-                      style="color: rgb(var(--v-theme-primary)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+                      style="
+                        color: rgb(var(--v-theme-primary));
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                      "
                     >
                       {{ plugin.author }}
                     </span>
                     <div
                       class="d-flex align-center text-subtitle-2 ml-2"
-                      style="color: rgba(var(--v-theme-on-surface), 0.7);"
+                      style="color: rgba(var(--v-theme-on-surface), 0.7)"
                     >
                       <v-icon
                         icon="mdi-source-branch"
                         size="x-small"
-                        style="margin-right: 2px;"
+                        style="margin-right: 2px"
                       />
                       <span>{{ plugin.version }}</span>
                     </div>
@@ -523,29 +480,29 @@
 
                   <div
                     class="d-flex align-center"
-                    style="gap: 8px; margin-top: auto;"
+                    style="gap: 8px; margin-top: auto"
                   >
                     <div
                       v-if="plugin.stars !== undefined"
                       class="d-flex align-center text-subtitle-2"
-                      style="color: rgba(var(--v-theme-on-surface), 0.7);"
+                      style="color: rgba(var(--v-theme-on-surface), 0.7)"
                     >
                       <v-icon
                         icon="mdi-star"
                         size="x-small"
-                        style="margin-right: 2px;"
+                        style="margin-right: 2px"
                       />
                       <span>{{ plugin.stars }}</span>
                     </div>
                     <div
                       v-if="plugin.updated_at"
                       class="d-flex align-center text-subtitle-2"
-                      style="color: rgba(var(--v-theme-on-surface), 0.7);"
+                      style="color: rgba(var(--v-theme-on-surface), 0.7)"
                     >
                       <v-icon
                         icon="mdi-clock-outline"
                         size="x-small"
-                        style="margin-right: 2px;"
+                        style="margin-right: 2px"
                       />
                       <span>{{ formatUpdatedAt(plugin.updated_at) }}</span>
                     </div>
@@ -561,7 +518,7 @@
                 :color="tag === 'danger' ? 'error' : 'primary'"
                 label
                 size="x-small"
-                style="height: 20px;"
+                style="height: 20px"
               >
                 {{ tag === 'danger' ? tm('tags.danger') : tag }}
               </v-chip>
@@ -576,16 +533,13 @@
                     color="grey"
                     label
                     size="x-small"
-                    style="height: 20px; cursor: pointer;"
+                    style="height: 20px; cursor: pointer"
                   >
                     +{{ plugin.tags.length - 2 }}
                   </v-chip>
                 </template>
                 <v-list density="compact">
-                  <v-list-item
-                    v-for="tag in plugin.tags.slice(2)"
-                    :key="tag"
-                  >
+                  <v-list-item v-for="tag in plugin.tags.slice(2)" :key="tag">
                     <v-chip
                       :color="tag === 'danger' ? 'error' : 'primary'"
                       label
@@ -600,7 +554,11 @@
 
             <template #actions>
               <v-tooltip
-                :text="isInCart(plugin) ? tm('market.cart.remove') : tm('market.cart.add')"
+                :text="
+                  isInCart(plugin)
+                    ? tm('market.cart.remove')
+                    : tm('market.cart.add')
+                "
                 location="top"
               >
                 <template #activator="{ props: tipProps }">
@@ -610,12 +568,14 @@
                     variant="text"
                     size="small"
                     color="primary"
-                    style="height: 32px; width: 32px;"
+                    style="height: 32px; width: 32px"
                     :disabled="!!plugin?.installed"
                     @click="emit('toggle-cart', plugin)"
                   >
                     <v-icon size="20">
-                      {{ isInCart(plugin) ? 'mdi-cart-remove' : 'mdi-cart-plus' }}
+                      {{
+                        isInCart(plugin) ? 'mdi-cart-remove' : 'mdi-cart-plus'
+                      }}
                     </v-icon>
                   </v-btn>
                 </template>
@@ -628,13 +588,9 @@
                 variant="tonal"
                 :href="plugin.repo"
                 target="_blank"
-                style="height: 32px;"
+                style="height: 32px"
               >
-                <v-icon
-                  icon="mdi-github"
-                  start
-                  size="20"
-                />
+                <v-icon icon="mdi-github" start size="20" />
                 {{ tm('buttons.viewRepo') }}
               </v-btn>
 
@@ -643,7 +599,7 @@
                 color="primary"
                 size="50"
                 variant="flat"
-                style="height: 32px;"
+                style="height: 32px"
                 @click="emit('handle-install-plugin', plugin)"
               >
                 {{ tm('buttons.install') }}
@@ -654,7 +610,7 @@
                 size="70"
                 variant="tonal"
                 disabled
-                style="height: 32px;"
+                style="height: 32px"
               >
                 ✓ {{ tm('status.installed') }}
               </v-btn>
@@ -664,10 +620,7 @@
       </template>
     </v-row>
 
-    <div
-      v-if="totalPages > 1"
-      class="d-flex justify-center mt-4"
-    >
+    <div v-if="totalPages > 1" class="d-flex justify-center mt-4">
       <v-pagination
         v-model="currentPageModel"
         :length="totalPages"
@@ -678,19 +631,10 @@
   </div>
 
   <!-- 危险插件确认对话框（下沉） -->
-  <v-dialog
-    v-model="dangerConfirmDialogModel"
-    width="500"
-    persistent
-  >
+  <v-dialog v-model="dangerConfirmDialogModel" width="500" persistent>
     <v-card>
       <v-card-title class="text-h5 d-flex align-center">
-        <v-icon
-          color="warning"
-          class="mr-2"
-        >
-          mdi-alert-circle
-        </v-icon>
+        <v-icon color="warning" class="mr-2"> mdi-alert-circle </v-icon>
         {{ tm('dialogs.danger_warning.title') }}
       </v-card-title>
       <v-card-text>
@@ -698,16 +642,10 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn
-          color="grey"
-          @click="emit('cancel-danger-install')"
-        >
+        <v-btn color="grey" @click="emit('cancel-danger-install')">
           {{ tm('dialogs.danger_warning.cancel') }}
         </v-btn>
-        <v-btn
-          color="warning"
-          @click="emit('confirm-danger-install')"
-        >
+        <v-btn color="warning" @click="emit('confirm-danger-install')">
           {{ tm('dialogs.danger_warning.confirm') }}
         </v-btn>
       </v-card-actions>
@@ -715,13 +653,12 @@
   </v-dialog>
 
   <!-- 添加/编辑自定义插件源对话框（下沉） -->
-  <v-dialog
-    v-model="showSourceDialogModel"
-    width="500"
-  >
+  <v-dialog v-model="showSourceDialogModel" width="500">
     <v-card>
       <v-card-title class="text-h5">
-        {{ props.editingSource ? tm('market.editSource') : tm('market.addSource') }}
+        {{
+          props.editingSource ? tm('market.editSource') : tm('market.addSource')
+        }}
       </v-card-title>
       <v-card-text>
         <div class="pa-2">
@@ -770,26 +707,15 @@
   </v-dialog>
 
   <!-- 删除插件源确认对话框（下沉） -->
-  <v-dialog
-    v-model="showRemoveSourceDialogModel"
-    width="400"
-  >
+  <v-dialog v-model="showRemoveSourceDialogModel" width="400">
     <v-card>
       <v-card-title class="text-h5 d-flex align-center">
-        <v-icon
-          color="warning"
-          class="mr-2"
-        >
-          mdi-alert-circle
-        </v-icon>
+        <v-icon color="warning" class="mr-2"> mdi-alert-circle </v-icon>
         {{ tm('dialogs.uninstall.title') }}
       </v-card-title>
       <v-card-text>
         <div>{{ tm('market.confirmRemoveSource') }}</div>
-        <div
-          v-if="props.sourceToRemove"
-          class="mt-2"
-        >
+        <div v-if="props.sourceToRemove" class="mt-2">
           <strong>{{ props.sourceToRemove.name }}</strong>
           <div class="text-caption">
             {{ props.sourceToRemove.url }}
@@ -818,195 +744,206 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
-import { useDisplay } from 'vuetify'
-import defaultPluginIcon from '@/assets/images/plugin_icon.png'
-import { useModuleI18n } from '@/i18n/composables'
-import ItemCard from '@/components/shared/ItemCard.vue'
+import { computed, ref, watch } from 'vue';
+import { useDisplay } from 'vuetify';
+import defaultPluginIcon from '@/assets/images/plugin_icon.png';
+import { useModuleI18n } from '@/i18n/composables';
+import ItemCard from '@/components/shared/ItemCard.vue';
 
-import type { PluginMarketItem, PluginSource } from '@/types/extension'
+import type { PluginMarketItem, PluginSource } from '@/types/extension';
 
 const props = defineProps<{
-  filteredMarketPlugins: PluginMarketItem[]
-  paginatedPlugins: PluginMarketItem[]
-  currentPage: number
-  totalPages: number
-  sortBy: string
-  sortOrder: string
-  sortOptions: Array<{ title: string; value: string }>
-  refreshingMarket: boolean
-  marketLoading: boolean
-  customSources: PluginSource[]
-  selectedSource: string | null
-  selectedSourceObj: PluginSource | null
-  showPluginFullName: boolean
-  cartItems: PluginMarketItem[]
-  cartCount: number
+  filteredMarketPlugins: PluginMarketItem[];
+  paginatedPlugins: PluginMarketItem[];
+  currentPage: number;
+  totalPages: number;
+  sortBy: string;
+  sortOrder: string;
+  sortOptions: Array<{ title: string; value: string }>;
+  refreshingMarket: boolean;
+  marketLoading: boolean;
+  customSources: PluginSource[];
+  selectedSource: string | null;
+  selectedSourceObj: PluginSource | null;
+  showPluginFullName: boolean;
+  cartItems: PluginMarketItem[];
+  cartCount: number;
 
-  dangerConfirmDialog: boolean
+  dangerConfirmDialog: boolean;
 
-  showSourceDialog: boolean
-  sourceName: string
-  sourceUrl: string
-  editingSource: boolean
+  showSourceDialog: boolean;
+  sourceName: string;
+  sourceUrl: string;
+  editingSource: boolean;
 
-  showRemoveSourceDialog: boolean
-  sourceToRemove: PluginSource | null
-}>()
+  showRemoveSourceDialog: boolean;
+  sourceToRemove: PluginSource | null;
+}>();
 
 const emit = defineEmits<{
-  (e: 'update:currentPage', value: number): void
-  (e: 'update:sortBy', value: string): void
-  (e: 'update:sortOrder', value: string): void
-  (e: 'refresh'): void
-  (e: 'handle-install-plugin', plugin: PluginMarketItem): void
-  (e: 'open-install-dialog'): void
-  (e: 'select-plugin-source', source: string | null): void
-  (e: 'add-custom-source'): void
-  (e: 'edit-custom-source', source: PluginSource): void
-  (e: 'remove-custom-source', source: PluginSource): void
-  (e: 'toggle-cart', plugin: PluginMarketItem): void
-  (e: 'clear-cart'): void
-  (e: 'install-cart'): void
-  (e: 'view-readme', plugin: PluginMarketItem): void
+  (e: 'update:currentPage', value: number): void;
+  (e: 'update:sortBy', value: string): void;
+  (e: 'update:sortOrder', value: string): void;
+  (e: 'refresh'): void;
+  (e: 'handle-install-plugin', plugin: PluginMarketItem): void;
+  (e: 'open-install-dialog'): void;
+  (e: 'select-plugin-source', source: string | null): void;
+  (e: 'add-custom-source'): void;
+  (e: 'edit-custom-source', source: PluginSource): void;
+  (e: 'remove-custom-source', source: PluginSource): void;
+  (e: 'toggle-cart', plugin: PluginMarketItem): void;
+  (e: 'clear-cart'): void;
+  (e: 'install-cart'): void;
+  (e: 'view-readme', plugin: PluginMarketItem): void;
 
-  (e: 'update:dangerConfirmDialog', value: boolean): void
-  (e: 'cancel-danger-install'): void
-  (e: 'confirm-danger-install'): void
+  (e: 'update:dangerConfirmDialog', value: boolean): void;
+  (e: 'cancel-danger-install'): void;
+  (e: 'confirm-danger-install'): void;
 
-  (e: 'update:showSourceDialog', value: boolean): void
-  (e: 'update:sourceName', value: string): void
-  (e: 'update:sourceUrl', value: string): void
-  (e: 'save-custom-source'): void
+  (e: 'update:showSourceDialog', value: boolean): void;
+  (e: 'update:sourceName', value: string): void;
+  (e: 'update:sourceUrl', value: string): void;
+  (e: 'save-custom-source'): void;
 
-  (e: 'update:showRemoveSourceDialog', value: boolean): void
-  (e: 'confirm-remove-source'): void
-}>()
+  (e: 'update:showRemoveSourceDialog', value: boolean): void;
+  (e: 'confirm-remove-source'): void;
+}>();
 
-const { tm } = useModuleI18n('features/extension')
-const display = useDisplay()
-const MAX_DESCRIPTION_LENGTH = 50
-const sourceDialog = ref(false)
-const cartDialog = ref(false)
+const { tm } = useModuleI18n('features/extension');
+const display = useDisplay();
+const MAX_DESCRIPTION_LENGTH = 50;
+const sourceDialog = ref(false);
+const cartDialog = ref(false);
 
 const dangerConfirmDialogModel = computed({
   get: () => props.dangerConfirmDialog,
-  set: value => emit('update:dangerConfirmDialog', value),
-})
+  set: (value) => emit('update:dangerConfirmDialog', value),
+});
 
 const showSourceDialogModel = computed({
   get: () => props.showSourceDialog,
-  set: value => emit('update:showSourceDialog', value),
-})
+  set: (value) => emit('update:showSourceDialog', value),
+});
 
 const sourceNameModel = computed({
   get: () => props.sourceName,
-  set: value => emit('update:sourceName', value),
-})
+  set: (value) => emit('update:sourceName', value),
+});
 
 const sourceUrlModel = computed({
   get: () => props.sourceUrl,
-  set: value => emit('update:sourceUrl', value),
-})
+  set: (value) => emit('update:sourceUrl', value),
+});
 
 const showRemoveSourceDialogModel = computed({
   get: () => props.showRemoveSourceDialog,
-  set: value => emit('update:showRemoveSourceDialog', value),
-})
+  set: (value) => emit('update:showRemoveSourceDialog', value),
+});
 
-const marketLoadingLatched = ref(false)
-const marketLoadingSeq = ref(0)
-const marketLoadingStartedAt = ref(0)
+const marketLoadingLatched = ref(false);
+const marketLoadingSeq = ref(0);
+const marketLoadingStartedAt = ref(0);
 
-const isMarketLoading = computed(() => props.refreshingMarket || props.marketLoading)
+const isMarketLoading = computed(
+  () => props.refreshingMarket || props.marketLoading,
+);
 
 watch(
   isMarketLoading,
   (loading) => {
     if (loading) {
-      marketLoadingSeq.value += 1
-      marketLoadingStartedAt.value = Date.now()
-      marketLoadingLatched.value = true
-      return
+      marketLoadingSeq.value += 1;
+      marketLoadingStartedAt.value = Date.now();
+      marketLoadingLatched.value = true;
+      return;
     }
 
-    const seq = marketLoadingSeq.value
-    const elapsed = Date.now() - marketLoadingStartedAt.value
-    const remaining = Math.max(0, 1000 - elapsed)
+    const seq = marketLoadingSeq.value;
+    const elapsed = Date.now() - marketLoadingStartedAt.value;
+    const remaining = Math.max(0, 1000 - elapsed);
 
     window.setTimeout(() => {
-      if (marketLoadingSeq.value !== seq) return
-      if (isMarketLoading.value) return
-      marketLoadingLatched.value = false
-    }, remaining)
+      if (marketLoadingSeq.value !== seq) return;
+      if (isMarketLoading.value) return;
+      marketLoadingLatched.value = false;
+    }, remaining);
   },
-  { immediate: true, flush: 'sync' }
-)
+  { immediate: true, flush: 'sync' },
+);
 
-const paginationTotalVisible = computed(() => (display.smAndDown.value ? 3 : 7))
-const paginationSize = computed(() => (display.smAndDown.value ? 'x-small' : 'small'))
+const paginationTotalVisible = computed(() =>
+  display.smAndDown.value ? 3 : 7,
+);
+const paginationSize = computed(() =>
+  display.smAndDown.value ? 'x-small' : 'small',
+);
 
 const currentPageModel = computed({
   get: () => props.currentPage,
-  set: value => emit('update:currentPage', value),
-})
+  set: (value) => emit('update:currentPage', value),
+});
 
 const sortByModel = computed({
   get: () => props.sortBy,
-  set: value => emit('update:sortBy', value),
-})
+  set: (value) => emit('update:sortBy', value),
+});
 
 const toggleSortOrder = () => {
-  const next = props.sortOrder === 'desc' ? 'asc' : 'desc'
-  emit('update:sortOrder', next)
-}
+  const next = props.sortOrder === 'desc' ? 'asc' : 'desc';
+  emit('update:sortOrder', next);
+};
 
 const selectedSourceDisplay = computed(() => {
   if (!props.selectedSource) {
-    return tm('market.defaultSource')
+    return tm('market.defaultSource');
   }
-  return props.customSources.find(source => source.url === props.selectedSource)?.name ?? props.selectedSource
-})
+  return (
+    props.customSources.find((source) => source.url === props.selectedSource)
+      ?.name ?? props.selectedSource
+  );
+});
 
-const selectedSourceTooltip = computed(() => props.selectedSource || tm('market.defaultOfficialSource'))
+const selectedSourceTooltip = computed(
+  () => props.selectedSource || tm('market.defaultOfficialSource'),
+);
 
 const displayPluginName = (plugin: PluginMarketItem) => {
   if (plugin.display_name?.length) {
-    return plugin.display_name
+    return plugin.display_name;
   }
-  return props.showPluginFullName ? plugin.name : plugin.trimmedName
-}
+  return props.showPluginFullName ? plugin.name : plugin.trimmedName;
+};
 
 const getCartKey = (plugin: PluginMarketItem) => {
-  const repo = (plugin.repo ?? '').trim()
-  return repo || plugin.name
-}
+  const repo = (plugin.repo ?? '').trim();
+  return repo || plugin.name;
+};
 
 const isInCart = (plugin: PluginMarketItem) => {
-  const key = getCartKey(plugin)
-  return props.cartItems.some(p => getCartKey(p) === key)
-}
+  const key = getCartKey(plugin);
+  return props.cartItems.some((p) => getCartKey(p) === key);
+};
 
 const formatUpdatedAt = (value: string) => {
-  return new Date(value).toLocaleString()
-}
+  return new Date(value).toLocaleString();
+};
 
 const formatDescription = (value?: string) => {
-  const text = (value ?? '').trim()
+  const text = (value ?? '').trim();
   if (!text) {
-    return ''
+    return '';
   }
   return text.length > MAX_DESCRIPTION_LENGTH
     ? `${text.slice(0, MAX_DESCRIPTION_LENGTH)}…`
-    : text
-}
+    : text;
+};
 
 const toItemCardPlugin = (plugin: PluginMarketItem) => {
   return {
     ...plugin,
     _title: displayPluginName(plugin) as string,
-  }
-}
+  };
+};
 </script>
 
 <style scoped>

@@ -1,8 +1,5 @@
 <template>
-  <v-dialog
-    v-model="isOpen"
-    max-width="400"
-  >
+  <v-dialog v-model="isOpen" max-width="400">
     <v-card>
       <v-card-title class="text-h6">
         {{ title }}
@@ -10,16 +7,10 @@
       <v-card-text>{{ message }}</v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn
-          color="gray"
-          @click="handleCancel"
-        >
+        <v-btn color="gray" @click="handleCancel">
           {{ t('core.common.dialog.cancelButton') }}
         </v-btn>
-        <v-btn
-          color="red"
-          @click="handleConfirm"
-        >
+        <v-btn color="red" @click="handleConfirm">
           {{ t('core.common.dialog.confirmButton') }}
         </v-btn>
       </v-card-actions>
@@ -28,17 +19,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref } from 'vue';
 import { useI18n } from '@/i18n/composables';
 
 const { t } = useI18n();
 
 const isOpen = ref(false);
-const title = ref("");
-const message = ref("");
+const title = ref('');
+const message = ref('');
 let resolvePromise: ((value: boolean) => void) | null = null;
 
-const open = (options: { title?: string; message?: string } = {}): Promise<boolean> => {
+const open = (
+  options: { title?: string; message?: string } = {},
+): Promise<boolean> => {
   title.value = options.title || t('core.common.dialog.confirmTitle');
   message.value = options.message || t('core.common.dialog.confirmMessage');
   isOpen.value = true;

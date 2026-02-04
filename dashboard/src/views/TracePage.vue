@@ -1,51 +1,53 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import axios from 'axios'
-import TraceDisplayer from '@/components/shared/TraceDisplayer.vue'
-import { useModuleI18n } from '@/i18n/composables'
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+import TraceDisplayer from '@/components/shared/TraceDisplayer.vue';
+import { useModuleI18n } from '@/i18n/composables';
 
-const { tm } = useModuleI18n('features/trace')
+const { tm } = useModuleI18n('features/trace');
 
-const traceEnabled = ref(true)
-const loading = ref(false)
-const traceDisplayerKey = ref(0)
+const traceEnabled = ref(true);
+const loading = ref(false);
+const traceDisplayerKey = ref(0);
 
 async function fetchTraceSettings() {
   try {
-    const res = await axios.get('/api/trace/settings')
+    const res = await axios.get('/api/trace/settings');
     if (res.data?.status === 'ok') {
-      traceEnabled.value = res.data.data?.trace_enable ?? true
+      traceEnabled.value = res.data.data?.trace_enable ?? true;
     }
   } catch (err) {
-    console.error('Failed to fetch trace settings:', err)
+    console.error('Failed to fetch trace settings:', err);
   }
 }
 
 async function updateTraceSettings() {
-  loading.value = true
+  loading.value = true;
   try {
     await axios.post('/api/trace/settings', {
-      trace_enable: traceEnabled.value
-    })
+      trace_enable: traceEnabled.value,
+    });
     // Refresh the TraceDisplayer component to reconnect SSE
-    traceDisplayerKey.value += 1
+    traceDisplayerKey.value += 1;
   } catch (err) {
-    console.error('Failed to update trace settings:', err)
+    console.error('Failed to update trace settings:', err);
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 
 onMounted(() => {
-  void fetchTraceSettings()
-})
+  void fetchTraceSettings();
+});
 </script>
 
 <template>
-  <div style="height: 100%; display: flex; flex-direction: column;">
+  <div style="height: 100%; display: flex; flex-direction: column">
     <div class="trace-header">
       <div class="trace-info">
-        <v-icon size="small" color="info" class="mr-2">mdi-information-outline</v-icon>
+        <v-icon size="small" color="info" class="mr-2"
+          >mdi-information-outline</v-icon
+        >
         <span class="trace-hint">{{ tm('hint') }}</span>
       </div>
       <div class="trace-controls">
@@ -59,12 +61,14 @@ onMounted(() => {
           @update:model-value="updateTraceSettings"
         >
           <template #label>
-            <span class="switch-label">{{ traceEnabled ? tm('recording') : tm('paused') }}</span>
+            <span class="switch-label">{{
+              traceEnabled ? tm('recording') : tm('paused')
+            }}</span>
           </template>
         </v-switch>
       </div>
     </div>
-    <div style="flex: 1; min-height: 0;">
+    <div style="flex: 1; min-height: 0">
       <TraceDisplayer :key="traceDisplayerKey" />
     </div>
   </div>

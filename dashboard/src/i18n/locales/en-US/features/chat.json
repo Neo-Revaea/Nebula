@@ -70,7 +70,8 @@
   "modes": {
     "darkMode": "Dark Mode",
     "lightMode": "Light Mode"
-  },  "shortcuts": {
+  },
+  "shortcuts": {
     "help": "Get Help",
     "voiceRecord": "Record Voice",
     "pasteImage": "Paste Image"
@@ -80,9 +81,11 @@
     "disabled": "Streaming disabled",
     "on": "Stream",
     "off": "Normal"
-  },  "config": {
+  },
+  "config": {
     "title": "Config"
-  },  "reasoning": {
+  },
+  "reasoning": {
     "thinking": "Thinking Process"
   },
   "reply": {
@@ -136,4 +139,4 @@
     "sessionNotFound": "Session does not exist or has been deleted",
     "sessionRunning": "This session is generating a reply. Please wait before sending."
   }
-} 
+}

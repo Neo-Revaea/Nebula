@@ -1,207 +1,224 @@
-﻿import { computed, onMounted, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+﻿import { computed, onMounted, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
-import { useModuleI18n } from '@/i18n/composables'
-import { useCommonStore } from '@/stores/common'
+import { useModuleI18n } from '@/i18n/composables';
+import { useCommonStore } from '@/stores/common';
 
-import type { ExtensionActiveTab } from '@/types/extension'
+import type { ExtensionActiveTab } from '@/types/extension';
 
-import { useCommandConflicts } from './useCommandConflicts'
-import { useInstalledPlugins } from './useInstalledPlugins'
-import { useLoadingDialog } from './useLoadingDialog'
-import { usePluginInstall } from './usePluginInstall'
-import { usePluginMarket } from './usePluginMarket'
-import { usePluginSources } from './usePluginSources'
-import { useSnackToast } from './useSnackToast'
-import { normalizeMessage, toReadmeUrl } from './utils'
+import { useCommandConflicts } from './useCommandConflicts';
+import { useInstalledPlugins } from './useInstalledPlugins';
+import { useLoadingDialog } from './useLoadingDialog';
+import { usePluginInstall } from './usePluginInstall';
+import { usePluginMarket } from './usePluginMarket';
+import { usePluginSources } from './usePluginSources';
+import { useSnackToast } from './useSnackToast';
+import { normalizeMessage, toReadmeUrl } from './utils';
 
-type InstallResult = { name: string; repo?: string | null }
-type AfterInstallOptions = { openReadme?: boolean }
+type InstallResult = { name: string; repo?: string | null };
+type AfterInstallOptions = { openReadme?: boolean };
 
 export function useExtensionPage() {
-  const commonStore = useCommonStore()
-  const { tm } = useModuleI18n('features/extension')
+  const commonStore = useCommonStore();
+  const { tm } = useModuleI18n('features/extension');
 
-  const route = useRoute()
-  const router = useRouter()
+  const route = useRoute();
+  const router = useRouter();
 
-  const activeTab = ref<ExtensionActiveTab>('installed')
+  const activeTab = ref<ExtensionActiveTab>('installed');
 
   const tabToHash: Record<ExtensionActiveTab, string> = {
     installed: '#installed',
     mcp: '#mcp',
     skills: '#skills',
     market: '#market',
-    components: '#components'
-  }
+    components: '#components',
+  };
 
   const hashToTab: Record<string, ExtensionActiveTab> = {
     '#installed': 'installed',
     '#mcp': 'mcp',
     '#skills': 'skills',
     '#market': 'market',
-    '#components': 'components'
-  }
+    '#components': 'components',
+  };
 
   const normalizeHash = (hash: string) => {
-    const trimmed = (hash ?? '').trim()
-    if (!trimmed) return ''
-    return trimmed.startsWith('#') ? trimmed.toLowerCase() : `#${trimmed.toLowerCase()}`
-  }
+    const trimmed = (hash ?? '').trim();
+    if (!trimmed) return '';
+    return trimmed.startsWith('#')
+      ? trimmed.toLowerCase()
+      : `#${trimmed.toLowerCase()}`;
+  };
 
   watch(
     () => route.hash,
-    hash => {
-      if (route.name !== 'Extensions') return
-      const normalized = normalizeHash(hash)
-      const nextTab = hashToTab[normalized]
+    (hash) => {
+      if (route.name !== 'Extensions') return;
+      const normalized = normalizeHash(hash);
+      const nextTab = hashToTab[normalized];
       if (nextTab && activeTab.value !== nextTab) {
-        activeTab.value = nextTab
+        activeTab.value = nextTab;
       }
     },
-    { immediate: true }
-  )
+    { immediate: true },
+  );
 
-  watch(activeTab, tab => {
-    if (route.name !== 'Extensions') return
-    const desired = tabToHash[tab]
-    if (!desired) return
-    if (route.hash === desired) return
+  watch(activeTab, (tab) => {
+    if (route.name !== 'Extensions') return;
+    const desired = tabToHash[tab];
+    if (!desired) return;
+    if (route.hash === desired) return;
 
     void router
       .replace({ name: 'Extensions', query: route.query, hash: desired })
-      .catch(() => undefined)
-  })
+      .catch(() => undefined);
+  });
 
-  const marketLoading = ref(false)
+  const marketLoading = ref(false);
 
-  const marketFetchedKey = ref<string | null>(null)
-  const marketProcessedKey = ref<string | null>(null)
+  const marketFetchedKey = ref<string | null>(null);
+  const marketProcessedKey = ref<string | null>(null);
 
-  const { snack_message, snack_show, snack_success, toast } = useSnackToast()
-  const { loadingDialog, resetLoadingDialog, onLoadingDialogResult } = useLoadingDialog(tm)
+  const { snack_message, snack_show, snack_success, toast } = useSnackToast();
+  const { loadingDialog, resetLoadingDialog, onLoadingDialogResult } =
+    useLoadingDialog(tm);
 
-  const { conflictDialog, checkAndPromptConflicts, handleConflictConfirm } = useCommandConflicts({
-    onGoToManage: () => {
-      activeTab.value = 'components'
-    }
-  })
+  const { conflictDialog, checkAndPromptConflicts, handleConflictConfirm } =
+    useCommandConflicts({
+      onGoToManage: () => {
+        activeTab.value = 'components';
+      },
+    });
 
   const toChangelogUrl = (repo?: string | null) => {
-    const base = (repo ?? '').trim().replace(/\.git$/i, '').replace(/\/+$/g, '')
-    if (!base) return null
-    if (!/^https?:\/\//i.test(base) && !/^git@/i.test(base)) return null
+    const base = (repo ?? '')
+      .trim()
+      .replace(/\.git$/i, '')
+      .replace(/\/+$/g, '');
+    if (!base) return null;
+    if (!/^https?:\/\//i.test(base) && !/^git@/i.test(base)) return null;
 
     // Reuse repo normalization logic via toReadmeUrl, then strip possible #readme.
-    const normalized = toReadmeUrl(base)
-    if (!normalized) return null
-    const repoUrl = normalized.replace(/#readme$/i, '')
+    const normalized = toReadmeUrl(base);
+    if (!normalized) return null;
+    const repoUrl = normalized.replace(/#readme$/i, '');
     // Best-effort: common GitHub/Gitea both support this style; if not, user still has repo link.
-    return `${repoUrl.replace(/\/+$/g, '')}/blob/master/CHANGELOG.md`
-  }
+    return `${repoUrl.replace(/\/+$/g, '')}/blob/master/CHANGELOG.md`;
+  };
 
   const viewReadme = (plugin: { name: string; repo?: string | null }) => {
-    const url = toReadmeUrl(plugin.repo ?? null)
-    if (!url) return
-    window.open(url, '_blank', 'noopener,noreferrer')
-  }
+    const url = toReadmeUrl(plugin.repo ?? null);
+    if (!url) return;
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
 
   const viewChangelog = (plugin: { name: string; repo?: string | null }) => {
-    const url = toChangelogUrl(plugin.repo ?? null) ?? toReadmeUrl(plugin.repo ?? null)
-    if (!url) return
-    window.open(url, '_blank', 'noopener,noreferrer')
-  }
+    const url =
+      toChangelogUrl(plugin.repo ?? null) ?? toReadmeUrl(plugin.repo ?? null);
+    if (!url) return;
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
 
   const setLoading = (title: string) => {
-    loadingDialog.title = title
-    loadingDialog.statusCode = 0
-    loadingDialog.result = ''
-    loadingDialog.show = true
-  }
+    loadingDialog.title = title;
+    loadingDialog.statusCode = 0;
+    loadingDialog.result = '';
+    loadingDialog.show = true;
+  };
 
   const installed = useInstalledPlugins({
     tm,
     toast,
     loadingDialog,
     onLoadingDialogResult,
-    afterPluginOn: checkAndPromptConflicts
-  })
+    afterPluginOn: checkAndPromptConflicts,
+  });
 
   const sources = usePluginSources({
     tm,
     toast,
     onSelectedChange: () => {
-      marketFetchedKey.value = null
-      marketProcessedKey.value = null
+      marketFetchedKey.value = null;
+      marketProcessedKey.value = null;
 
       if (activeTab.value === 'market') {
-        void refreshPluginMarket()
+        void refreshPluginMarket();
       } else {
-        void fetchMarketData(false)
+        void fetchMarketData(false);
       }
-    }
-  })
+    },
+  });
 
   const market = usePluginMarket({
     tm,
     toast,
     selectedSource: sources.selectedSource,
-    getInstalledPlugins: () => (Array.isArray(installed.extension_data?.data) ? installed.extension_data.data : [])
-  })
+    getInstalledPlugins: () =>
+      Array.isArray(installed.extension_data?.data)
+        ? installed.extension_data.data
+        : [],
+  });
 
   const checkUpdate = () => {
-    installed.checkUpdate(market.pluginMarketData.value)
-  }
+    installed.checkUpdate(market.pluginMarketData.value);
+  };
 
-  const getSourceKey = (sourceUrl: string | null) => sourceUrl ?? '__default__'
+  const getSourceKey = (sourceUrl: string | null) => sourceUrl ?? '__default__';
 
   const fetchMarketData = async (force = false) => {
-    const key = getSourceKey(sources.selectedSource.value)
-    if (!force && marketFetchedKey.value === key) return
+    const key = getSourceKey(sources.selectedSource.value);
+    if (!force && marketFetchedKey.value === key) return;
 
     try {
-      marketLoading.value = true
-      const data = await commonStore.getPluginCollections(force, sources.selectedSource.value)
-      market.pluginMarketData.value = data
-      marketFetchedKey.value = key
+      marketLoading.value = true;
+      const data = await commonStore.getPluginCollections(
+        force,
+        sources.selectedSource.value,
+      );
+      market.pluginMarketData.value = data;
+      marketFetchedKey.value = key;
 
       // Keep installed page update indicators working without doing heavy market indexing.
-      checkUpdate()
+      checkUpdate();
     } catch (err) {
-      toast(tm('messages.getMarketDataFailed') + ' ' + err, 'error')
+      toast(tm('messages.getMarketDataFailed') + ' ' + err, 'error');
     } finally {
-      marketLoading.value = false
+      marketLoading.value = false;
     }
-  }
+  };
 
   const processMarketDataIfNeeded = () => {
-    const key = getSourceKey(sources.selectedSource.value)
-    if (marketProcessedKey.value === key) return
+    const key = getSourceKey(sources.selectedSource.value);
+    if (marketProcessedKey.value === key) return;
 
-    market.trimExtensionName()
-    market.checkAlreadyInstalled()
-    marketProcessedKey.value = key
-  }
+    market.trimExtensionName();
+    market.checkAlreadyInstalled();
+    marketProcessedKey.value = key;
+  };
 
   const refreshPluginMarket = async () => {
-    await market.loadPluginMarket(true, true)
-    const key = getSourceKey(sources.selectedSource.value)
-    marketFetchedKey.value = key
-    marketProcessedKey.value = key
-    checkUpdate()
-  }
+    await market.loadPluginMarket(true, true);
+    const key = getSourceKey(sources.selectedSource.value);
+    marketFetchedKey.value = key;
+    marketProcessedKey.value = key;
+    checkUpdate();
+  };
 
-  const afterInstall = async (result: InstallResult, options: AfterInstallOptions = {}) => {
-    await installed.getExtensions()
+  const afterInstall = async (
+    result: InstallResult,
+    options: AfterInstallOptions = {},
+  ) => {
+    await installed.getExtensions();
     if (marketFetchedKey.value) {
-      market.checkAlreadyInstalled()
-      checkUpdate()
+      market.checkAlreadyInstalled();
+      checkUpdate();
     }
     if (options.openReadme ?? true) {
-      viewReadme({ name: result.name, repo: result.repo ?? null })
+      viewReadme({ name: result.name, repo: result.repo ?? null });
     }
-    await checkAndPromptConflicts()
-  }
+    await checkAndPromptConflicts();
+  };
 
   const install = usePluginInstall({
     tm,
@@ -209,142 +226,167 @@ export function useExtensionPage() {
     loadingFlag: installed.loading_,
     setLoading,
     onLoadingResult: onLoadingDialogResult,
-    afterInstall
-  })
+    afterInstall,
+  });
 
   const getCartKey = (plugin: { name: string; repo?: string | null }) => {
-    const repo = (plugin.repo ?? '').trim()
-    return repo || plugin.name
-  }
+    const repo = (plugin.repo ?? '').trim();
+    return repo || plugin.name;
+  };
 
-  const cart = ref(new Map<string, any>())
+  const cart = ref(new Map<string, any>());
 
-  const cartItems = computed(() => Array.from(cart.value.values()))
-  const cartCount = computed(() => cart.value.size)
+  const cartItems = computed(() => Array.from(cart.value.values()));
+  const cartCount = computed(() => cart.value.size);
 
   const toggleCart = (plugin: any) => {
-    if (!plugin) return
-    if (plugin.installed) return
+    if (!plugin) return;
+    if (plugin.installed) return;
 
-    const key = getCartKey(plugin)
+    const key = getCartKey(plugin);
     if (cart.value.has(key)) {
-      cart.value.delete(key)
+      cart.value.delete(key);
     } else {
-      cart.value.set(key, plugin)
+      cart.value.set(key, plugin);
     }
-  }
+  };
 
   const clearCart = () => {
-    cart.value.clear()
-  }
+    cart.value.clear();
+  };
 
   const installCart = async () => {
-    const items = cartItems.value
-    if (items.length === 0) return
+    const items = cartItems.value;
+    if (items.length === 0) return;
 
-    const total = items.length
+    const total = items.length;
 
-    const dangerItems = items.filter(p => Array.isArray(p.tags) && p.tags.includes('danger'))
+    const dangerItems = items.filter(
+      (p) => Array.isArray(p.tags) && p.tags.includes('danger'),
+    );
 
     const run = async () => {
-      installed.loading_.value = true
-      setLoading(tm('market.cart.batchProgressDetail', { done: 0, total, success: 0, failed: 0 }))
+      installed.loading_.value = true;
+      setLoading(
+        tm('market.cart.batchProgressDetail', {
+          done: 0,
+          total,
+          success: 0,
+          failed: 0,
+        }),
+      );
 
-      let success = 0
-      let done = 0
-      const failed: Array<{ name: string; error: string }> = []
+      let success = 0;
+      let done = 0;
+      const failed: Array<{ name: string; error: string }> = [];
 
       try {
         for (const plugin of items) {
-          const url = (plugin?.repo ?? '').trim()
+          const url = (plugin?.repo ?? '').trim();
           if (!url) {
-            failed.push({ name: plugin?.name ?? 'unknown', error: 'missing repo url' })
-            done++
+            failed.push({
+              name: plugin?.name ?? 'unknown',
+              error: 'missing repo url',
+            });
+            done++;
             loadingDialog.title = tm('market.cart.batchProgressDetail', {
               done,
               total,
               success,
-              failed: failed.length
-            })
-            continue
+              failed: failed.length,
+            });
+            continue;
           }
 
           try {
-            await install.installFromUrl(url, { openReadme: false, silent: true })
-            success++
+            await install.installFromUrl(url, {
+              openReadme: false,
+              silent: true,
+            });
+            success++;
           } catch (err) {
-            failed.push({ name: plugin?.name ?? url, error: normalizeMessage(err) })
+            failed.push({
+              name: plugin?.name ?? url,
+              error: normalizeMessage(err),
+            });
           } finally {
-            done++
+            done++;
             loadingDialog.title = tm('market.cart.batchProgressDetail', {
               done,
               total,
               success,
-              failed: failed.length
-            })
+              failed: failed.length,
+            });
           }
         }
 
-        await installed.getExtensions()
+        await installed.getExtensions();
         if (marketFetchedKey.value) {
-          market.checkAlreadyInstalled()
-          checkUpdate()
+          market.checkAlreadyInstalled();
+          checkUpdate();
         }
 
         if (failed.length === 0) {
-          onLoadingDialogResult(1, tm('market.cart.batchSuccess', { success, total: items.length }))
+          onLoadingDialogResult(
+            1,
+            tm('market.cart.batchSuccess', { success, total: items.length }),
+          );
         } else {
           onLoadingDialogResult(
             2,
-            tm('market.cart.batchPartial', { success, failed: failed.length, total: items.length }),
-            -1
-          )
+            tm('market.cart.batchPartial', {
+              success,
+              failed: failed.length,
+              total: items.length,
+            }),
+            -1,
+          );
         }
 
-        clearCart()
-        await checkAndPromptConflicts()
+        clearCart();
+        await checkAndPromptConflicts();
       } finally {
-        installed.loading_.value = false
+        installed.loading_.value = false;
       }
-    }
+    };
 
     if (dangerItems.length > 0) {
-      install.openDangerConfirm(dangerItems[0], run)
-      return
+      install.openDangerConfirm(dangerItems[0], run);
+      return;
     }
 
-    await run()
-  }
+    await run();
+  };
 
   onMounted(() => {
-    void installed.getExtensions()
+    void installed.getExtensions();
 
     void (async () => {
-      await sources.loadCustomSources()
-      await fetchMarketData(false)
-    })()
+      await sources.loadCustomSources();
+      await fetchMarketData(false);
+    })();
 
-    let urlParams: URLSearchParams
+    let urlParams: URLSearchParams;
     if (window.location.hash) {
-      const hashQuery = window.location.hash.split('?')[1] || ''
-      urlParams = new URLSearchParams(hashQuery)
+      const hashQuery = window.location.hash.split('?')[1] || '';
+      urlParams = new URLSearchParams(hashQuery);
     } else {
-      urlParams = new URLSearchParams(window.location.search)
+      urlParams = new URLSearchParams(window.location.search);
     }
-    const plugin_name = urlParams.get('open_config')
+    const plugin_name = urlParams.get('open_config');
     if (plugin_name) {
-      void installed.openExtensionConfig(plugin_name)
+      void installed.openExtensionConfig(plugin_name);
     }
-  })
+  });
 
-  watch(activeTab, tab => {
-    if (tab !== 'market') return
+  watch(activeTab, (tab) => {
+    if (tab !== 'market') return;
 
     void (async () => {
-      await fetchMarketData(false)
-      processMarketDataIfNeeded()
-    })()
-  })
+      await fetchMarketData(false);
+      processMarketDataIfNeeded();
+    })();
+  });
 
   return {
     tm,
@@ -481,6 +523,6 @@ export function useExtensionPage() {
 
     newExtension: install.newExtension,
 
-    marketCustomFilter: market.marketCustomFilter
-  }
+    marketCustomFilter: market.marketCustomFilter,
+  };
 }

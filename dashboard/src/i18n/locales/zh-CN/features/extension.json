@@ -3,7 +3,7 @@
   "subtitle": "管理和配置系统插件",
   "tabs": {
     "installedPlugins": "插件",
-    "market": "插件市场", 
+    "market": "插件市场",
     "installedMcpServers": "MCP",
     "skills": "Skills",
     "handlersOperation": "管理行为"

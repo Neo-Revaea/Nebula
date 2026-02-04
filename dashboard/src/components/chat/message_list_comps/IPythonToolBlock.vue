@@ -1,12 +1,6 @@
 <template>
-  <div
-    class="ipython-tool-block"
-    :class="{ compact: !showHeader }"
-  >
-    <div
-      v-if="displayExpanded"
-      class="py-3 animate-fade-in"
-    >
+  <div class="ipython-tool-block" :class="{ compact: !showHeader }">
+    <div v-if="displayExpanded" class="py-3 animate-fade-in">
       <!-- Code Section -->
       <div class="code-section">
         <div
@@ -14,25 +8,17 @@
           class="code-highlighted"
           v-html="highlightedCode"
         />
-        <pre
-          v-else
-          class="code-fallback"
-          :class="{ 'dark-theme': isDark }"
-        >{{ code || 'No code available' }}</pre>
+        <pre v-else class="code-fallback" :class="{ 'dark-theme': isDark }">{{
+          code || 'No code available'
+        }}</pre>
       </div>
 
       <!-- Result Section -->
-      <div
-        v-if="result"
-        class="result-section"
-      >
-        <div class="result-label">
-          {{ tm('ipython.output') }}:
-        </div>
-        <pre
-          class="result-content"
-          :class="{ 'dark-theme': isDark }"
-        >{{ formattedResult }}</pre>
+      <div v-if="result" class="result-section">
+        <div class="result-label">{{ tm('ipython.output') }}:</div>
+        <pre class="result-content" :class="{ 'dark-theme': isDark }">{{
+          formattedResult
+        }}</pre>
       </div>
     </div>
   </div>
@@ -44,24 +30,24 @@ import { useModuleI18n } from '@/i18n/composables';
 import { createHighlighter, type Highlighter } from 'shiki';
 
 type IPythonToolCall = {
-    args?: { code?: string } | null;
-    result?: string | null;
+  args?: { code?: string } | null;
+  result?: string | null;
 };
 
 const props = withDefaults(
-    defineProps<{
-        toolCall: IPythonToolCall;
-        isDark?: boolean;
-        initialExpanded?: boolean;
-        showHeader?: boolean;
-        forceExpanded?: boolean | null;
-    }>(),
-    {
-        isDark: false,
-        initialExpanded: false,
-        showHeader: true,
-        forceExpanded: null
-    }
+  defineProps<{
+    toolCall: IPythonToolCall;
+    isDark?: boolean;
+    initialExpanded?: boolean;
+    showHeader?: boolean;
+    forceExpanded?: boolean | null;
+  }>(),
+  {
+    isDark: false,
+    initialExpanded: false,
+    showHeader: true,
+    forceExpanded: null,
+  },
 );
 
 const { tm } = useModuleI18n('features/chat');
@@ -70,152 +56,152 @@ const shikiHighlighter = ref<Highlighter | null>(null);
 const shikiReady = ref<boolean>(false);
 
 const code = computed(() => {
-    try {
-        const codeValue = props.toolCall.args?.code;
-        return codeValue ?? null;
-    } catch (err) {
-        console.error('Failed to get iPython code:', err);
-    }
-    return null;
+  try {
+    const codeValue = props.toolCall.args?.code;
+    return codeValue ?? null;
+  } catch (err) {
+    console.error('Failed to get iPython code:', err);
+  }
+  return null;
 });
 
 const result = computed<string | null | undefined>(() => props.toolCall.result);
 
 const formattedResult = computed(() => {
-    if (!result.value) return '';
-    try {
-        const parsed = JSON.parse(result.value);
-        return JSON.stringify(parsed, null, 2);
-    } catch {
-        return result.value;
-    }
+  if (!result.value) return '';
+  try {
+    const parsed = JSON.parse(result.value);
+    return JSON.stringify(parsed, null, 2);
+  } catch {
+    return result.value;
+  }
 });
 
 const highlightedCode = computed(() => {
-    const highlighter = shikiHighlighter.value;
-    if (!shikiReady.value || !highlighter || !code.value) {
-        return '';
-    }
-    try {
-        return highlighter.codeToHtml(code.value, {
-            lang: 'python',
-            theme: props.isDark ? 'min-dark' : 'github-light'
-        });
-    } catch (err) {
-        console.error('Failed to highlight code:', err);
-        return `<pre><code>${code.value}</code></pre>`;
-    }
+  const highlighter = shikiHighlighter.value;
+  if (!shikiReady.value || !highlighter || !code.value) {
+    return '';
+  }
+  try {
+    return highlighter.codeToHtml(code.value, {
+      lang: 'python',
+      theme: props.isDark ? 'min-dark' : 'github-light',
+    });
+  } catch (err) {
+    console.error('Failed to highlight code:', err);
+    return `<pre><code>${code.value}</code></pre>`;
+  }
 });
 
 const displayExpanded = computed(() => {
-    if (props.forceExpanded === null) {
-        return isExpanded.value;
-    }
-    return props.forceExpanded;
+  if (props.forceExpanded === null) {
+    return isExpanded.value;
+  }
+  return props.forceExpanded;
 });
 
 onMounted(async () => {
-    try {
-        shikiHighlighter.value = await createHighlighter({
-            themes: ['min-dark', 'github-light'],
-            langs: ['python']
-        });
-        shikiReady.value = true;
-    } catch (err) {
-        console.error('Failed to initialize Shiki:', err);
-    }
+  try {
+    shikiHighlighter.value = await createHighlighter({
+      themes: ['min-dark', 'github-light'],
+      langs: ['python'],
+    });
+    shikiReady.value = true;
+  } catch (err) {
+    console.error('Failed to initialize Shiki:', err);
+  }
 });
 </script>
 
 <style scoped>
 .ipython-tool-block {
-    margin-bottom: 12px;
-    margin-top: 6px;
+  margin-bottom: 12px;
+  margin-top: 6px;
 }
 
 .ipython-tool-block.compact {
-    margin: 0;
+  margin: 0;
 }
 
 .py-3 {
-    padding-top: 12px;
-    padding-bottom: 12px;
-    overflow: hidden;
-    font-size: 14px;
-    line-height: 1.5;
-    overflow-x: auto;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  overflow: hidden;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-x: auto;
 }
 
 .code-section {
-    margin-bottom: 12px;
+  margin-bottom: 12px;
 }
 
 .code-highlighted {
-    border-radius: 6px;
-    overflow: hidden;
-    font-size: 14px;
-    line-height: 1.5;
-    overflow-x: auto;
+  border-radius: 6px;
+  overflow: hidden;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-x: auto;
 }
 
 .code-fallback {
-    margin: 0;
-    padding: 12px;
-    border-radius: 6px;
-    overflow-x: auto;
-    font-size: 13px;
-    line-height: 1.5;
-    background-color: rgba(var(--v-theme-surface), 0.55);
-    animation: fadeIn 0.2s ease-in-out;
+  margin: 0;
+  padding: 12px;
+  border-radius: 6px;
+  overflow-x: auto;
+  font-size: 13px;
+  line-height: 1.5;
+  background-color: rgba(var(--v-theme-surface), 0.55);
+  animation: fadeIn 0.2s ease-in-out;
 }
 
 .code-fallback.dark-theme {
-    background-color: transparent;
+  background-color: transparent;
 }
 
 .result-section {
-    margin-top: 12px;
+  margin-top: 12px;
 }
 
 .result-label {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--v-theme-secondaryText);
-    margin-bottom: 6px;
-    opacity: 0.8;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--v-theme-secondaryText);
+  margin-bottom: 6px;
+  opacity: 0.8;
 }
 
 .result-content {
-    margin: 0;
-    padding: 12px;
-    border-radius: 6px;
-    overflow-x: auto;
-    font-size: 13px;
-    line-height: 1.5;
-    background-color: rgba(var(--v-theme-surface), 0.55);
-    max-height: 300px;
-    overflow-y: auto;
+  margin: 0;
+  padding: 12px;
+  border-radius: 6px;
+  overflow-x: auto;
+  font-size: 13px;
+  line-height: 1.5;
+  background-color: rgba(var(--v-theme-surface), 0.55);
+  max-height: 300px;
+  overflow-y: auto;
 }
 
 .result-content.dark-theme {
-    background-color: transparent;
+  background-color: transparent;
 }
 
 .animate-fade-in {
-    animation: fadeIn 0.2s ease-in-out;
+  animation: fadeIn 0.2s ease-in-out;
 }
 
 :deep(.code-highlighted pre) {
-    background-color: transparent !important;
+  background-color: transparent !important;
 }
 
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
+  from {
+    opacity: 0;
+  }
 
-    to {
-        opacity: 1;
-    }
+  to {
+    opacity: 1;
+  }
 }
 </style>

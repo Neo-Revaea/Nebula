@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useDisplay } from 'vuetify'
-import { useLanguageSwitcher, useI18n } from '@/i18n/composables'
-import type { Locale } from '@/i18n/types'
+import { computed } from 'vue';
+import { useDisplay } from 'vuetify';
+import { useLanguageSwitcher, useI18n } from '@/i18n/composables';
+import type { Locale } from '@/i18n/types';
 
-const display = useDisplay()
-const { t } = useI18n()
+const display = useDisplay();
+const { t } = useI18n();
 
-const { languageOptions, switchLanguage, locale } = useLanguageSwitcher()
-const currentLocale = computed(() => locale.value)
+const { languageOptions, switchLanguage, locale } = useLanguageSwitcher();
+const currentLocale = computed(() => locale.value);
 
 const changeLanguage = async (langCode: string) => {
-  await switchLanguage(langCode as Locale)
-}
+  await switchLanguage(langCode as Locale);
+};
 </script>
 
 <template>
@@ -35,27 +35,21 @@ const changeLanguage = async (langCode: string) => {
         <template #prepend>
           <v-icon>mdi-translate</v-icon>
         </template>
-        <v-list-item-title>{{ t('core.header.buttons.language') || 'Language' }}</v-list-item-title>
+        <v-list-item-title>{{
+          t('core.header.buttons.language') || 'Language'
+        }}</v-list-item-title>
         <template #append>
-          <v-icon
-            size="small"
-            color="medium-emphasis"
-          >
-            {{ display.mobile.value ? 'mdi-chevron-down' : 'mdi-chevron-right' }}
+          <v-icon size="small" color="medium-emphasis">
+            {{
+              display.mobile.value ? 'mdi-chevron-down' : 'mdi-chevron-right'
+            }}
           </v-icon>
         </template>
       </v-list-item>
     </template>
 
-    <v-card
-      class="language-dropdown"
-      elevation="8"
-      rounded="lg"
-    >
-      <v-list
-        density="compact"
-        class="pa-1"
-      >
+    <v-card class="language-dropdown" elevation="8" rounded="lg">
+      <v-list density="compact" class="pa-1">
         <v-list-item
           v-for="lang in languageOptions"
           :key="lang.value"
@@ -69,16 +63,8 @@ const changeLanguage = async (langCode: string) => {
             <span :class="['fi', `fi-${lang.flag}`, 'language-flag-styled']" />
           </template>
           <v-list-item-title>{{ lang.label }}</v-list-item-title>
-          <template
-            v-if="currentLocale === lang.value"
-            #append
-          >
-            <v-icon
-              color="primary"
-              size="small"
-            >
-              mdi-check
-            </v-icon>
+          <template v-if="currentLocale === lang.value" #append>
+            <v-icon color="primary" size="small"> mdi-check </v-icon>
           </template>
         </v-list-item>
       </v-list>

@@ -7,10 +7,8 @@ const { tm } = useModuleI18n('features/console');
 </script>
 
 <template>
-  <div style="height: 100%;">
-    <div
-      class="console-toolbar"
-    >
+  <div style="height: 100%">
+    <div class="console-toolbar">
       <div class="console-toolbar__left">
         <h4>{{ tm('title') }}</h4>
         <v-alert
@@ -25,21 +23,19 @@ const { tm } = useModuleI18n('features/console');
       <div class="console-toolbar__right d-flex align-center">
         <v-switch
           v-model="autoScrollEnabled"
-          :label="autoScrollEnabled ? tm('autoScroll.enabled') : tm('autoScroll.disabled')"
+          :label="
+            autoScrollEnabled
+              ? tm('autoScroll.enabled')
+              : tm('autoScroll.disabled')
+          "
           hide-details
           density="compact"
           color="primary"
           class="console-toolbar__switch"
         />
-        <v-dialog
-          v-model="pipDialog"
-          width="400"
-        >
+        <v-dialog v-model="pipDialog" width="400">
           <template #activator="{ props }">
-            <v-btn
-              variant="plain"
-              v-bind="props"
-            >
+            <v-btn variant="plain" v-bind="props">
               {{ tm('pipInstall.button') }}
             </v-btn>
           </template>
@@ -80,7 +76,7 @@ const { tm } = useModuleI18n('features/console');
     </div>
     <ConsoleDisplayer
       ref="consoleDisplayer"
-      style="height: calc(100vh - 220px); "
+      style="height: calc(100vh - 220px)"
     />
   </div>
 </template>
@@ -88,7 +84,7 @@ const { tm } = useModuleI18n('features/console');
 export default {
   name: 'ConsolePage',
   components: {
-    ConsoleDisplayer
+    ConsoleDisplayer,
   },
   data() {
     return {
@@ -96,39 +92,40 @@ export default {
       pipDialog: false,
       pipInstallPayload: {
         package: '',
-        mirror: ''
+        mirror: '',
       },
       loading: false,
-      pipStatus: ''
-    }
+      pipStatus: '',
+    };
   },
   watch: {
     autoScrollEnabled(val) {
       if (this.$refs.consoleDisplayer) {
         (this.$refs.consoleDisplayer as any).autoScroll = val;
       }
-    }
+    },
   },
   methods: {
     pipInstall() {
       this.loading = true;
-      axios.post('/api/update/pip-install', this.pipInstallPayload)
-          .then(res => {
+      axios
+        .post('/api/update/pip-install', this.pipInstallPayload)
+        .then((res) => {
           this.pipStatus = res.data.message;
           setTimeout(() => {
             this.pipStatus = '';
             this.pipDialog = false;
           }, 2000);
-          })
-          .catch(err => {
+        })
+        .catch((err) => {
           this.pipStatus = err.response.data.message;
-          }).finally(() => {
+        })
+        .finally(() => {
           this.loading = false;
         });
-    }
-  }
-}
-
+    },
+  },
+};
 </script>
 
 <style>

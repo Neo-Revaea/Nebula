@@ -5,20 +5,20 @@ import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 
 type SidebarNavItem = {
-  title?: string
-  icon?: string
-  iconSize?: string | number
-  to?: string
-  divider?: boolean
-  chip?: string
-  chipColor?: string
-  chipVariant?: 'flat' | 'text' | 'elevated' | 'tonal' | 'outlined' | 'plain'
-  chipIcon?: string
-  children?: SidebarNavItem[]
-  disabled?: boolean
-  type?: string
-  subCaption?: string
-}
+  title?: string;
+  icon?: string;
+  iconSize?: string | number;
+  to?: string;
+  divider?: boolean;
+  chip?: string;
+  chipColor?: string;
+  chipVariant?: 'flat' | 'text' | 'elevated' | 'tonal' | 'outlined' | 'plain';
+  chipIcon?: string;
+  children?: SidebarNavItem[];
+  disabled?: boolean;
+  type?: string;
+  subCaption?: string;
+};
 
 const props = defineProps<{ item: SidebarNavItem; level?: number }>();
 const { t } = useI18n();
@@ -32,7 +32,8 @@ const itemStyle = computed(() => {
 });
 
 const isItemActive = computed(() => {
-  if (!props.item || props.item.type === 'external' || !props.item.to) return false;
+  if (!props.item || props.item.type === 'external' || !props.item.to)
+    return false;
   if (typeof props.item.to !== 'string') return false;
   if (props.item.to.includes('#')) {
     const [path, hash] = props.item.to.split('#');
@@ -57,21 +58,22 @@ const isItemActive = computed(() => {
         :prepend-icon="item.icon"
         :style="{ '--indent-padding': '0px' }"
       >
-        <v-list-item-title style="font-size: 14px; font-weight: 500; line-height: 1.2; word-break: break-word;">
+        <v-list-item-title
+          style="
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 1.2;
+            word-break: break-word;
+          "
+        >
           {{ t(item.title || '') }}
         </v-list-item-title>
       </v-list-item>
     </template>
 
     <!-- children -->
-    <template
-      v-for="(child, index) in item.children"
-      :key="index"
-    >
-      <NavItem
-        :item="child"
-        :level="(level || 0) + 1"
-      />
+    <template v-for="(child, index) in item.children" :key="index">
+      <NavItem :item="child" :level="(level || 0) + 1" />
     </template>
   </v-list-group>
 
@@ -96,7 +98,7 @@ const isItemActive = computed(() => {
         :icon="item.icon"
       />
     </template>
-    <v-list-item-title style="font-size: 14px;">
+    <v-list-item-title style="font-size: 14px">
       {{ t(item.title || '') }}
     </v-list-item-title>
     <v-list-item-subtitle
@@ -105,10 +107,7 @@ const isItemActive = computed(() => {
     >
       {{ item.subCaption }}
     </v-list-item-subtitle>
-    <template
-      v-if="item.chip"
-      #append
-    >
+    <template v-if="item.chip" #append>
       <v-chip
         :color="item.chipColor"
         class="sidebarchip hide-menu"

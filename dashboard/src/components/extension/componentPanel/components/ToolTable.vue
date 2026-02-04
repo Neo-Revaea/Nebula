@@ -18,17 +18,38 @@ const emit = defineEmits<{
 const toolHeaders = computed(() => [
   { title: tmTool('functionTools.title'), key: 'name', minWidth: '160px' },
   { title: tmTool('functionTools.description'), key: 'description' },
-  { title: tmTool('functionTools.table.origin'), key: 'origin', sortable: false, width: '120px' },
-  { title: tmTool('functionTools.table.originName'), key: 'origin_name', sortable: false, width: '160px' },
-  { title: tmCommand('status.enabled'), key: 'active', sortable: false, width: '120px' },
-  { title: tmTool('functionTools.table.actions'), key: 'actions', sortable: false, width: '120px' }
+  {
+    title: tmTool('functionTools.table.origin'),
+    key: 'origin',
+    sortable: false,
+    width: '120px',
+  },
+  {
+    title: tmTool('functionTools.table.originName'),
+    key: 'origin_name',
+    sortable: false,
+    width: '160px',
+  },
+  {
+    title: tmCommand('status.enabled'),
+    key: 'active',
+    sortable: false,
+    width: '120px',
+  },
+  {
+    title: tmTool('functionTools.table.actions'),
+    key: 'actions',
+    sortable: false,
+    width: '120px',
+  },
 ]);
 
 const toolRowKey = (tool: ToolItem): string => {
   return `${tool.origin ?? ''}::${tool.origin_name ?? ''}::${tool.name ?? ''}`;
 };
 
-const parameterEntries = (tool: ToolItem) => Object.entries(tool.parameters?.properties || {});
+const parameterEntries = (tool: ToolItem) =>
+  Object.entries(tool.parameters?.properties || {});
 </script>
 
 <template>
@@ -44,12 +65,12 @@ const parameterEntries = (tool: ToolItem) => Object.entries(tool.parameters?.pro
     >
       <template #item.name="{ item }">
         <div class="d-flex align-center py-2">
-          <v-icon
-            color="primary"
-            class="mr-2"
-            size="18"
-          >
-            {{ item.name.includes(':') ? 'mdi-server-network' : 'mdi-function-variant' }}
+          <v-icon color="primary" class="mr-2" size="18">
+            {{
+              item.name.includes(':')
+                ? 'mdi-server-network'
+                : 'mdi-function-variant'
+            }}
           </v-icon>
           <div>
             <div class="text-subtitle-1 font-weight-medium">
@@ -62,7 +83,12 @@ const parameterEntries = (tool: ToolItem) => Object.entries(tool.parameters?.pro
       <template #item.description="{ item }">
         <div
           class="text-body-2 text-medium-emphasis"
-          style="max-width: 320px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
+          style="
+            max-width: 320px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          "
         >
           {{ item.description || '-' }}
         </div>
@@ -82,7 +108,12 @@ const parameterEntries = (tool: ToolItem) => Object.entries(tool.parameters?.pro
       <template #item.origin_name="{ item }">
         <div
           class="text-body-2 text-medium-emphasis"
-          style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
+          style="
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          "
         >
           {{ item.origin_name || '-' }}
         </div>
@@ -95,7 +126,11 @@ const parameterEntries = (tool: ToolItem) => Object.entries(tool.parameters?.pro
           class="font-weight-medium"
           :variant="item.active ? 'flat' : 'outlined'"
         >
-          {{ item.active ? tmCommand('status.enabled') : tmCommand('status.disabled') }}
+          {{
+            item.active
+              ? tmCommand('status.enabled')
+              : tmCommand('status.disabled')
+          }}
         </v-chip>
       </template>
 
@@ -112,11 +147,7 @@ const parameterEntries = (tool: ToolItem) => Object.entries(tool.parameters?.pro
 
       <template #no-data>
         <div class="text-center pa-8">
-          <v-icon
-            size="64"
-            color="info"
-            class="mb-4"
-          >
+          <v-icon size="64" color="info" class="mb-4">
             mdi-function-variant
           </v-icon>
           <div class="text-h5 mb-2">
@@ -126,17 +157,9 @@ const parameterEntries = (tool: ToolItem) => Object.entries(tool.parameters?.pro
       </template>
 
       <template #expanded-row="{ item }">
-        <td
-          :colspan="toolHeaders.length + 1"
-          class="pa-4"
-        >
+        <td :colspan="toolHeaders.length + 1" class="pa-4">
           <div class="d-flex align-start ga-4">
-            <v-icon
-              size="20"
-              color="primary"
-            >
-              mdi-code-json
-            </v-icon>
+            <v-icon size="20" color="primary"> mdi-code-json </v-icon>
             <div class="flex-1">
               <div class="text-subtitle-2 font-weight-medium mb-2">
                 {{ tmTool('functionTools.parameters') }}
@@ -147,11 +170,7 @@ const parameterEntries = (tool: ToolItem) => Object.entries(tool.parameters?.pro
               >
                 {{ tmTool('functionTools.noParameters') }}
               </div>
-              <v-table
-                v-else
-                density="compact"
-                class="param-table"
-              >
+              <v-table v-else density="compact" class="param-table">
                 <thead>
                   <tr>
                     <th class="text-left text-caption text-medium-emphasis">
@@ -159,7 +178,7 @@ const parameterEntries = (tool: ToolItem) => Object.entries(tool.parameters?.pro
                     </th>
                     <th
                       class="text-left text-caption text-medium-emphasis"
-                      style="width: 140px;"
+                      style="width: 140px"
                     >
                       {{ tmTool('functionTools.table.type') }}
                     </th>
@@ -170,7 +189,7 @@ const parameterEntries = (tool: ToolItem) => Object.entries(tool.parameters?.pro
                 </thead>
                 <tbody>
                   <tr
-                    v-for="([paramName, param]) in parameterEntries(item)"
+                    v-for="[paramName, param] in parameterEntries(item)"
                     :key="paramName"
                   >
                     <td class="font-weight-medium text-body-2">

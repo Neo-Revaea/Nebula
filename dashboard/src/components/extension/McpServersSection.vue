@@ -1,10 +1,6 @@
 <template>
   <div class="tools-page">
-    <v-container
-      fluid
-      class="pa-0"
-      elevation="0"
-    >
+    <v-container fluid class="pa-0" elevation="0">
       <!-- 页面标题 -->
       <v-row class="d-flex justify-space-between align-center px-4 py-3 pb-8">
         <div />
@@ -30,16 +26,8 @@
       </v-row>
 
       <!-- MCP 服务器部分 -->
-      <div
-        v-if="mcpServers.length === 0"
-        class="text-center pa-8"
-      >
-        <v-icon
-          size="64"
-          color="grey-lighten-1"
-        >
-          mdi-server-off
-        </v-icon>
+      <div v-if="mcpServers.length === 0" class="text-center pa-8">
+        <v-icon size="64" color="grey-lighten-1"> mdi-server-off </v-icon>
         <p class="text-grey mt-4">
           {{ tm('mcpServers.empty') }}
         </p>
@@ -65,11 +53,7 @@
           >
             <template #item-details="{ item }">
               <div class="d-flex align-center mb-2">
-                <v-icon
-                  size="small"
-                  color="grey"
-                  class="me-2"
-                >
+                <v-icon size="small" color="grey" class="me-2">
                   mdi-file-code
                 </v-icon>
                 <span
@@ -80,18 +64,11 @@
                 </span>
               </div>
 
-              <div
-                class="d-flex"
-                style="gap: 8px;"
-              >
+              <div class="d-flex" style="gap: 8px">
                 <div>
                   <div v-if="item.tools && item.tools.length > 0">
                     <div class="d-flex align-center mb-1">
-                      <v-icon
-                        size="small"
-                        color="grey"
-                        class="me-2"
-                      >
+                      <v-icon size="small" color="grey" class="me-2">
                         mdi-tools
                       </v-icon>
                       <v-dialog max-width="600px">
@@ -99,22 +76,29 @@
                           <span
                             class="text-caption text-medium-emphasis cursor-pointer"
                             v-bind="listToolsProps"
-                            style="text-decoration: underline;"
+                            style="text-decoration: underline"
                           >
-                            {{ tm('mcpServers.status.availableTools', { count: item.tools.length }) }} ({{ item.tools.length }})
+                            {{
+                              tm('mcpServers.status.availableTools', {
+                                count: item.tools.length,
+                              })
+                            }}
+                            ({{ item.tools.length }})
                           </span>
                         </template>
                         <template #default="{ isActive }">
-                          <v-card style="padding: 16px;">
+                          <v-card style="padding: 16px">
                             <v-card-title class="d-flex align-center">
-                              <span>{{ tm('mcpServers.status.availableTools') }}</span>
+                              <span>{{
+                                tm('mcpServers.status.availableTools')
+                              }}</span>
                             </v-card-title>
                             <v-card-text>
                               <ul>
                                 <li
                                   v-for="(tool, idx) in item.tools"
                                   :key="idx"
-                                  style="margin: 8px 0px;"
+                                  style="margin: 8px 0px"
                                 >
                                   {{ tool }}
                                 </li>
@@ -134,15 +118,8 @@
                       </v-dialog>
                     </div>
                   </div>
-                  <div
-                    v-else
-                    class="text-caption text-medium-emphasis"
-                  >
-                    <v-icon
-                      size="small"
-                      color="warning"
-                      class="me-1"
-                    >
+                  <div v-else class="text-caption text-medium-emphasis">
+                    <v-icon size="small" color="warning" class="me-1">
                       mdi-alert-circle
                     </v-icon>
                     {{ tm('mcpServers.status.noTools') }}
@@ -166,23 +143,21 @@
     </v-container>
 
     <!-- 添加/编辑 MCP 服务器对话框 -->
-    <v-dialog
-      v-model="showMcpServerDialog"
-      max-width="750px"
-    >
+    <v-dialog v-model="showMcpServerDialog" max-width="750px">
       <v-card>
         <v-card-title class="pa-4 pl-6">
           <v-icon class="me-2">
             {{ isEditMode ? 'mdi-pencil' : 'mdi-plus' }}
           </v-icon>
-          <span>{{ isEditMode ? tm('dialogs.addServer.editTitle') : tm('dialogs.addServer.title') }}</span>
+          <span>{{
+            isEditMode
+              ? tm('dialogs.addServer.editTitle')
+              : tm('dialogs.addServer.title')
+          }}</span>
         </v-card-title>
 
         <v-card-text class="py-4">
-          <v-form
-            ref="form"
-            @submit.prevent="saveServer"
-          >
+          <v-form ref="form" @submit.prevent="saveServer">
             <v-text-field
               v-model="currentServer.name"
               :label="tm('dialogs.addServer.fields.name')"
@@ -193,7 +168,9 @@
             />
 
             <div class="mb-2 d-flex align-center">
-              <span class="text-subtitle-1">{{ tm('dialogs.addServer.fields.config') }}</span>
+              <span class="text-subtitle-1">{{
+                tm('dialogs.addServer.fields.config')
+              }}</span>
               <v-spacer />
               <v-btn
                 size="small"
@@ -224,56 +201,44 @@
               </v-btn>
             </div>
 
-            <small style="color: grey">*{{ tm('dialogs.addServer.tips.timeoutConfig') }}</small>
-
-            <div
-              class="monaco-container"
-              style="margin-top: 16px;"
+            <small style="color: grey"
+              >*{{ tm('dialogs.addServer.tips.timeoutConfig') }}</small
             >
+
+            <div class="monaco-container" style="margin-top: 16px">
               <VueMonacoEditor
                 v-model:value="serverConfigJson"
                 theme="vs-dark"
                 language="json"
                 :options="{
                   minimap: {
-                    enabled: false
+                    enabled: false,
                   },
                   scrollBeyondLastLine: false,
                   automaticLayout: true,
                   lineNumbers: 'on',
                   roundedSelection: true,
-                  tabSize: 2
+                  tabSize: 2,
                 }"
                 @change="validateJson"
               />
             </div>
 
-            <div
-              v-if="jsonError"
-              class="mt-2 text-error"
-            >
-              <v-icon
-                color="error"
-                size="small"
-                class="me-1"
-              >
+            <div v-if="jsonError" class="mt-2 text-error">
+              <v-icon color="error" size="small" class="me-1">
                 mdi-alert-circle
               </v-icon>
               <span>{{ jsonError }}</span>
             </div>
           </v-form>
-          <div style="margin-top: 8px;">
+          <div style="margin-top: 8px">
             <small>{{ addServerDialogMessage }}</small>
           </div>
         </v-card-text>
 
         <v-card-actions class="pa-4">
           <v-spacer />
-          <v-btn
-            variant="text"
-            :disabled="loading"
-            @click="closeServerDialog"
-          >
+          <v-btn variant="text" :disabled="loading" @click="closeServerDialog">
             {{ tm('dialogs.addServer.buttons.cancel') }}
           </v-btn>
           <v-btn
@@ -296,11 +261,7 @@
     </v-dialog>
 
     <!-- 同步 MCP 服务器对话框 -->
-    <v-dialog
-      v-model="showSyncMcpServerDialog"
-      max-width="500px"
-      persistent
-    >
+    <v-dialog v-model="showSyncMcpServerDialog" max-width="500px" persistent>
       <v-card>
         <v-card-title class="bg-primary text-white py-3">
           <span>同步外部平台 MCP 服务器</span>
@@ -315,23 +276,19 @@
             required
           />
           <div v-if="selectedMcpServerProvider === 'modelscope'">
-            <v-timeline
-              align="start"
-              side="end"
-            >
+            <v-timeline align="start" side="end">
               <v-timeline-item
                 icon="mdi-numeric-1"
                 icon-color="rgb(var(--v-theme-background))"
               >
                 <div>
-                  <div class="text-h4">
-                    发现 MCP 服务器
-                  </div>
+                  <div class="text-h4">发现 MCP 服务器</div>
                   <p class="mt-2">
-                    访问 <a
-                      href="https://www.modelscope.cn/mcp"
-                      target="_blank"
-                    >ModelScope 平台</a> 浏览需要的 MCP 服务器。
+                    访问
+                    <a href="https://www.modelscope.cn/mcp" target="_blank"
+                      >ModelScope 平台</a
+                    >
+                    浏览需要的 MCP 服务器。
                   </p>
                 </div>
               </v-timeline-item>
@@ -341,14 +298,13 @@
                 icon-color="rgb(var(--v-theme-background))"
               >
                 <div>
-                  <div class="text-h4">
-                    获取访问令牌
-                  </div>
+                  <div class="text-h4">获取访问令牌</div>
                   <p class="mt-2">
                     从<a
                       href="https://modelscope.cn/my/myaccesstoken"
                       target="_blank"
-                    >账户设置</a>中获取个人访问令牌。
+                      >账户设置</a
+                    >中获取个人访问令牌。
                   </p>
                 </div>
               </v-timeline-item>
@@ -358,12 +314,8 @@
                 icon-color="rgb(var(--v-theme-background))"
               >
                 <div>
-                  <div class="text-h4">
-                    输入您的访问令牌
-                  </div>
-                  <p class="mt-2">
-                    输入您的访问令牌以同步 MCP 服务器。
-                  </p>
+                  <div class="text-h4">输入您的访问令牌</div>
+                  <p class="mt-2">输入您的访问令牌以同步 MCP 服务器。</p>
                   <v-text-field
                     v-model="mcpProviderToken"
                     type="password"
@@ -435,7 +387,7 @@ export default {
   name: 'McpServersSection',
   components: {
     VueMonacoEditor,
-    ItemCard
+    ItemCard,
   },
   setup() {
     const { t } = useI18n();
@@ -461,13 +413,16 @@ export default {
       currentServer: {
         name: '',
         active: true,
-        tools: [] as string[]
+        tools: [] as string[],
       },
       originalServerName: '',
       save_message_snack: false,
       save_message: '',
       save_message_success: 'success',
-      nameRules: [(v: string) => !!v || (this as any).tm('dialogs.addServer.fields.nameRequired')]
+      nameRules: [
+        (v: string) =>
+          !!v || (this as any).tm('dialogs.addServer.fields.nameRequired'),
+      ],
     };
   },
   computed: {
@@ -475,22 +430,26 @@ export default {
       return !!this.currentServer.name && !this.jsonError;
     },
     nameRulesComputed(): Array<(v: string) => true | string> {
-      return [(v: string) => !!v || this.tm('dialogs.addServer.fields.nameRequired')];
+      return [
+        (v: string) => !!v || this.tm('dialogs.addServer.fields.nameRequired'),
+      ];
     },
     getServerConfigSummary() {
       return (server: McpServer) => {
         if (server.command) {
           return `${server.command} ${((server.args || []) as unknown[]).join(' ')}`;
         }
-        const configKeys = Object.keys(server).filter(key =>
-          !['name', 'active', 'tools'].includes(key)
+        const configKeys = Object.keys(server).filter(
+          (key) => !['name', 'active', 'tools'].includes(key),
         );
         if (configKeys.length > 0) {
-          return this.tm('mcpServers.status.configSummary', { keys: configKeys.join(', ') });
+          return this.tm('mcpServers.status.configSummary', {
+            keys: configKeys.join(', '),
+          });
         }
         return this.tm('mcpServers.status.noConfig');
       };
-    }
+    },
   },
   mounted() {
     this.getServers();
@@ -509,8 +468,9 @@ export default {
     },
     getServers() {
       this.loadingGettingServers = true;
-      axios.get('/api/tools/mcp/servers')
-        .then(response => {
+      axios
+        .get('/api/tools/mcp/servers')
+        .then((response) => {
           this.mcpServers = (response.data.data || []) as McpServer[];
           for (const server of this.mcpServers) {
             if (!this.mcpServerUpdateLoaders[server.name]) {
@@ -518,12 +478,17 @@ export default {
             }
           }
         })
-        .catch(error => {
+        .catch((error) => {
           const message = axios.isAxiosError(error)
             ? error.response?.data?.message || error.message
-            : (error instanceof Error ? error.message : 'Unknown error');
-          this.showError(this.tm('messages.getServersError', { error: message }));
-        }).finally(() => {
+            : error instanceof Error
+              ? error.message
+              : 'Unknown error';
+          this.showError(
+            this.tm('messages.getServersError', { error: message }),
+          );
+        })
+        .finally(() => {
           this.loadingGettingServers = false;
         });
     },
@@ -538,7 +503,9 @@ export default {
         return true;
       } catch (e) {
         const message = e instanceof Error ? e.message : String(e);
-        this.jsonError = this.tm('dialogs.addServer.errors.jsonFormat', { error: message });
+        this.jsonError = this.tm('dialogs.addServer.errors.jsonFormat', {
+          error: message,
+        });
         return false;
       }
     },
@@ -550,7 +517,7 @@ export default {
           url: 'your mcp server url',
           headers: {},
           timeout: 5,
-          sse_read_timeout: 300
+          sse_read_timeout: 300,
         };
       } else if (type === 'sse') {
         template = {
@@ -558,12 +525,12 @@ export default {
           url: 'your mcp server url',
           headers: {},
           timeout: 5,
-          sse_read_timeout: 300
+          sse_read_timeout: 300,
         };
       } else {
         template = {
           command: 'python',
-          args: ['-m', 'your_module']
+          args: ['-m', 'your_module'],
         };
       }
       this.serverConfigJson = JSON.stringify(template, null, 2);
@@ -578,46 +545,60 @@ export default {
         const serverData: McpServer = {
           name: this.currentServer.name,
           active: this.currentServer.active,
-          ...configObj
+          ...configObj,
         };
         if (this.isEditMode && this.originalServerName) {
           serverData.oldName = this.originalServerName;
         }
-        const endpoint = this.isEditMode ? '/api/tools/mcp/update' : '/api/tools/mcp/add';
-        axios.post(endpoint, serverData)
-          .then(response => {
+        const endpoint = this.isEditMode
+          ? '/api/tools/mcp/update'
+          : '/api/tools/mcp/add';
+        axios
+          .post(endpoint, serverData)
+          .then((response) => {
             this.loading = false;
             this.showMcpServerDialog = false;
             this.addServerDialogMessage = '';
             this.getServers();
-            this.showSuccess(response.data.message || this.tm('messages.saveSuccess'));
+            this.showSuccess(
+              response.data.message || this.tm('messages.saveSuccess'),
+            );
             this.resetForm();
           })
-          .catch(error => {
+          .catch((error) => {
             this.loading = false;
             const message = axios.isAxiosError(error)
               ? error.response?.data?.message || error.message
-              : (error instanceof Error ? error.message : 'Unknown error');
+              : error instanceof Error
+                ? error.message
+                : 'Unknown error';
             this.showError(this.tm('messages.saveError', { error: message }));
           });
       } catch (e) {
         this.loading = false;
         const message = e instanceof Error ? e.message : String(e);
-        this.showError(this.tm('dialogs.addServer.errors.jsonParse', { error: message }));
+        this.showError(
+          this.tm('dialogs.addServer.errors.jsonParse', { error: message }),
+        );
       }
     },
     deleteServer(server: McpServer | string) {
       const serverName = typeof server === 'string' ? server : server.name;
       if (confirm(this.tm('dialogs.confirmDelete', { name: serverName }))) {
-        axios.post('/api/tools/mcp/delete', { name: serverName })
-          .then(response => {
+        axios
+          .post('/api/tools/mcp/delete', { name: serverName })
+          .then((response) => {
             this.getServers();
-            this.showSuccess(response.data.message || this.tm('messages.deleteSuccess'));
+            this.showSuccess(
+              response.data.message || this.tm('messages.deleteSuccess'),
+            );
           })
-          .catch(error => {
+          .catch((error) => {
             const message = axios.isAxiosError(error)
               ? error.response?.data?.message || error.message
-              : (error instanceof Error ? error.message : 'Unknown error');
+              : error instanceof Error
+                ? error.message
+                : 'Unknown error';
             this.showError(this.tm('messages.deleteError', { error: message }));
           });
       }
@@ -631,7 +612,7 @@ export default {
       this.currentServer = {
         name: server.name,
         active: server.active,
-        tools: server.tools || []
+        tools: server.tools || [],
       };
       this.originalServerName = server.name;
       this.serverConfigJson = JSON.stringify(configCopy, null, 2);
@@ -641,15 +622,20 @@ export default {
     updateServerStatus(server: McpServer) {
       this.mcpServerUpdateLoaders[server.name] = true;
       server.active = !server.active;
-      axios.post('/api/tools/mcp/update', server)
-        .then(response => {
+      axios
+        .post('/api/tools/mcp/update', server)
+        .then((response) => {
           this.getServers();
-          this.showSuccess(response.data.message || this.tm('messages.updateSuccess'));
+          this.showSuccess(
+            response.data.message || this.tm('messages.updateSuccess'),
+          );
         })
-        .catch(error => {
+        .catch((error) => {
           const message = axios.isAxiosError(error)
             ? error.response?.data?.message || error.message
-            : (error instanceof Error ? error.message : 'Unknown error');
+            : error instanceof Error
+              ? error.message
+              : 'Unknown error';
           this.showError(this.tm('messages.updateError', { error: message }));
           server.active = !server.active;
         })
@@ -673,21 +659,26 @@ export default {
       } catch (e) {
         this.loading = false;
         const message = e instanceof Error ? e.message : String(e);
-        this.showError(this.tm('dialogs.addServer.errors.jsonParse', { error: message }));
+        this.showError(
+          this.tm('dialogs.addServer.errors.jsonParse', { error: message }),
+        );
         return;
       }
-      axios.post('/api/tools/mcp/test', {
-        mcp_server_config: configObj
-      })
-        .then(response => {
+      axios
+        .post('/api/tools/mcp/test', {
+          mcp_server_config: configObj,
+        })
+        .then((response) => {
           this.loading = false;
           this.addServerDialogMessage = `${response.data.message} (tools: ${response.data.data})`;
         })
-        .catch(error => {
+        .catch((error) => {
           this.loading = false;
           const message = axios.isAxiosError(error)
             ? error.response?.data?.message || error.message
-            : (error instanceof Error ? error.message : 'Unknown error');
+            : error instanceof Error
+              ? error.message
+              : 'Unknown error';
           this.showError(this.tm('messages.testError', { error: message }));
         });
     },
@@ -695,7 +686,7 @@ export default {
       this.currentServer = {
         name: '',
         active: true,
-        tools: []
+        tools: [],
       };
       this.serverConfigJson = '';
       this.jsonError = null;
@@ -720,7 +711,7 @@ export default {
       this.loading = true;
       try {
         const requestData: any = {
-          name: this.selectedMcpServerProvider
+          name: this.selectedMcpServerProvider,
         };
         if (this.selectedMcpServerProvider === 'modelscope') {
           if (!this.mcpProviderToken.trim()) {
@@ -730,25 +721,40 @@ export default {
           }
           requestData.access_token = this.mcpProviderToken.trim();
         }
-        const response = await axios.post('/api/tools/mcp/sync-provider', requestData);
+        const response = await axios.post(
+          '/api/tools/mcp/sync-provider',
+          requestData,
+        );
         if (response.data.status === 'ok') {
-          this.showSuccess(response.data.message || this.tm('syncProvider.messages.syncSuccess'));
+          this.showSuccess(
+            response.data.message ||
+              this.tm('syncProvider.messages.syncSuccess'),
+          );
           this.showSyncMcpServerDialog = false;
           this.mcpProviderToken = '';
           this.getServers();
         } else {
-          this.showError(response.data.message || this.tm('syncProvider.messages.syncError', { error: 'Unknown error' }));
+          this.showError(
+            response.data.message ||
+              this.tm('syncProvider.messages.syncError', {
+                error: 'Unknown error',
+              }),
+          );
         }
       } catch (error) {
         const message = axios.isAxiosError(error)
           ? error.response?.data?.message || error.message
-          : (error instanceof Error ? error.message : '网络连接或访问令牌问题');
-        this.showError(this.tm('syncProvider.messages.syncError', { error: message }));
+          : error instanceof Error
+            ? error.message
+            : '网络连接或访问令牌问题';
+        this.showError(
+          this.tm('syncProvider.messages.syncError', { error: message }),
+        );
       } finally {
         this.loading = false;
       }
-    }
-  }
+    },
+  },
 };
 </script>
 

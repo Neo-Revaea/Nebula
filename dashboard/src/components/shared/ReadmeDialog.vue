@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref, watch, computed } from "vue";
-import MarkdownIt from "markdown-it";
-import hljs from "highlight.js";
-import axios from "axios";
-import DOMPurify from "dompurify";
-import "highlight.js/styles/github-dark.css";
-import { useI18n } from "@/i18n/composables";
+import { ref, watch, computed } from 'vue';
+import MarkdownIt from 'markdown-it';
+import hljs from 'highlight.js';
+import axios from 'axios';
+import DOMPurify from 'dompurify';
+import 'highlight.js/styles/github-dark.css';
+import { useI18n } from '@/i18n/composables';
 
 const md = new MarkdownIt({
   html: true,
@@ -14,9 +14,9 @@ const md = new MarkdownIt({
   breaks: false,
 });
 
-md.enable(["table", "strikethrough"]);
+md.enable(['table', 'strikethrough']);
 md.renderer.rules.table_open = () => '<div class="table-container"><table>';
-md.renderer.rules.table_close = () => "</table></div>";
+md.renderer.rules.table_close = () => '</table></div>';
 
 md.renderer.rules.fence = (
   tokens: Array<{ info: string; content: string }>,
@@ -26,7 +26,7 @@ md.renderer.rules.fence = (
   _self: unknown,
 ) => {
   const token = tokens[idx];
-  const lang = token.info.trim() || "";
+  const lang = token.info.trim() || '';
   const code = token.content;
 
   const highlighted =
@@ -35,31 +35,30 @@ md.renderer.rules.fence = (
       : md.utils.escapeHtml(code);
 
   return `<div class="code-block-wrapper">
-    ${lang ? `<span class="code-lang-label">${lang}</span>` : ""}
+    ${lang ? `<span class="code-lang-label">${lang}</span>` : ''}
     <pre class="hljs"><code class="language-${lang}">${highlighted}</code></pre>
   </div>`;
 };
 
-
 const props = defineProps({
   show: { type: Boolean, default: false },
-  pluginName: { type: String, default: "" },
+  pluginName: { type: String, default: '' },
   repoUrl: { type: String, default: null },
   mode: {
     type: String,
-    default: "readme",
-    validator: (value: string) => ["readme", "changelog"].includes(value),
+    default: 'readme',
+    validator: (value: string) => ['readme', 'changelog'].includes(value),
   },
 });
 
-const emit = defineEmits(["update:show"]);
+const emit = defineEmits(['update:show']);
 const { t, locale } = useI18n();
 
 const content = ref<string | null>(null);
 const error = ref<string | null>(null);
 const loading = ref(false);
 const isEmpty = ref(false);
-const renderedHtml = ref("");
+const renderedHtml = ref('');
 const lastRequestId = ref(0);
 
 function renderMarkdown(markdown: string): string {
@@ -67,80 +66,80 @@ function renderMarkdown(markdown: string): string {
 
   const cleanHtml = DOMPurify.sanitize(rawHtml, {
     ALLOWED_TAGS: [
-      "h1",
-      "h2",
-      "h3",
-      "h4",
-      "h5",
-      "h6",
-      "p",
-      "br",
-      "hr",
-      "ul",
-      "ol",
-      "li",
-      "blockquote",
-      "pre",
-      "code",
-      "a",
-      "img",
-      "table",
-      "thead",
-      "tbody",
-      "tr",
-      "th",
-      "td",
-      "strong",
-      "em",
-      "del",
-      "s",
-      "details",
-      "summary",
-      "div",
-      "span",
-      "input",
-      "button",
-      "svg",
-      "rect",
-      "path",
-      "polyline",
+      'h1',
+      'h2',
+      'h3',
+      'h4',
+      'h5',
+      'h6',
+      'p',
+      'br',
+      'hr',
+      'ul',
+      'ol',
+      'li',
+      'blockquote',
+      'pre',
+      'code',
+      'a',
+      'img',
+      'table',
+      'thead',
+      'tbody',
+      'tr',
+      'th',
+      'td',
+      'strong',
+      'em',
+      'del',
+      's',
+      'details',
+      'summary',
+      'div',
+      'span',
+      'input',
+      'button',
+      'svg',
+      'rect',
+      'path',
+      'polyline',
     ],
     ALLOWED_ATTR: [
-      "href",
-      "src",
-      "alt",
-      "title",
-      "class",
-      "id",
-      "target",
-      "rel",
-      "type",
-      "checked",
-      "disabled",
-      "open",
-      "align",
-      "width",
-      "height",
-      "viewBox",
-      "fill",
-      "stroke",
-      "stroke-width",
-      "points",
-      "d",
-      "x",
-      "y",
-      "rx",
-      "ry",
+      'href',
+      'src',
+      'alt',
+      'title',
+      'class',
+      'id',
+      'target',
+      'rel',
+      'type',
+      'checked',
+      'disabled',
+      'open',
+      'align',
+      'width',
+      'height',
+      'viewBox',
+      'fill',
+      'stroke',
+      'stroke-width',
+      'points',
+      'd',
+      'x',
+      'y',
+      'rx',
+      'ry',
     ],
   });
 
-  const tempDiv = document.createElement("div");
+  const tempDiv = document.createElement('div');
   tempDiv.innerHTML = cleanHtml;
-  tempDiv.querySelectorAll("a").forEach((link) => {
-    const href = link.getAttribute("href");
-    if (href && (href.startsWith("http") || href.startsWith("//"))) {
-      link.setAttribute("target", "_blank");
-      link.setAttribute("rel", "noopener noreferrer");
+  tempDiv.querySelectorAll('a').forEach((link) => {
+    const href = link.getAttribute('href');
+    if (href && (href.startsWith('http') || href.startsWith('//'))) {
+      link.setAttribute('target', '_blank');
+      link.setAttribute('rel', 'noopener noreferrer');
     }
   });
 
@@ -150,20 +149,20 @@ function renderMarkdown(markdown: string): string {
 watch(
   [() => content.value, () => locale?.value],
   ([markdown]) => {
-    renderedHtml.value = markdown ? renderMarkdown(markdown) : "";
+    renderedHtml.value = markdown ? renderMarkdown(markdown) : '';
   },
   { immediate: true },
 );
 
 const modeConfig = computed(() => {
-  const isChangelog = props.mode === "changelog";
-  const keyBase = `core.common.${isChangelog ? "changelog" : "readme"}`;
+  const isChangelog = props.mode === 'changelog';
+  const keyBase = `core.common.${isChangelog ? 'changelog' : 'readme'}`;
   return {
     title: t(`${keyBase}.title`),
     loading: t(`${keyBase}.loading`),
     emptyTitle: t(`${keyBase}.empty.title`),
     emptySubtitle: t(`${keyBase}.empty.subtitle`),
-    apiPath: `/api/plugin/${isChangelog ? "changelog" : "readme"}`,
+    apiPath: `/api/plugin/${isChangelog ? 'changelog' : 'readme'}`,
   };
 });
 
@@ -181,11 +180,11 @@ async function fetchContent() {
     );
     if (requestId !== lastRequestId.value) return;
 
-    if (res.data?.status === "ok") {
+    if (res.data?.status === 'ok') {
       if (res.data?.data?.content) content.value = res.data.data.content;
       else isEmpty.value = true;
     } else {
-      error.value = String(res.data?.message ?? "Unknown error");
+      error.value = String(res.data?.message ?? 'Unknown error');
     }
   } catch (err: unknown) {
     if (requestId === lastRequestId.value) {
@@ -210,28 +209,21 @@ function handleContainerClick(_event: MouseEvent) {
 
 const _show = computed({
   get: () => props.show,
-  set: (val: boolean) => emit("update:show", val),
+  set: (val: boolean) => emit('update:show', val),
 });
 
 function openExternalLink(url: string | null) {
   if (!url) return;
-  window.open(url, "_blank", "noopener,noreferrer");
+  window.open(url, '_blank', 'noopener,noreferrer');
 }
 </script>
 
 <template>
-  <v-dialog
-    v-model="_show"
-    width="800"
-  >
+  <v-dialog v-model="_show" width="800">
     <v-card>
       <v-card-title class="d-flex justify-space-between align-center">
         <span class="text-h5">{{ modeConfig.title }}</span>
-        <v-btn
-          icon
-          variant="text"
-          @click="_show = false"
-        >
+        <v-btn icon variant="text" @click="_show = false">
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-card-title>
@@ -244,14 +236,14 @@ function openExternalLink(url: string | null) {
             prepend-icon="mdi-github"
             @click="openExternalLink(repoUrl)"
           >
-            {{ t("core.common.readme.buttons.viewOnGithub") }}
+            {{ t('core.common.readme.buttons.viewOnGithub') }}
           </v-btn>
           <v-btn
             color="secondary"
             prepend-icon="mdi-refresh"
             @click="fetchContent"
           >
-            {{ t("core.common.readme.buttons.refresh") }}
+            {{ t('core.common.readme.buttons.refresh') }}
           </v-btn>
         </div>
 
@@ -283,15 +275,11 @@ function openExternalLink(url: string | null) {
           class="d-flex flex-column align-center justify-center"
           style="height: 100%"
         >
-          <v-icon
-            size="64"
-            color="error"
-            class="mb-4"
-          >
+          <v-icon size="64" color="error" class="mb-4">
             mdi-alert-circle-outline
           </v-icon>
           <p class="text-body-1 text-center mb-2">
-            {{ t("core.common.error") }}
+            {{ t('core.common.error') }}
           </p>
           <p class="text-body-2 text-center text-medium-emphasis">
             {{ error }}
@@ -303,11 +291,7 @@ function openExternalLink(url: string | null) {
           class="d-flex flex-column align-center justify-center"
           style="height: 100%"
         >
-          <v-icon
-            size="64"
-            color="warning"
-            class="mb-4"
-          >
+          <v-icon size="64" color="warning" class="mb-4">
             mdi-file-question-outline
           </v-icon>
           <p class="text-body-1 text-center mb-2">
@@ -321,12 +305,8 @@ function openExternalLink(url: string | null) {
       <v-divider />
       <v-card-actions>
         <v-spacer />
-        <v-btn
-          color="primary"
-          variant="tonal"
-          @click="_show = false"
-        >
-          {{ t("core.common.close") }}
+        <v-btn color="primary" variant="tonal" @click="_show = false">
+          {{ t('core.common.close') }}
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -336,17 +316,17 @@ function openExternalLink(url: string | null) {
 <style scoped>
 :deep(.markdown-body) {
   --markdown-border: rgba(128, 128, 128, 0.3);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial,
-    sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
   line-height: 1.6;
   padding: 8px 0;
   color: var(--v-theme-secondaryText);
 }
 
-:deep(.markdown-body [align="center"]) {
+:deep(.markdown-body [align='center']) {
   text-align: center;
 }
-:deep(.markdown-body [align="right"]) {
+:deep(.markdown-body [align='right']) {
   text-align: right;
 }
 
@@ -392,14 +372,13 @@ function openExternalLink(url: string | null) {
   z-index: 1;
 }
 
-
 :deep(.markdown-body code) {
   padding: 0.2em 0.4em;
   margin: 0;
   background-color: rgba(110, 118, 129, 0.2);
   border-radius: 6px;
   font-size: 85%;
-  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
 }
 
 :deep(.markdown-body pre.hljs) {
@@ -433,8 +412,8 @@ function openExternalLink(url: string | null) {
   border-radius: 3px;
 }
 
-:deep(.markdown-body img[src*="shields.io"]),
-:deep(.markdown-body img[src*="badge"]) {
+:deep(.markdown-body img[src*='shields.io']),
+:deep(.markdown-body img[src*='badge']) {
   display: inline-block;
   vertical-align: middle;
   height: auto;
@@ -518,7 +497,7 @@ function openExternalLink(url: string | null) {
 }
 
 :deep(.markdown-body summary::before) {
-  content: "▶";
+  content: '▶';
   font-size: 0.75em;
   transition: transform 0.2s ease;
 }

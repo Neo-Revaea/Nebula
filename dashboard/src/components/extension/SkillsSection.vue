@@ -1,10 +1,6 @@
 <template>
   <div class="skills-page">
-    <v-container
-      fluid
-      class="pa-0"
-      elevation="0"
-    >
+    <v-container fluid class="pa-0" elevation="0">
       <v-row class="d-flex justify-space-between align-center px-4 py-3 pb-8">
         <div>
           <v-btn
@@ -28,25 +24,13 @@
       </v-row>
 
       <div class="px-2 pb-2">
-        <small style="color: grey;">{{ tm('skills.runtimeHint') }}</small>
+        <small style="color: grey">{{ tm('skills.runtimeHint') }}</small>
       </div>
 
-      <v-progress-linear
-        v-if="loading"
-        indeterminate
-        color="primary"
-      />
+      <v-progress-linear v-if="loading" indeterminate color="primary" />
 
-      <div
-        v-else-if="skills.length === 0"
-        class="text-center pa-8"
-      >
-        <v-icon
-          size="64"
-          color="grey-lighten-1"
-        >
-          mdi-folder-open
-        </v-icon>
+      <div v-else-if="skills.length === 0" class="text-center pa-8">
+        <v-icon size="64" color="grey-lighten-1"> mdi-folder-open </v-icon>
         <p class="text-grey mt-4">
           {{ tm('skills.empty') }}
         </p>
@@ -77,24 +61,14 @@
                 class="text-caption text-medium-emphasis mb-2 skill-description"
                 :title="item.description || tm('skills.noDescription')"
               >
-                <v-icon
-                  size="small"
-                  class="me-1"
-                >
-                  mdi-text
-                </v-icon>
+                <v-icon size="small" class="me-1"> mdi-text </v-icon>
                 {{ item.description || tm('skills.noDescription') }}
               </div>
               <div
                 class="text-caption text-medium-emphasis skill-path"
                 :title="item.path"
               >
-                <v-icon
-                  size="small"
-                  class="me-1"
-                >
-                  mdi-file-document
-                </v-icon>
+                <v-icon size="small" class="me-1"> mdi-file-document </v-icon>
                 {{ tm('skills.path') }}: {{ item.path }}
               </div>
             </template>
@@ -103,11 +77,7 @@
       </v-row>
     </v-container>
 
-    <v-dialog
-      v-model="uploadDialog"
-      max-width="520px"
-      persistent
-    >
+    <v-dialog v-model="uploadDialog" max-width="520px" persistent>
       <v-card>
         <v-card-title class="text-h3 pa-4 pb-0 pl-6">
           {{ tm('skills.uploadDialogTitle') }}
@@ -123,17 +93,12 @@
             :multiple="false"
           >
             <template #prepend>
-              <v-icon size="small">
-                mdi-file-zip
-              </v-icon>
+              <v-icon size="small"> mdi-file-zip </v-icon>
             </template>
           </v-file-input>
         </v-card-text>
         <v-card-actions class="d-flex justify-end">
-          <v-btn
-            variant="text"
-            @click="uploadDialog = false"
-          >
+          <v-btn variant="text" @click="uploadDialog = false">
             {{ tm('skills.cancel') }}
           </v-btn>
           <v-btn
@@ -148,25 +113,15 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog
-      v-model="deleteDialog"
-      max-width="400px"
-    >
+    <v-dialog v-model="deleteDialog" max-width="400px">
       <v-card>
         <v-card-title>{{ tm('skills.deleteTitle') }}</v-card-title>
         <v-card-text>{{ tm('skills.deleteMessage') }}</v-card-text>
         <v-card-actions class="d-flex justify-end">
-          <v-btn
-            variant="text"
-            @click="deleteDialog = false"
-          >
+          <v-btn variant="text" @click="deleteDialog = false">
             {{ tm('skills.cancel') }}
           </v-btn>
-          <v-btn
-            color="error"
-            :loading="deleting"
-            @click="deleteSkill"
-          >
+          <v-btn color="error" :loading="deleting" @click="deleteSkill">
             {{ t('core.common.itemCard.delete') }}
           </v-btn>
         </v-card-actions>
@@ -185,13 +140,13 @@
 </template>
 
 <script lang="ts">
-import axios, { type AxiosResponse } from "axios";
-import { defineComponent, onMounted, reactive, ref } from "vue";
-import ItemCard from "@/components/shared/ItemCard.vue";
-import { useI18n, useModuleI18n } from "@/i18n/composables";
+import axios, { type AxiosResponse } from 'axios';
+import { defineComponent, onMounted, reactive, ref } from 'vue';
+import ItemCard from '@/components/shared/ItemCard.vue';
+import { useI18n, useModuleI18n } from '@/i18n/composables';
 
 type ApiResponse<T> = {
-  status: "ok" | "error";
+  status: 'ok' | 'error';
   message?: string | null;
   data?: T;
 };
@@ -204,11 +159,11 @@ type SkillItem = {
 };
 
 export default defineComponent({
-  name: "SkillsSection",
+  name: 'SkillsSection',
   components: { ItemCard },
   setup() {
     const { t } = useI18n();
-    const { tm } = useModuleI18n("features/extension");
+    const { tm } = useModuleI18n('features/extension');
 
     const skills = ref<SkillItem[]>([]);
     const loading = ref(false);
@@ -219,22 +174,28 @@ export default defineComponent({
     const deleteDialog = ref(false);
     const deleting = ref(false);
     const skillToDelete = ref<SkillItem | null>(null);
-    const snackbar = reactive<{ show: boolean; message: string; color: string }>({
+    const snackbar = reactive<{
+      show: boolean;
+      message: string;
+      color: string;
+    }>({
       show: false,
-      message: "",
-      color: "success",
+      message: '',
+      color: 'success',
     });
 
-    const showMessage = (message: string, color: string = "success") => {
+    const showMessage = (message: string, color: string = 'success') => {
       snackbar.message = message;
       snackbar.color = color;
       snackbar.show = true;
     };
 
-    const assertOk = <T,>(res: AxiosResponse<ApiResponse<T>>): ApiResponse<T> => {
+    const assertOk = <T,>(
+      res: AxiosResponse<ApiResponse<T>>,
+    ): ApiResponse<T> => {
       const status = res?.data?.status;
-      if (status !== "ok") {
-        const msg = res?.data?.message || "Request failed";
+      if (status !== 'ok') {
+        const msg = res?.data?.message || 'Request failed';
         throw new Error(msg);
       }
       return res.data;
@@ -245,9 +206,10 @@ export default defineComponent({
       const minLoadingMs = 800;
       loading.value = true;
       try {
-        const res = await axios.get<ApiResponse<{ skills: SkillItem[] } | SkillItem[]>>(
-          "/api/skills"
-        );
+        const res =
+          await axios.get<ApiResponse<{ skills: SkillItem[] } | SkillItem[]>>(
+            '/api/skills',
+          );
         const data = assertOk(res);
         const payload = data.data;
         if (Array.isArray(payload)) {
@@ -256,7 +218,7 @@ export default defineComponent({
           skills.value = payload?.skills || [];
         }
       } catch (err) {
-        showMessage((err as any)?.message || tm("skills.loadFailed"), "error");
+        showMessage((err as any)?.message || tm('skills.loadFailed'), 'error');
       }
 
       const elapsed = Date.now() - startedAt;
@@ -272,16 +234,16 @@ export default defineComponent({
       res: AxiosResponse<ApiResponse<T>>,
       successMessage: string,
       failureMessageDefault: string,
-      onSuccess?: () => void | Promise<void>
+      onSuccess?: () => void | Promise<void>,
     ): void => {
-      if (res?.data?.status === "ok") {
-        showMessage(successMessage, "success");
+      if (res?.data?.status === 'ok') {
+        showMessage(successMessage, 'success');
         void onSuccess?.();
         return;
       }
 
       const msg = res?.data?.message || failureMessageDefault;
-      showMessage(msg, "error");
+      showMessage(msg, 'error');
     };
 
     const uploadSkill = async () => {
@@ -296,26 +258,29 @@ export default defineComponent({
           uploading.value = false;
           return;
         }
-        formData.append("file", file);
+        formData.append('file', file);
         const res = await axios.post<ApiResponse<{ name: string }>>(
-          "/api/skills/upload",
+          '/api/skills/upload',
           formData,
           {
-            headers: { "Content-Type": "multipart/form-data" },
-          }
+            headers: { 'Content-Type': 'multipart/form-data' },
+          },
         );
         handleApiResponse(
           res,
-          tm("skills.uploadSuccess"),
-          tm("skills.uploadFailed"),
+          tm('skills.uploadSuccess'),
+          tm('skills.uploadFailed'),
           async () => {
             uploadDialog.value = false;
             uploadFile.value = null;
             await fetchSkills();
-          }
+          },
         );
       } catch (err) {
-        showMessage((err as any)?.message || tm("skills.uploadFailed"), "error");
+        showMessage(
+          (err as any)?.message || tm('skills.uploadFailed'),
+          'error',
+        );
       } finally {
         uploading.value = false;
       }
@@ -325,23 +290,25 @@ export default defineComponent({
       const nextActive = !skill.active;
       itemLoading[skill.name] = true;
       try {
-        const res = await axios.post<ApiResponse<{ name: string; active: boolean }>>(
-          "/api/skills/update",
-          {
-            name: skill.name,
-            active: nextActive,
-          }
-        );
+        const res = await axios.post<
+          ApiResponse<{ name: string; active: boolean }>
+        >('/api/skills/update', {
+          name: skill.name,
+          active: nextActive,
+        });
         handleApiResponse(
           res,
-          tm("skills.updateSuccess"),
-          tm("skills.updateFailed"),
+          tm('skills.updateSuccess'),
+          tm('skills.updateFailed'),
           () => {
             skill.active = nextActive;
-          }
+          },
         );
       } catch (err) {
-        showMessage((err as any)?.message || tm("skills.updateFailed"), "error");
+        showMessage(
+          (err as any)?.message || tm('skills.updateFailed'),
+          'error',
+        );
       } finally {
         itemLoading[skill.name] = false;
       }
@@ -357,22 +324,25 @@ export default defineComponent({
       deleting.value = true;
       try {
         const res = await axios.post<ApiResponse<{ name: string }>>(
-          "/api/skills/delete",
+          '/api/skills/delete',
           {
             name: skillToDelete.value.name,
-          }
+          },
         );
         handleApiResponse(
           res,
-          tm("skills.deleteSuccess"),
-          tm("skills.deleteFailed"),
+          tm('skills.deleteSuccess'),
+          tm('skills.deleteFailed'),
           async () => {
             deleteDialog.value = false;
             await fetchSkills();
-          }
+          },
         );
       } catch (err) {
-        showMessage((err as any)?.message || tm("skills.deleteFailed"), "error");
+        showMessage(
+          (err as any)?.message || tm('skills.deleteFailed'),
+          'error',
+        );
       } finally {
         deleting.value = false;
       }

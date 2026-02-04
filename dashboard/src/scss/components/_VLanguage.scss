@@ -12,7 +12,9 @@
   background-position: center;
   background-repeat: no-repeat;
   filter: grayscale(20%) opacity(0.7);
-  transition: filter 0.2s ease, transform 0.2s ease;
+  transition:
+    filter 0.2s ease,
+    transform 0.2s ease;
 }
 
 .fi-cn {
@@ -25,7 +27,7 @@
 
 .language-item:hover .language-flag-styled,
 .styled-menu-item-active .language-flag-styled,
-.language-item-selected .language-flag-styled, 
+.language-item-selected .language-flag-styled,
 .v-list-item--active .language-flag-styled {
   filter: grayscale(0%) opacity(1);
 }

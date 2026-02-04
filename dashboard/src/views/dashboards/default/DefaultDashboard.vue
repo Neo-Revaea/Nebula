@@ -1,12 +1,9 @@
 <template>
   <div class="dashboard-container">
     <v-slide-y-transition>
-      <v-row
-        v-if="noticeTitle && noticeContent"
-        class="notice-row"
-      >
+      <v-row v-if="noticeTitle && noticeContent" class="notice-row">
         <v-alert
-          :type="(noticeType as any)"
+          :type="noticeType as any"
           :text="noticeContent"
           :title="noticeTitle"
           closable
@@ -16,84 +13,60 @@
         />
       </v-row>
     </v-slide-y-transition>
-    
+
     <!-- 主指标卡片行 -->
     <v-row class="stats-row">
-      <v-col
-        cols="12"
-        md="3"
-      >
+      <v-col cols="12" md="3">
         <v-slide-y-transition>
           <TotalMessage :stat="stat" />
         </v-slide-y-transition>
       </v-col>
-      <v-col
-        cols="12"
-        md="3"
-      >
+      <v-col cols="12" md="3">
         <v-slide-y-transition>
           <OnlinePlatform :stat="stat" />
         </v-slide-y-transition>
       </v-col>
-      <v-col
-        cols="12"
-        md="3"
-      >
+      <v-col cols="12" md="3">
         <v-slide-y-transition>
           <RunningTime :stat="stat" />
         </v-slide-y-transition>
       </v-col>
-      <v-col
-        cols="12"
-        md="3"
-      >
+      <v-col cols="12" md="3">
         <v-slide-y-transition>
           <MemoryUsage :stat="stat" />
         </v-slide-y-transition>
       </v-col>
     </v-row>
-    
+
     <!-- 图表行 -->
     <v-row class="charts-row">
-      <v-col
-        cols="12"
-        lg="8"
-      >
+      <v-col cols="12" lg="8">
         <v-slide-y-transition>
           <MessageStat />
         </v-slide-y-transition>
       </v-col>
-      <v-col
-        cols="12"
-        lg="4"
-      >
+      <v-col cols="12" lg="4">
         <v-slide-y-transition>
           <PlatformStat :stat="stat" />
         </v-slide-y-transition>
       </v-col>
     </v-row>
     <div class="dashboard-footer">
-      <v-chip
-        size="small"
-        color="primary"
-        variant="flat"
-        theme="dark"
-      >
+      <v-chip size="small" color="primary" variant="flat" theme="dark">
         {{ t('lastUpdate') }}: {{ lastUpdated }}
       </v-chip>
-      <v-btn 
-        icon="mdi-refresh" 
-        size="small" 
-        color="primary" 
-        variant="text" 
-        class="ml-2" 
+      <v-btn
+        icon="mdi-refresh"
+        size="small"
+        color="primary"
+        variant="text"
+        class="ml-2"
         :loading="isRefreshing"
         @click="fetchData"
       />
     </div>
   </div>
 </template>
-
 
 <script lang="ts">
 import TotalMessage from './components/TotalMessage.vue';
@@ -127,7 +100,7 @@ export default {
       noticeType: '',
       lastUpdated: '',
       refreshInterval: null as ReturnType<typeof setInterval> | null,
-      isRefreshing: false
+      isRefreshing: false,
     };
   },
 
@@ -135,20 +108,20 @@ export default {
     this.lastUpdated = this.t('status.loading');
     this.fetchData();
     this.fetchNotice();
-    
+
     // 设置自动刷新（每60秒）
     this.refreshInterval = setInterval(() => {
       this.fetchData();
     }, 60000);
   },
-  
+
   beforeUnmount() {
     // 清除定时器
     if (this.refreshInterval) {
       clearInterval(this.refreshInterval);
     }
   },
-  
+
   methods: {
     async fetchData() {
       this.isRefreshing = true;
@@ -163,21 +136,24 @@ export default {
         this.isRefreshing = false;
       }
     },
-    
+
     fetchNotice() {
-      axios.get('https://api.soulter.top/astrbot-announcement').then((res) => {
-        let data = res.data.data;
-        // 如果 dashboard-notice 在其中
-        if (data['dashboard-notice']) {
-          this.noticeTitle = data['dashboard-notice'].title;
-          this.noticeContent = data['dashboard-notice'].content;
-          this.noticeType = data['dashboard-notice'].type;
-        }
-      }).catch(error => {
-        console.error(this.t('status.noticeError'), error);
-      });
-    }
-  }
+      axios
+        .get('https://api.soulter.top/astrbot-announcement')
+        .then((res) => {
+          let data = res.data.data;
+          // 如果 dashboard-notice 在其中
+          if (data['dashboard-notice']) {
+            this.noticeTitle = data['dashboard-notice'].title;
+            this.noticeContent = data['dashboard-notice'].content;
+            this.noticeType = data['dashboard-notice'].type;
+          }
+        })
+        .catch((error) => {
+          console.error(this.t('status.noticeError'), error);
+        });
+    },
+  },
 };
 </script>
 
@@ -198,7 +174,9 @@ export default {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
 }
 
-.stats-row, .charts-row, .plugin-row {
+.stats-row,
+.charts-row,
+.plugin-row {
   margin-bottom: 24px;
 }
 
@@ -220,7 +198,9 @@ export default {
 }
 
 .plugin-item {
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 
 .plugin-item:hover {

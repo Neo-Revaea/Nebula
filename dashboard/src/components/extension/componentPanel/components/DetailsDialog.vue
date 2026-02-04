@@ -20,27 +20,43 @@ const emit = defineEmits<{
 const getTypeInfo = (type: string): TypeInfo => {
   switch (type) {
     case 'group':
-      return { text: tm('type.group'), color: 'info', icon: 'mdi-folder-outline' };
+      return {
+        text: tm('type.group'),
+        color: 'info',
+        icon: 'mdi-folder-outline',
+      };
     case 'sub_command':
-      return { text: tm('type.subCommand'), color: 'secondary', icon: 'mdi-subdirectory-arrow-right' };
+      return {
+        text: tm('type.subCommand'),
+        color: 'secondary',
+        icon: 'mdi-subdirectory-arrow-right',
+      };
     default:
-      return { text: tm('type.command'), color: 'primary', icon: 'mdi-console-line' };
+      return {
+        text: tm('type.command'),
+        color: 'primary',
+        icon: 'mdi-console-line',
+      };
   }
 };
 
 // 获取权限颜色
 const getPermissionColor = (permission: string): string => {
   switch (permission) {
-    case 'admin': return 'error';
-    default: return 'success';
+    case 'admin':
+      return 'error';
+    default:
+      return 'success';
   }
 };
 
 // 获取权限标签
 const getPermissionLabel = (permission: string): string => {
   switch (permission) {
-    case 'admin': return tm('permission.admin');
-    default: return tm('permission.everyone');
+    case 'admin':
+      return tm('permission.admin');
+    default:
+      return tm('permission.everyone');
   }
 };
 </script>
@@ -67,10 +83,7 @@ const getPermissionLabel = (permission: string): string => {
                 size="small"
                 variant="tonal"
               >
-                <v-icon
-                  start
-                  size="14"
-                >
+                <v-icon start size="14">
                   {{ getTypeInfo(command.type).icon }}
                 </v-icon>
                 {{ getTypeInfo(command.type).text }}
@@ -81,31 +94,43 @@ const getPermissionLabel = (permission: string): string => {
             <v-list-item-title class="font-weight-bold">
               {{ tm('dialogs.details.handler') }}
             </v-list-item-title>
-            <v-list-item-subtitle><code>{{ command.handler_name }}</code></v-list-item-subtitle>
+            <v-list-item-subtitle
+              ><code>{{ command.handler_name }}</code></v-list-item-subtitle
+            >
           </v-list-item>
           <v-list-item>
             <v-list-item-title class="font-weight-bold">
               {{ tm('dialogs.details.module') }}
             </v-list-item-title>
-            <v-list-item-subtitle><code>{{ command.module_path }}</code></v-list-item-subtitle>
+            <v-list-item-subtitle
+              ><code>{{ command.module_path }}</code></v-list-item-subtitle
+            >
           </v-list-item>
           <v-list-item>
             <v-list-item-title class="font-weight-bold">
               {{ tm('dialogs.details.originalCommand') }}
             </v-list-item-title>
-            <v-list-item-subtitle><code>{{ command.original_command }}</code></v-list-item-subtitle>
+            <v-list-item-subtitle
+              ><code>{{ command.original_command }}</code></v-list-item-subtitle
+            >
           </v-list-item>
           <v-list-item>
             <v-list-item-title class="font-weight-bold">
               {{ tm('dialogs.details.effectiveCommand') }}
             </v-list-item-title>
-            <v-list-item-subtitle><code>{{ command.effective_command }}</code></v-list-item-subtitle>
+            <v-list-item-subtitle
+              ><code>{{
+                command.effective_command
+              }}</code></v-list-item-subtitle
+            >
           </v-list-item>
           <v-list-item v-if="command.parent_signature">
             <v-list-item-title class="font-weight-bold">
               {{ tm('dialogs.details.parentGroup') }}
             </v-list-item-title>
-            <v-list-item-subtitle><code>{{ command.parent_signature }}</code></v-list-item-subtitle>
+            <v-list-item-subtitle
+              ><code>{{ command.parent_signature }}</code></v-list-item-subtitle
+            >
           </v-list-item>
           <v-list-item v-if="command.aliases.length > 0">
             <v-list-item-title class="font-weight-bold">
@@ -122,15 +147,17 @@ const getPermissionLabel = (permission: string): string => {
               </v-chip>
             </v-list-item-subtitle>
           </v-list-item>
-          <v-list-item v-if="command.is_group && command.sub_commands?.length > 0">
+          <v-list-item
+            v-if="command.is_group && command.sub_commands?.length > 0"
+          >
             <v-list-item-title class="font-weight-bold">
               {{ tm('dialogs.details.subCommands') }}
             </v-list-item-title>
             <v-list-item-subtitle>
               <div class="d-flex flex-wrap ga-1 mt-1">
-                <v-chip 
-                  v-for="sub in command.sub_commands" 
-                  :key="sub.handler_full_name" 
+                <v-chip
+                  v-for="sub in command.sub_commands"
+                  :key="sub.handler_full_name"
                   size="small"
                   variant="outlined"
                 >
@@ -157,10 +184,7 @@ const getPermissionLabel = (permission: string): string => {
               {{ tm('dialogs.details.conflictStatus') }}
             </v-list-item-title>
             <v-list-item-subtitle>
-              <v-chip
-                color="warning"
-                size="small"
-              >
+              <v-chip color="warning" size="small">
                 {{ tm('status.conflict') }}
               </v-chip>
             </v-list-item-subtitle>

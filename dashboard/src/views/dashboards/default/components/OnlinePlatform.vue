@@ -9,10 +9,7 @@
     <template #item-details>
       <div class="d-flex align-start content-wrapper">
         <div class="icon-wrapper">
-          <v-icon
-            icon="mdi-server-network"
-            size="24"
-          />
+          <v-icon icon="mdi-server-network" size="24" />
         </div>
 
         <div class="stat-content">
@@ -35,7 +32,7 @@
 
 <script lang="ts">
 import { computed } from 'vue';
-import { useTheme } from 'vuetify'; 
+import { useTheme } from 'vuetify';
 import { useModuleI18n } from '@/i18n/composables';
 import ItemCard from '@/components/shared/ItemCard.vue';
 
@@ -48,13 +45,13 @@ export default {
     const theme = useTheme();
     const isDark = computed(() => theme.global.current.value.dark);
     return { t, isDark };
-  }
+  },
 };
 </script>
 
 <style scoped>
 .stat-card {
-  --custom-text: #5e35b1; 
+  --custom-text: #5e35b1;
   --custom-text-muted: rgba(94, 53, 177, 0.7);
   --custom-border: rgba(94, 53, 177, 0.2);
   --custom-bg-hover: rgba(94, 53, 177, 0.05);
@@ -76,7 +73,7 @@ export default {
   border: 3px solid var(--custom-border) !important;
   color: var(--custom-text) !important;
   background: transparent !important;
-  
+
   transition: all 0.2s ease;
   overflow: hidden;
 }
@@ -85,11 +82,11 @@ export default {
   transform: translateY(-2px);
   background: var(--custom-bg-hover) !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
-  border-color: var(--custom-text) !important; 
+  border-color: var(--custom-text) !important;
 }
 
 .content-wrapper {
-  padding: 16px; 
+  padding: 16px;
   height: 100%;
 }
 
@@ -105,7 +102,9 @@ export default {
   color: var(--custom-text);
 }
 
-.stat-content { flex: 1; }
+.stat-content {
+  flex: 1;
+}
 
 .stat-title {
   font-size: 14px;
@@ -114,13 +113,17 @@ export default {
   margin-bottom: 4px;
 }
 
-.stat-value-wrapper { display: flex; align-items: baseline; margin-bottom: 4px; }
-.stat-value { 
-  font-size: 32px; 
-  font-weight: 600; 
-  line-height: 1.2; 
-  margin-right: 8px; 
-  color: var(--custom-text); 
+.stat-value-wrapper {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 4px;
+}
+.stat-value {
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.2;
+  margin-right: 8px;
+  color: var(--custom-text);
 }
 
 .stat-subtitle {
@@ -128,8 +131,8 @@ export default {
   color: var(--custom-text-muted);
 }
 
-.stat-item-card :deep(.v-card-title), 
-.stat-item-card :deep(.v-card-actions) { 
-  display: none; 
+.stat-item-card :deep(.v-card-title),
+.stat-item-card :deep(.v-card-actions) {
+  display: none;
 }
 </style>

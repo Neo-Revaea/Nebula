@@ -1,7 +1,7 @@
 <template>
   <div class="project-list-container">
     <!-- 项目按钮 -->
-    <div style="padding: 0 8px 0px 8px; opacity: 0.6;">
+    <div style="padding: 0 8px 0px 8px; opacity: 0.6">
       <v-btn
         block
         variant="text"
@@ -20,15 +20,12 @@
 
     <!-- 项目列表 -->
     <v-expand-transition>
-      <div
-        v-show="expanded"
-        style="padding: 0 8px;"
-      >
+      <div v-show="expanded" style="padding: 0 8px">
         <v-list
           density="compact"
           nav
           class="project-list"
-          style="background-color: transparent;"
+          style="background-color: transparent"
         >
           <v-list-item
             class="create-project-item"
@@ -36,9 +33,11 @@
             @click="$emit('createProject')"
           >
             <template #prepend>
-              <span class="project-emoji"><v-icon size="small">mdi-plus</v-icon></span>
+              <span class="project-emoji"
+                ><v-icon size="small">mdi-plus</v-icon></span
+              >
             </template>
-            <v-list-item-title style="font-size: 13px;">
+            <v-list-item-title style="font-size: 13px">
               {{ tm('project.create') }}
             </v-list-item-title>
           </v-list-item>
@@ -86,28 +85,28 @@ import { ref } from 'vue';
 import { useModuleI18n } from '@/i18n/composables';
 
 export interface Project {
-    project_id: string;
-    title: string;
-    emoji?: string;
-    description?: string;
-    created_at: string;
-    updated_at: string;
+  project_id: string;
+  title: string;
+  emoji?: string;
+  description?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 interface Props {
-    projects: Project[];
-    initialExpanded?: boolean;
+  projects: Project[];
+  initialExpanded?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-    initialExpanded: false
+  initialExpanded: false,
 });
 
 const emit = defineEmits<{
-    selectProject: [projectId: string];
-    createProject: [];
-    editProject: [project: Project];
-    deleteProject: [projectId: string];
+  selectProject: [projectId: string];
+  createProject: [];
+  editProject: [project: Project];
+  deleteProject: [projectId: string];
 }>();
 
 const { tm } = useModuleI18n('features/chat');
@@ -117,87 +116,87 @@ const expanded = ref(props.initialExpanded);
 // 从 localStorage 读取项目展开状态
 const savedProjectsExpandedState = localStorage.getItem('projectsExpanded');
 if (savedProjectsExpandedState !== null) {
-    expanded.value = JSON.parse(savedProjectsExpandedState);
+  expanded.value = JSON.parse(savedProjectsExpandedState);
 }
 
 function toggleExpanded() {
-    expanded.value = !expanded.value;
-    localStorage.setItem('projectsExpanded', JSON.stringify(expanded.value));
+  expanded.value = !expanded.value;
+  localStorage.setItem('projectsExpanded', JSON.stringify(expanded.value));
 }
 
 function handleDeleteProject(project: Project) {
-    const message = tm('project.confirmDelete', { title: project.title });
-    if (window.confirm(message)) {
-        emit('deleteProject', project.project_id);
-    }
+  const message = tm('project.confirmDelete', { title: project.title });
+  if (window.confirm(message)) {
+    emit('deleteProject', project.project_id);
+  }
 }
 </script>
 
 <style scoped>
 .project-btn {
-    justify-content: flex-start;
-    background-color: transparent !important;
-    border-radius: 20px;
-    padding: 8px 16px !important;
-    text-transform: none;
+  justify-content: flex-start;
+  background-color: transparent !important;
+  border-radius: 20px;
+  padding: 8px 16px !important;
+  text-transform: none;
 }
 
 .project-list-container {
-    border-bottom: 2px solid rgba(0, 0, 0, 0.04);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.04);
 }
 
 .project-item {
-    border-radius: 16px !important;
-    padding: 4px 12px !important;
-    margin-bottom: 2px;
+  border-radius: 16px !important;
+  padding: 4px 12px !important;
+  margin-bottom: 2px;
 }
 
 .project-item:hover {
-    background-color: rgba(58, 106, 183, 0.05);
+  background-color: rgba(58, 106, 183, 0.05);
 }
 
 .project-item:hover .project-actions {
-    opacity: 1;
-    visibility: visible;
+  opacity: 1;
+  visibility: visible;
 }
 
 .project-emoji {
-    font-size: 16px;
-    margin-right: 6px;
+  font-size: 16px;
+  margin-right: 6px;
 }
 
 .project-title {
-    font-size: 13px;
-    font-weight: 500;
+  font-size: 13px;
+  font-weight: 500;
 }
 
 .project-actions {
-    display: flex;
-    gap: 2px;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.2s ease;
+  display: flex;
+  gap: 2px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
 }
 
 .edit-project-btn,
 .delete-project-btn {
-    opacity: 0.7;
-    transition: opacity 0.2s ease;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
 }
 
 .edit-project-btn:hover,
 .delete-project-btn:hover {
-    opacity: 1;
+  opacity: 1;
 }
 
 .create-project-item {
-    border-radius: 16px !important;
-    padding: 4px 12px !important;
-    opacity: 0.7;
+  border-radius: 16px !important;
+  padding: 4px 12px !important;
+  opacity: 0.7;
 }
 
 .create-project-item:hover {
-    background-color: rgba(58, 108, 183, 0.08);
-    opacity: 1;
+  background-color: rgba(58, 108, 183, 0.08);
+  opacity: 1;
 }
 </style>

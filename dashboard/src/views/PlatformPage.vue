@@ -1,18 +1,11 @@
 <template>
   <div class="platform-page">
-    <v-container
-      fluid
-      class="pa-0"
-    >
+    <v-container fluid class="pa-0">
       <v-row class="d-flex justify-space-between align-center px-4 py-3 pb-8">
         <div>
           <h1 class="text-h1 font-weight-bold mb-2 d-flex align-center">
-            <v-icon
-              color="black"
-              class="me-2"
-            >
-              mdi-robot
-            </v-icon>{{ tm('title') }}
+            <v-icon color="black" class="me-2"> mdi-robot </v-icon
+            >{{ tm('title') }}
           </h1>
           <p class="text-subtitle-1 text-medium-emphasis mb-4">
             {{ tm('subtitle') }}
@@ -24,23 +17,19 @@
           variant="tonal"
           rounded="xl"
           size="x-large"
-          @click="updatingMode = false; showAddPlatformDialog = true"
+          @click="
+            updatingMode = false;
+            showAddPlatformDialog = true;
+          "
         >
           {{ tm('addAdapter') }}
         </v-btn>
       </v-row>
 
       <div>
-        <div style="min-height: 240px;">
-          <v-row
-            v-if="loadingConfig"
-            key="loading"
-            style="min-height: 240px;"
-          >
-            <v-col
-              cols="12"
-              class="d-flex align-center justify-center pa-8"
-            >
+        <div style="min-height: 240px">
+          <v-row v-if="loadingConfig" key="loading" style="min-height: 240px">
+            <v-col cols="12" class="d-flex align-center justify-center pa-8">
               <v-progress-circular
                 indeterminate
                 color="primary"
@@ -54,26 +43,15 @@
             v-else-if="fetched && (config_data.platform || []).length === 0"
             key="empty"
           >
-            <v-col
-              cols="12"
-              class="text-center pa-8"
-            >
-              <v-icon
-                size="64"
-                color="grey-lighten-1"
-              >
-                mdi-connection
-              </v-icon>
+            <v-col cols="12" class="text-center pa-8">
+              <v-icon size="64" color="grey-lighten-1"> mdi-connection </v-icon>
               <p class="text-grey mt-4">
                 {{ tm('emptyText') }}
               </p>
             </v-col>
           </v-row>
 
-          <v-row
-            v-else
-            key="content"
-          >
+          <v-row v-else key="content">
             <v-col
               v-for="(platform, index) in config_data.platform || []"
               :key="index"
@@ -83,20 +61,24 @@
               lg="4"
               xl="3"
             >
-              <item-card 
-                :item="platform" 
-                title-field="id" 
+              <item-card
+                :item="platform"
+                title-field="id"
                 enabled-field="enable"
-                title-class="text-h3" 
-                :bglogo="getPlatformIcon(platform.type || platform.id)" 
+                title-class="text-h3"
+                :bglogo="getPlatformIcon(platform.type || platform.id)"
                 class="platform-card-item"
-                @toggle-enabled="platformStatusChange" 
-                @delete="deletePlatform" 
+                @toggle-enabled="platformStatusChange"
+                @delete="deletePlatform"
                 @edit="editPlatform"
               >
                 <template #item-details="{ item }">
                   <div
-                    v-if="getPlatformStat(item?.id) && (getPlatformStat(item?.id)?.status !== 'running' || (getPlatformStat(item?.id)?.error_count || 0) > 0)"
+                    v-if="
+                      getPlatformStat(item?.id) &&
+                      (getPlatformStat(item?.id)?.status !== 'running' ||
+                        (getPlatformStat(item?.id)?.error_count || 0) > 0)
+                    "
                     class="platform-status-row mb-2"
                   >
                     <v-chip
@@ -106,13 +88,15 @@
                       variant="tonal"
                       class="status-chip"
                     >
-                      <v-icon
-                        size="small"
-                        start
-                      >
+                      <v-icon size="small" start>
                         {{ getStatusIcon(getPlatformStat(item?.id)?.status) }}
                       </v-icon>
-                      {{ tm('runtimeStatus.' + (getPlatformStat(item?.id)?.status || 'unknown')) }}
+                      {{
+                        tm(
+                          'runtimeStatus.' +
+                            (getPlatformStat(item?.id)?.status || 'unknown'),
+                        )
+                      }}
                     </v-chip>
                     <v-chip
                       v-if="(getPlatformStat(item?.id)?.error_count || 0) > 0"
@@ -120,20 +104,21 @@
                       color="error"
                       variant="tonal"
                       class="error-chip"
-                      :class="{ 'ms-2': getPlatformStat(item?.id)?.status !== 'running' }"
+                      :class="{
+                        'ms-2': getPlatformStat(item?.id)?.status !== 'running',
+                      }"
                       @click.stop="showErrorDetails(item)"
                     >
-                      <v-icon
-                        size="small"
-                        start
-                      >
-                        mdi-bug
-                      </v-icon>
-                      {{ getPlatformStat(item?.id)?.error_count || 0 }} {{ tm('runtimeStatus.errors') }}
+                      <v-icon size="small" start> mdi-bug </v-icon>
+                      {{ getPlatformStat(item?.id)?.error_count || 0 }}
+                      {{ tm('runtimeStatus.errors') }}
                     </v-chip>
                   </div>
                   <div
-                    v-if="getPlatformStat(item?.id)?.unified_webhook && item.webhook_uuid"
+                    v-if="
+                      getPlatformStat(item?.id)?.unified_webhook &&
+                      item.webhook_uuid
+                    "
                     class="webhook-info"
                   >
                     <v-chip
@@ -143,12 +128,7 @@
                       class="webhook-chip"
                       @click.stop="openWebhookDialog(item.webhook_uuid)"
                     >
-                      <v-icon
-                        size="small"
-                        start
-                      >
-                        mdi-webhook
-                      </v-icon>
+                      <v-icon size="small" start> mdi-webhook </v-icon>
                       {{ tm('viewWebhook') }}
                     </v-chip>
                   </div>
@@ -159,14 +139,9 @@
         </div>
       </div>
 
-      <v-card
-        elevation="0"
-        class="mt-4 mb-10"
-      >
+      <v-card elevation="0" class="mt-4 mb-10">
         <v-card-title class="d-flex align-center py-3 px-4">
-          <v-icon class="me-2">
-            mdi-console-line
-          </v-icon>
+          <v-icon class="me-2"> mdi-console-line </v-icon>
           <span class="text-h4">{{ tm('logs.title') }}</span>
           <v-spacer />
           <v-btn
@@ -175,16 +150,17 @@
             @click="showConsole = !showConsole"
           >
             {{ showConsole ? tm('logs.collapse') : tm('logs.expand') }}
-            <v-icon>{{ showConsole ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
+            <v-icon>{{
+              showConsole ? 'mdi-chevron-up' : 'mdi-chevron-down'
+            }}</v-icon>
           </v-btn>
         </v-card-title>
 
         <v-expand-transition>
-          <v-card-text
-            v-if="showConsole"
-            class="pa-0"
-          >
-            <ConsoleDisplayer style="background-color: #1e1e1e; height: 300px; border-radius: 0" />
+          <v-card-text v-if="showConsole" class="pa-0">
+            <ConsoleDisplayer
+              style="background-color: #1e1e1e; height: 300px; border-radius: 0"
+            />
           </v-card-text>
         </v-expand-transition>
       </v-card>
@@ -201,18 +177,10 @@
       @refresh-config="getConfig"
     />
 
-    <v-dialog
-      v-model="showWebhookDialog"
-      max-width="600"
-    >
+    <v-dialog v-model="showWebhookDialog" max-width="600">
       <v-card>
         <v-card-title class="d-flex align-center pa-4">
-          <v-icon
-            class="me-2"
-            color="primary"
-          >
-            mdi-webhook
-          </v-icon>
+          <v-icon class="me-2" color="primary"> mdi-webhook </v-icon>
           {{ tm('webhookDialog.title') }}
         </v-card-title>
         <v-card-text class="px-4 pb-2">
@@ -251,54 +219,45 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog
-      v-model="showErrorDialog"
-      max-width="700"
-    >
+    <v-dialog v-model="showErrorDialog" max-width="700">
       <v-card>
         <v-card-title class="d-flex align-center pa-4">
-          <v-icon
-            class="me-2"
-            color="error"
-          >
-            mdi-alert-circle
-          </v-icon>
+          <v-icon class="me-2" color="error"> mdi-alert-circle </v-icon>
           {{ tm('errorDialog.title') }}
         </v-card-title>
-        <v-card-text
-          v-if="currentErrorPlatform"
-          class="px-4 pb-4"
-        >
+        <v-card-text v-if="currentErrorPlatform" class="px-4 pb-4">
           <div class="mb-3">
-            <strong>{{ tm('errorDialog.platformId') }}:</strong> {{ currentErrorPlatform.id }}
+            <strong>{{ tm('errorDialog.platformId') }}:</strong>
+            {{ currentErrorPlatform.id }}
           </div>
           <div class="mb-3">
-            <strong>{{ tm('errorDialog.errorCount') }}:</strong> {{ currentErrorPlatform.error_count }}
+            <strong>{{ tm('errorDialog.errorCount') }}:</strong>
+            {{ currentErrorPlatform.error_count }}
           </div>
-          <div
-            v-if="currentErrorPlatform.last_error"
-            class="error-details"
-          >
+          <div v-if="currentErrorPlatform.last_error" class="error-details">
             <div class="mb-2">
               <strong>{{ tm('errorDialog.lastError') }}:</strong>
             </div>
-            <v-alert
-              type="error"
-              variant="tonal"
-              class="mb-3"
-            >
+            <v-alert type="error" variant="tonal" class="mb-3">
               <div class="error-message">
                 {{ currentErrorPlatform.last_error.message }}
               </div>
               <div class="error-time text-caption text-medium-emphasis mt-1">
-                {{ tm('errorDialog.occurredAt') }}: {{ new Date(currentErrorPlatform.last_error.timestamp).toLocaleString() }}
+                {{ tm('errorDialog.occurredAt') }}:
+                {{
+                  new Date(
+                    currentErrorPlatform.last_error.timestamp,
+                  ).toLocaleString()
+                }}
               </div>
             </v-alert>
             <div v-if="currentErrorPlatform.last_error.traceback">
               <div class="mb-2">
                 <strong>{{ tm('errorDialog.traceback') }}:</strong>
               </div>
-              <pre class="traceback-box">{{ currentErrorPlatform.last_error.traceback }}</pre>
+              <pre class="traceback-box">{{
+                currentErrorPlatform.last_error.traceback
+              }}</pre>
             </div>
           </div>
         </v-card-text>
@@ -364,7 +323,7 @@ export default {
   components: {
     ConsoleDisplayer,
     ItemCard,
-    AddNewPlatform
+    AddNewPlatform,
   },
   setup() {
     const { t } = useI18n();
@@ -372,7 +331,7 @@ export default {
 
     return {
       t,
-      tm
+      tm,
     };
   },
   data() {
@@ -388,8 +347,8 @@ export default {
       updatingMode: false,
 
       save_message_snack: false,
-      save_message: "",
-      save_message_success: "success",
+      save_message: '',
+      save_message_success: 'success',
 
       showConsole: localStorage.getItem('platformPage_showConsole') === 'true',
 
@@ -407,8 +366,8 @@ export default {
       showErrorDialog: false,
       currentErrorPlatform: null as PlatformStat | null,
 
-      store: useCommonStore()
-    }
+      store: useCommonStore(),
+    };
   },
   computed: {
     messages() {
@@ -417,12 +376,12 @@ export default {
         addSuccess: this.tm('messages.addSuccess'),
         deleteSuccess: this.tm('messages.deleteSuccess'),
         statusUpdateSuccess: this.tm('messages.statusUpdateSuccess'),
-        deleteConfirm: this.tm('messages.deleteConfirm')
+        deleteConfirm: this.tm('messages.deleteConfirm'),
       };
     },
     currentWebhookUrl() {
       return this.getWebhookUrl(this.currentWebhookUuid);
-    }
+    },
   },
 
   watch: {
@@ -442,7 +401,7 @@ export default {
         this.oneBotEmptyTokenWarningResolve(true);
         this.oneBotEmptyTokenWarningResolve = null;
       }
-    }
+    },
   },
 
   mounted() {
@@ -461,7 +420,10 @@ export default {
 
   methods: {
     getPlatformIcon(platform_id: string) {
-      const template = this.metadata['platform_group']?.metadata?.platform?.config_template?.[platform_id];
+      const template =
+        this.metadata['platform_group']?.metadata?.platform?.config_template?.[
+          platform_id
+        ];
       if (template && template.logo_token) {
         return `/api/file/${template.logo_token}`;
       }
@@ -487,30 +449,37 @@ export default {
         }, remaining);
       };
 
-      axios.get('/api/config/get').then((res) => {
-        if (this.configLoadSeq !== seq) return;
-        this.config_data = res.data.data.config;
-        this.metadata = res.data.data.metadata;
-        finish();
-      }).catch((err) => {
-        if (this.configLoadSeq !== seq) return;
-        this.showError(err);
-        finish();
-      });
+      axios
+        .get('/api/config/get')
+        .then((res) => {
+          if (this.configLoadSeq !== seq) return;
+          this.config_data = res.data.data.config;
+          this.metadata = res.data.data.metadata;
+          finish();
+        })
+        .catch((err) => {
+          if (this.configLoadSeq !== seq) return;
+          this.showError(err);
+          finish();
+        });
     },
 
     getPlatformStats() {
-      axios.get('/api/platform/stats').then((res) => {
-        if (res.data.status === 'ok') {
-          const stats: Record<string, PlatformStat> = {};
-          for (const platform of (res.data.data.platforms || []) as PlatformStat[]) {
-            stats[platform.id] = platform;
+      axios
+        .get('/api/platform/stats')
+        .then((res) => {
+          if (res.data.status === 'ok') {
+            const stats: Record<string, PlatformStat> = {};
+            for (const platform of (res.data.data.platforms ||
+              []) as PlatformStat[]) {
+              stats[platform.id] = platform;
+            }
+            this.platformStats = stats;
           }
-          this.platformStats = stats;
-        }
-      }).catch((err) => {
-        console.warn('获取平台统计信息失败:', err);
-      });
+        })
+        .catch((err) => {
+          console.warn('获取平台统计信息失败:', err);
+        });
     },
 
     getPlatformStat(platformId?: string) {
@@ -520,21 +489,31 @@ export default {
 
     getStatusColor(status: string | undefined) {
       switch (status) {
-        case 'running': return 'success';
-        case 'error': return 'error';
-        case 'pending': return 'warning';
-        case 'stopped': return 'grey';
-        default: return 'grey';
+        case 'running':
+          return 'success';
+        case 'error':
+          return 'error';
+        case 'pending':
+          return 'warning';
+        case 'stopped':
+          return 'grey';
+        default:
+          return 'grey';
       }
     },
 
     getStatusIcon(status: string | undefined) {
       switch (status) {
-        case 'running': return 'mdi-check-circle';
-        case 'error': return 'mdi-alert-circle';
-        case 'pending': return 'mdi-clock-outline';
-        case 'stopped': return 'mdi-stop-circle';
-        default: return 'mdi-help-circle';
+        case 'running':
+          return 'mdi-check-circle';
+        case 'error':
+          return 'mdi-alert-circle';
+        case 'pending':
+          return 'mdi-clock-outline';
+        case 'stopped':
+          return 'mdi-stop-circle';
+        default:
+          return 'mdi-help-circle';
       }
     },
 
@@ -547,7 +526,9 @@ export default {
     },
 
     editPlatform(platform: PlatformConfig) {
-      this.updatingPlatformConfig = JSON.parse(JSON.stringify(platform)) as PlatformConfig;
+      this.updatingPlatformConfig = JSON.parse(
+        JSON.stringify(platform),
+      ) as PlatformConfig;
       this.updatingMode = true;
       this.showAddPlatformDialog = true;
       this.$nextTick(() => {
@@ -557,37 +538,55 @@ export default {
 
     deletePlatform(platform: PlatformConfig) {
       if (confirm(`${this.messages.deleteConfirm} ${platform.id}?`)) {
-        axios.post('/api/config/platform/delete', { id: platform.id }).then((res) => {
-          this.getConfig();
-          this.showSuccess(res.data.message || this.messages.deleteSuccess);
-        }).catch((err) => {
-          const message = axios.isAxiosError(err)
-            ? (err.response?.data?.message || err.message)
-            : (err instanceof Error ? err.message : String(err));
-          this.showError(message);
-        });
+        axios
+          .post('/api/config/platform/delete', { id: platform.id })
+          .then((res) => {
+            this.getConfig();
+            this.showSuccess(res.data.message || this.messages.deleteSuccess);
+          })
+          .catch((err) => {
+            const message = axios.isAxiosError(err)
+              ? err.response?.data?.message || err.message
+              : err instanceof Error
+                ? err.message
+                : String(err);
+            this.showError(message);
+          });
       }
     },
 
     platformStatusChange(platform: PlatformConfig) {
       platform.enable = !platform.enable;
 
-      axios.post('/api/config/platform/update', {
-        id: platform.id,
-        config: platform
-      }).then((res) => {
-        this.getConfig();
-        this.showSuccess(res.data.message || this.messages.statusUpdateSuccess);
-      }).catch((err) => {
-        platform.enable = !platform.enable;
-        const message = axios.isAxiosError(err)
-          ? (err.response?.data?.message || err.message)
-          : (err instanceof Error ? err.message : String(err));
-        this.showError(message);
-      });
+      axios
+        .post('/api/config/platform/update', {
+          id: platform.id,
+          config: platform,
+        })
+        .then((res) => {
+          this.getConfig();
+          this.showSuccess(
+            res.data.message || this.messages.statusUpdateSuccess,
+          );
+        })
+        .catch((err) => {
+          platform.enable = !platform.enable;
+          const message = axios.isAxiosError(err)
+            ? err.response?.data?.message || err.message
+            : err instanceof Error
+              ? err.message
+              : String(err);
+          this.showError(message);
+        });
     },
 
-    showToast({ message, type }: { message: string; type: 'success' | 'error' }) {
+    showToast({
+      message,
+      type,
+    }: {
+      message: string;
+      type: 'success' | 'error';
+    }) {
       if (type === 'success') {
         this.showSuccess(message);
       } else if (type === 'error') {
@@ -597,20 +596,20 @@ export default {
 
     showSuccess(message: string) {
       this.save_message = message;
-      this.save_message_success = "success";
+      this.save_message_success = 'success';
       this.save_message_snack = true;
     },
 
     showError(message: string) {
       this.save_message = message;
-      this.save_message_success = "error";
+      this.save_message_success = 'error';
       this.save_message_snack = true;
     },
 
     getWebhookUrl(webhookUuid: string) {
       let callbackBase = this.config_data.callback_api_base || '';
       if (!callbackBase) {
-        callbackBase = "http(s)://<your-domain-or-ip>";
+        callbackBase = 'http(s)://<your-domain-or-ip>';
       }
       if (callbackBase) {
         return `${callbackBase.replace(/\/$/, '')}/api/platform/webhook/${webhookUuid}`;
@@ -631,9 +630,9 @@ export default {
       } catch (_err) {
         this.showError(this.tm('webhookCopyFailed'));
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style scoped>

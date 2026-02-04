@@ -1,32 +1,24 @@
 <template>
-  <v-card 
+  <v-card
     :class="['item-card', 'hover-elevation', { 'pin-actions': pinActions }]"
     elevation="0"
-    v-bind="$attrs" 
+    v-bind="$attrs"
   >
     <v-card-title
       v-if="!hideHeader"
       class="d-flex justify-space-between align-center pb-1 pt-3 flex-shrink-0"
     >
-      <div
-        class="d-flex align-center ga-2 flex-grow-1"
-        style="min-width: 0;"
-      >
-        <slot
-          name="title-prepend"
-          :item="item"
-        />
+      <div class="d-flex align-center ga-2 flex-grow-1" style="min-width: 0">
+        <slot name="title-prepend" :item="item" />
         <span
           :class="['text-truncate', titleClass]"
-          style="min-width: 0;"
+          style="min-width: 0"
           :title="getItemTitle()"
-        >{{ getItemTitle() }}</span>
+          >{{ getItemTitle() }}</span
+        >
       </div>
-      
-      <v-tooltip
-        v-if="showSwitch"
-        location="top"
-      >
+
+      <v-tooltip v-if="showSwitch" location="top">
         <template #activator="{ props }">
           <v-switch
             color="primary"
@@ -39,18 +31,22 @@
             @update:model-value="toggleEnabled"
           />
         </template>
-        <span>{{ getItemEnabled() ? t('core.common.itemCard.enabled') : t('core.common.itemCard.disabled') }}</span>
+        <span>{{
+          getItemEnabled()
+            ? t('core.common.itemCard.enabled')
+            : t('core.common.itemCard.disabled')
+        }}</span>
       </v-tooltip>
     </v-card-title>
 
-    <v-card-text 
-      :class="[{ 'pa-0': noPadding }, pinActions ? 'flex-grow-1 d-flex flex-column' : '']"
-      style="overflow: hidden; min-height: 0;"
+    <v-card-text
+      :class="[
+        { 'pa-0': noPadding },
+        pinActions ? 'flex-grow-1 d-flex flex-column' : '',
+      ]"
+      style="overflow: hidden; min-height: 0"
     >
-      <slot
-        name="item-details"
-        :item="item"
-      />
+      <slot name="item-details" :item="item" />
     </v-card-text>
 
     <v-card-actions
@@ -58,22 +54,16 @@
       :class="[
         'flex-shrink-0 align-center',
         wrapActions ? 'flex-wrap ga-2' : '',
-        actionsAlign === 'start' ? 'justify-start' : ''
+        actionsAlign === 'start' ? 'justify-start' : '',
       ]"
-      style="margin: 8px;"
+      style="margin: 8px"
     >
-      <slot
-        name="footer-start"
-        :item="item"
-      />
-      
+      <slot name="footer-start" :item="item" />
+
       <v-spacer v-if="actionsAlign !== 'start'" />
-      
-      <slot
-        name="actions"
-        :item="item"
-      />
-      
+
+      <slot name="actions" :item="item" />
+
       <v-btn
         v-if="showCopyButton"
         variant="tonal"
@@ -114,14 +104,15 @@
     <div
       v-if="bglogo"
       class="d-flex justify-end align-center"
-      style="position: absolute; bottom: 16px; right: 16px; opacity: 0.2; pointer-events: none;"
+      style="
+        position: absolute;
+        bottom: 16px;
+        right: 16px;
+        opacity: 0.2;
+        pointer-events: none;
+      "
     >
-      <v-img
-        :src="bglogo"
-        contain
-        width="120"
-        height="120"
-      />
+      <v-img :src="bglogo" contain width="120" height="120" />
     </div>
   </v-card>
 </template>
@@ -149,8 +140,8 @@ export default {
     actionsAlign: {
       type: String,
       default: 'end',
-      validator: (v: string) => ['start', 'end'].includes(v)
-    }
+      validator: (v: string) => ['start', 'end'].includes(v),
+    },
   },
   emits: ['toggle-enabled', 'delete', 'edit', 'copy'],
   setup() {
@@ -158,24 +149,31 @@ export default {
     return { t };
   },
   methods: {
-    getItemTitle() { return this.item[this.titleField]; },
-    getItemEnabled() { return this.item[this.enabledField]; },
-    toggleEnabled() { this.$emit('toggle-enabled', this.item); }
-  }
-}
+    getItemTitle() {
+      return this.item[this.titleField];
+    },
+    getItemEnabled() {
+      return this.item[this.enabledField];
+    },
+    toggleEnabled() {
+      this.$emit('toggle-enabled', this.item);
+    },
+  },
+};
 </script>
 
 <style scoped>
 .item-card {
   position: relative;
-  border-radius: 16px; 
+  border-radius: 16px;
   transition: all 0.3s ease;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   height: 100%;
-  border: 3px solid rgba(var(--v-theme-border), var(--v-theme-border-opacity, 1));
+  border: 3px solid
+    rgba(var(--v-theme-border), var(--v-theme-border-opacity, 1));
   color: rgba(var(--v-theme-primaryText));
   opacity: 0.8;
 }

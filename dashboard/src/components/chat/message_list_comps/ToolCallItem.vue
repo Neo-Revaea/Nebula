@@ -8,10 +8,7 @@
       @keydown.enter="toggleExpanded"
       @keydown.space.prevent="toggleExpanded"
     >
-      <slot
-        name="label"
-        :expanded="isExpanded"
-      />
+      <slot name="label" :expanded="isExpanded" />
     </div>
     <transition name="tool-call-fade">
       <div
@@ -29,59 +26,61 @@
 import { ref } from 'vue';
 
 defineSlots<{
-    label(props: { expanded: boolean }): any
-    details(): any
-}>()
+  label(props: { expanded: boolean }): any;
+  details(): any;
+}>();
 
 defineProps<{
-    isDark?: boolean
-}>()
+  isDark?: boolean;
+}>();
 
 const isExpanded = ref(false);
 
 const toggleExpanded = () => {
-    isExpanded.value = !isExpanded.value;
+  isExpanded.value = !isExpanded.value;
 };
 </script>
 
 <style scoped>
 .tool-call-line {
-    font-size: 14px;
-    color: var(--v-theme-secondaryText);
-    opacity: 0.85;
-    cursor: pointer;
-    user-select: none;
-    transition: color 0.2s ease, opacity 0.2s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
+  font-size: 14px;
+  color: var(--v-theme-secondaryText);
+  opacity: 0.85;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    color 0.2s ease,
+    opacity 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .tool-call-line:hover {
-    color: var(--v-theme-secondary);
-    opacity: 1;
+  color: var(--v-theme-secondary);
+  opacity: 1;
 }
 
 .tool-call-inline-details {
-    margin-top: 6px;
-    padding: 8px 10px;
-    border-left: 2px solid var(--v-theme-border);
-    border-radius: 6px;
-    background-color: rgba(0, 0, 0, 0.02);
+  margin-top: 6px;
+  padding: 8px 10px;
+  border-left: 2px solid var(--v-theme-border);
+  border-radius: 6px;
+  background-color: rgba(0, 0, 0, 0.02);
 }
 
 .tool-call-inline-details.is-dark {
-    background-color: rgba(255, 255, 255, 0.04);
-    border-left-color: rgba(255, 255, 255, 0.15);
+  background-color: rgba(255, 255, 255, 0.04);
+  border-left-color: rgba(255, 255, 255, 0.15);
 }
 
 .tool-call-fade-enter-active,
 .tool-call-fade-leave-active {
-    transition: opacity 0.1s ease;
+  transition: opacity 0.1s ease;
 }
 
 .tool-call-fade-enter-from,
 .tool-call-fade-leave-to {
-    opacity: 0;
+  opacity: 0;
 }
 </style>

@@ -14,7 +14,9 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-pattern dist",
     "lint:check": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --ignore-pattern dist",
     "lint:ci": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --ignore-pattern dist --max-warnings 0",
-    "check": "pnpm typecheck && pnpm lint:check"
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check": "pnpm typecheck && pnpm lint:check && pnpm format:check"
   },
   "dependencies": {
     "@guolao/vue-monaco-editor": "^1.5.4",
@@ -58,6 +60,7 @@
     "eslint-plugin-vue": "^10.7.0",
     "globals": "^17.3.0",
     "jiti": "^2.6.1",
+    "prettier": "^3.8.1",
     "sass": "1.66.1",
     "typescript": "5.7.3",
     "vite": "5.4.21",

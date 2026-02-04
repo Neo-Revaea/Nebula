@@ -1,98 +1,107 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import axios from 'axios'
-import { md5 } from 'js-md5'
-import { useAuthStore } from '@/stores/auth'
-import { useI18n } from '@/i18n/composables'
-import Logo from '@/components/shared/Logo.vue'
-import { useRouter } from 'vue-router'
-import { useDisplay } from 'vuetify'
+import { computed, ref } from 'vue';
+import axios from 'axios';
+import { md5 } from 'js-md5';
+import { useAuthStore } from '@/stores/auth';
+import { useI18n } from '@/i18n/composables';
+import Logo from '@/components/shared/Logo.vue';
+import { useRouter } from 'vue-router';
+import { useDisplay } from 'vuetify';
 
 const props = defineProps<{
-  modelValue: boolean
-  warning: boolean
-}>()
+  modelValue: boolean;
+  warning: boolean;
+}>();
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: boolean): void
-}>()
+  (e: 'update:modelValue', value: boolean): void;
+}>();
 
-const display = useDisplay()
-const { t } = useI18n()
-const router = useRouter()
+const display = useDisplay();
+const { t } = useI18n();
+const router = useRouter();
 
-const username = localStorage.getItem('user')
+const username = localStorage.getItem('user');
 
-const password = ref('')
-const newPassword = ref('')
-const newUsername = ref('')
+const password = ref('');
+const newPassword = ref('');
+const newUsername = ref('');
 
-const formValid = ref(true)
+const formValid = ref(true);
 
 const passwordRules = computed(() => [
-  (v: string) => !!v || t('core.header.accountDialog.validation.passwordRequired'),
-  (v: string) => v.length >= 8 || t('core.header.accountDialog.validation.passwordMinLength')
-])
+  (v: string) =>
+    !!v || t('core.header.accountDialog.validation.passwordRequired'),
+  (v: string) =>
+    v.length >= 8 ||
+    t('core.header.accountDialog.validation.passwordMinLength'),
+]);
 
 const usernameRules = computed(() => [
-  (v: string) => !v || v.length >= 3 || t('core.header.accountDialog.validation.usernameMinLength')
-])
+  (v: string) =>
+    !v ||
+    v.length >= 3 ||
+    t('core.header.accountDialog.validation.usernameMinLength'),
+]);
 
-const showPassword = ref(false)
-const showNewPassword = ref(false)
+const showPassword = ref(false);
+const showNewPassword = ref(false);
 
 const accountEditStatus = ref({
   loading: false,
   success: false,
   error: false,
-  message: ''
-})
+  message: '',
+});
 
 const dialogModel = computed({
   get: () => props.modelValue,
-  set: (val: boolean) => emit('update:modelValue', val)
-})
+  set: (val: boolean) => emit('update:modelValue', val),
+});
 
 async function accountEdit() {
-  accountEditStatus.value.loading = true
-  accountEditStatus.value.error = false
-  accountEditStatus.value.success = false
+  accountEditStatus.value.loading = true;
+  accountEditStatus.value.error = false;
+  accountEditStatus.value.success = false;
 
-  const payloadPassword = password.value ? md5(password.value) : ''
-  const payloadNewPassword = newPassword.value ? md5(newPassword.value) : ''
+  const payloadPassword = password.value ? md5(password.value) : '';
+  const payloadNewPassword = newPassword.value ? md5(newPassword.value) : '';
 
   try {
     const res = await axios.post('/api/auth/account/edit', {
       password: payloadPassword,
       new_password: payloadNewPassword,
-      new_username: newUsername.value ? newUsername.value : username
-    })
+      new_username: newUsername.value ? newUsername.value : username,
+    });
 
     if (res.data.status == 'error') {
-      accountEditStatus.value.error = true
-      accountEditStatus.value.message = res.data.message
-      password.value = ''
-      newPassword.value = ''
-      return
+      accountEditStatus.value.error = true;
+      accountEditStatus.value.message = res.data.message;
+      password.value = '';
+      newPassword.value = '';
+      return;
     }
 
-    accountEditStatus.value.success = true
-    accountEditStatus.value.message = res.data.message
+    accountEditStatus.value.success = true;
+    accountEditStatus.value.message = res.data.message;
 
     setTimeout(() => {
-      dialogModel.value = false
-      const authStore = useAuthStore()
-      authStore.logout()
-      router.push('/auth/login')
-    }, 2000)
+      dialogModel.value = false;
+      const authStore = useAuthStore();
+      authStore.logout();
+      router.push('/auth/login');
+    }, 2000);
   } catch (err) {
-    console.log(err)
-    accountEditStatus.value.error = true
-    accountEditStatus.value.message = typeof err === 'string' ? err : t('core.header.accountDialog.messages.updateFailed')
-    password.value = ''
-    newPassword.value = ''
+    console.log(err);
+    accountEditStatus.value.error = true;
+    accountEditStatus.value.message =
+      typeof err === 'string'
+        ? err
+        : t('core.header.accountDialog.messages.updateFailed');
+    password.value = '';
+    newPassword.value = '';
   } finally {
-    accountEditStatus.value.loading = false
+    accountEditStatus.value.loading = false;
   }
 }
 </script>
@@ -142,10 +151,7 @@ async function accountEdit() {
           {{ accountEditStatus.message }}
         </v-alert>
 
-        <v-form
-          v-model="formValid"
-          @submit.prevent="accountEdit"
-        >
+        <v-form v-model="formValid" @submit.prevent="accountEdit">
           <v-text-field
             v-model="password"
             :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"

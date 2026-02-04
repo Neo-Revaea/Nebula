@@ -1,227 +1,263 @@
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue'
-import axios from 'axios'
-import { MarkdownRender, enableKatex, enableMermaid } from 'markstream-vue'
-import 'markstream-vue/index.css'
-import 'katex/dist/katex.min.css'
-import { useI18n } from '@/i18n/composables'
-import { useAuthStore } from '@/stores/auth'
-import { useRouter } from 'vue-router'
-import { useDisplay, useTheme } from 'vuetify'
-import { shikiWasmReady } from '@/composables/shikiWasm'
-import { getSelectedGitHubProxy } from '@/utils/githubProxy'
+import { ref, computed, watch, onMounted } from 'vue';
+import axios from 'axios';
+import { MarkdownRender, enableKatex, enableMermaid } from 'markstream-vue';
+import 'markstream-vue/index.css';
+import 'katex/dist/katex.min.css';
+import { useI18n } from '@/i18n/composables';
+import { useAuthStore } from '@/stores/auth';
+import { useRouter } from 'vue-router';
+import { useDisplay, useTheme } from 'vuetify';
+import { shikiWasmReady } from '@/composables/shikiWasm';
+import { getSelectedGitHubProxy } from '@/utils/githubProxy';
 
-type UpdateChannel = 'official' | 'nebula'
+type UpdateChannel = 'official' | 'nebula';
 
-type UpdateTab = 'source' | 'dashboard'
+type UpdateTab = 'source' | 'dashboard';
 
 type UpdateFlags = {
-  hasNewVersion: boolean
-  dashboardHasNewVersion: boolean
-}
+  hasNewVersion: boolean;
+  dashboardHasNewVersion: boolean;
+};
 
 const props = defineProps<{
-  modelValue: boolean
-  botCurrVersion: string
-  dashboardCurrentVersion: string
-}>()
+  modelValue: boolean;
+  botCurrVersion: string;
+  dashboardCurrentVersion: string;
+}>();
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: boolean): void
-  (e: 'updateFlags', value: UpdateFlags): void
-}>()
+  (e: 'update:modelValue', value: boolean): void;
+  (e: 'updateFlags', value: UpdateFlags): void;
+}>();
 
-enableKatex()
-enableMermaid()
+enableKatex();
+enableMermaid();
 
-const { t } = useI18n()
-const router = useRouter()
+const { t } = useI18n();
+const router = useRouter();
 
-const display = useDisplay()
+const display = useDisplay();
 
-const theme = useTheme()
-const isDark = computed(() => theme.global.current.value.dark)
+const theme = useTheme();
+const isDark = computed(() => theme.global.current.value.dark);
 
 // 高度过低时使用手机布局（即使是宽屏也切到“无侧栏”布局）
-const isPhoneLayout = computed(() => display.xs.value || display.height.value < 720)
+const isPhoneLayout = computed(
+  () => display.xs.value || display.height.value < 720,
+);
 
 // 平板/手机或高度过低时强制全屏（避免内容被挤压/背后可滚动）
-const isDialogFullscreen = computed(() => display.smAndDown.value || display.height.value < 720)
+const isDialogFullscreen = computed(
+  () => display.smAndDown.value || display.height.value < 720,
+);
 
-const sidebarWidth = computed(() => (display.sm.value ? 260 : 320))
+const sidebarWidth = computed(() => (display.sm.value ? 260 : 320));
 
-const updateTab = ref<UpdateTab>('source')
+const updateTab = ref<UpdateTab>('source');
 
-const sourceUpdateChannel = ref<UpdateChannel>('official')
-const dashboardUpdateChannel = ref<UpdateChannel>('official')
+const sourceUpdateChannel = ref<UpdateChannel>('official');
+const dashboardUpdateChannel = ref<UpdateChannel>('official');
 
 const updateChannelOptions = computed(() => [
-  { title: t('core.header.updateDialog.channel.official'), value: 'official' as const },
-  { title: t('core.header.updateDialog.channel.nebula'), value: 'nebula' as const }
-])
+  {
+    title: t('core.header.updateDialog.channel.official'),
+    value: 'official' as const,
+  },
+  {
+    title: t('core.header.updateDialog.channel.nebula'),
+    value: 'nebula' as const,
+  },
+]);
 
-const updateStatusKey = ref<string | null>(null)
-const updateStatusText = ref('')
-const lastCheckedAt = ref<Date | null>(null)
+const updateStatusKey = ref<string | null>(null);
+const updateStatusText = ref('');
+const lastCheckedAt = ref<Date | null>(null);
 
-const hasNewVersion = ref(false)
-const dashboardHasNewVersion = ref(false)
+const hasNewVersion = ref(false);
+const dashboardHasNewVersion = ref(false);
 
-const installLoading = ref(false)
-const updatingDashboardLoading = ref(false)
+const installLoading = ref(false);
+const updatingDashboardLoading = ref(false);
 
-const releaseMessage = ref('')
-const releases = ref<any[]>([])
+const releaseMessage = ref('');
+const releases = ref<any[]>([]);
 
 const releasesHeader = computed(() => [
-  { title: t('core.header.updateDialog.table.tag'), key: 'tag_name', sortable: false },
-  { title: t('core.header.updateDialog.table.publishDate'), key: 'published_at', sortable: false },
-  { title: t('core.header.updateDialog.table.sourceUrl'), key: 'zipball_url', sortable: false },
-  { title: t('core.header.updateDialog.table.content'), key: 'body', sortable: false },
-  { title: t('core.header.updateDialog.table.actions'), key: 'switch', sortable: false }
-])
+  {
+    title: t('core.header.updateDialog.table.tag'),
+    key: 'tag_name',
+    sortable: false,
+  },
+  {
+    title: t('core.header.updateDialog.table.publishDate'),
+    key: 'published_at',
+    sortable: false,
+  },
+  {
+    title: t('core.header.updateDialog.table.sourceUrl'),
+    key: 'zipball_url',
+    sortable: false,
+  },
+  {
+    title: t('core.header.updateDialog.table.content'),
+    key: 'body',
+    sortable: false,
+  },
+  {
+    title: t('core.header.updateDialog.table.actions'),
+    key: 'switch',
+    sortable: false,
+  },
+]);
 
-const activeHasNewVersion = computed(() => (updateTab.value === 'dashboard' ? dashboardHasNewVersion.value : hasNewVersion.value))
-const displayUpdateStatus = computed(() => (updateStatusKey.value ? t(updateStatusKey.value) : updateStatusText.value))
+const activeHasNewVersion = computed(() =>
+  updateTab.value === 'dashboard'
+    ? dashboardHasNewVersion.value
+    : hasNewVersion.value,
+);
+const displayUpdateStatus = computed(() =>
+  updateStatusKey.value ? t(updateStatusKey.value) : updateStatusText.value,
+);
 
 function setUpdateStatusKey(key: string) {
-  updateStatusKey.value = key
-  updateStatusText.value = ''
+  updateStatusKey.value = key;
+  updateStatusText.value = '';
 }
 
 function setUpdateStatusText(text: unknown) {
-  updateStatusKey.value = null
-  updateStatusText.value = typeof text === 'string' ? text : String(text)
+  updateStatusKey.value = null;
+  updateStatusText.value = typeof text === 'string' ? text : String(text);
 }
 
-const releaseNotesDialog = ref(false)
-const releaseNotesTitle = ref('')
-const releaseNotesContent = ref('')
+const releaseNotesDialog = ref(false);
+const releaseNotesTitle = ref('');
+const releaseNotesContent = ref('');
 
 function openReleaseNotesDialog(body: string, tagName: string) {
-  releaseNotesTitle.value = tagName
-  releaseNotesContent.value = body
-  releaseNotesDialog.value = true
+  releaseNotesTitle.value = tagName;
+  releaseNotesContent.value = body;
+  releaseNotesDialog.value = true;
 }
 
 function isPreRelease(tagName: string) {
-  return tagName.includes('-')
+  return tagName.includes('-');
 }
 
 function onSourceChannelChanged() {
-  releaseMessage.value = ''
-  checkUpdate()
-  getReleases()
+  releaseMessage.value = '';
+  checkUpdate();
+  getReleases();
 }
 
 async function checkUpdate() {
-  setUpdateStatusKey('core.header.updateDialog.status.checking')
+  setUpdateStatusKey('core.header.updateDialog.status.checking');
   try {
     const res = await axios.get('/api/update/check', {
-      params: { channel: sourceUpdateChannel.value }
-    })
+      params: { channel: sourceUpdateChannel.value },
+    });
 
-    hasNewVersion.value = !!res.data.data.has_new_version
-    dashboardHasNewVersion.value = !!res.data.data.dashboard_has_new_version
+    hasNewVersion.value = !!res.data.data.has_new_version;
+    dashboardHasNewVersion.value = !!res.data.data.dashboard_has_new_version;
 
     emit('updateFlags', {
       hasNewVersion: hasNewVersion.value,
-      dashboardHasNewVersion: dashboardHasNewVersion.value
-    })
+      dashboardHasNewVersion: dashboardHasNewVersion.value,
+    });
 
     if (hasNewVersion.value) {
-      releaseMessage.value = res.data.message
-      setUpdateStatusKey('core.header.version.hasNewVersion')
+      releaseMessage.value = res.data.message;
+      setUpdateStatusKey('core.header.version.hasNewVersion');
     } else {
       // 后端 message 可能是固定中文句子；这里用 i18n key，保证切换语言时能立即更新
-      setUpdateStatusKey('core.header.updateDialog.dashboardUpdate.isLatest')
+      setUpdateStatusKey('core.header.updateDialog.dashboardUpdate.isLatest');
     }
   } catch (err: any) {
     if (err?.response && err.response.status == 401) {
-      const authStore = useAuthStore()
-      authStore.logout()
-      router.push('/auth/login')
-      return
+      const authStore = useAuthStore();
+      authStore.logout();
+      router.push('/auth/login');
+      return;
     }
-    setUpdateStatusText(err)
+    setUpdateStatusText(err);
   } finally {
-    lastCheckedAt.value = new Date()
+    lastCheckedAt.value = new Date();
   }
 }
 
 async function getReleases() {
   try {
     const res = await axios.get('/api/update/releases', {
-      params: { channel: sourceUpdateChannel.value }
-    })
+      params: { channel: sourceUpdateChannel.value },
+    });
     releases.value = (res.data.data || []).map((item: any) => {
-      item.published_at = new Date(item.published_at).toLocaleString()
-      return item
-    })
+      item.published_at = new Date(item.published_at).toLocaleString();
+      return item;
+    });
   } catch (err) {
-    console.log(err)
+    console.log(err);
   }
 }
 
 async function switchVersion(tag: string) {
-  setUpdateStatusKey('core.header.updateDialog.status.switching')
-  installLoading.value = true
+  setUpdateStatusKey('core.header.updateDialog.status.switching');
+  installLoading.value = true;
   try {
     const res = await axios.post('/api/update/do', {
       version: tag,
       proxy: getSelectedGitHubProxy(),
-      channel: sourceUpdateChannel.value
-    })
-    setUpdateStatusText(res.data.message)
+      channel: sourceUpdateChannel.value,
+    });
+    setUpdateStatusText(res.data.message);
     if (res.data.status == 'ok') {
-      setTimeout(() => window.location.reload(), 1000)
+      setTimeout(() => window.location.reload(), 1000);
     }
   } catch (err) {
-    console.log(err)
-    setUpdateStatusText(err)
+    console.log(err);
+    setUpdateStatusText(err);
   } finally {
-    installLoading.value = false
+    installLoading.value = false;
   }
 }
 
 async function updateToLatestFromChannel() {
-  setUpdateStatusKey('core.header.updateDialog.status.switching')
-  installLoading.value = true
+  setUpdateStatusKey('core.header.updateDialog.status.switching');
+  installLoading.value = true;
   try {
     const res = await axios.post('/api/update/do', {
       version: 'latest',
       proxy: getSelectedGitHubProxy(),
-      channel: sourceUpdateChannel.value
-    })
-    setUpdateStatusText(res.data.message)
+      channel: sourceUpdateChannel.value,
+    });
+    setUpdateStatusText(res.data.message);
     if (res.data.status == 'ok') {
-      setTimeout(() => window.location.reload(), 1000)
+      setTimeout(() => window.location.reload(), 1000);
     }
   } catch (err) {
-    console.log(err)
-    setUpdateStatusText(err)
+    console.log(err);
+    setUpdateStatusText(err);
   } finally {
-    installLoading.value = false
+    installLoading.value = false;
   }
 }
 
 async function updateDashboard() {
-  updatingDashboardLoading.value = true
-  setUpdateStatusKey('core.header.updateDialog.status.updating')
+  updatingDashboardLoading.value = true;
+  setUpdateStatusKey('core.header.updateDialog.status.updating');
   try {
     const res = await axios.post('/api/update/dashboard', {
       channel: dashboardUpdateChannel.value,
-      proxy: getSelectedGitHubProxy()
-    })
-    setUpdateStatusText(res.data.message)
+      proxy: getSelectedGitHubProxy(),
+    });
+    setUpdateStatusText(res.data.message);
     if (res.data.status == 'ok') {
-      setTimeout(() => window.location.reload(), 1000)
+      setTimeout(() => window.location.reload(), 1000);
     }
   } catch (err) {
-    console.log(err)
-    setUpdateStatusText(err)
+    console.log(err);
+    setUpdateStatusText(err);
   } finally {
-    updatingDashboardLoading.value = false
+    updatingDashboardLoading.value = false;
   }
 }
 
@@ -229,27 +265,29 @@ watch(
   () => props.modelValue,
   (open) => {
     if (open) {
-      updateTab.value = 'source'
-      checkUpdate()
-      getReleases()
+      updateTab.value = 'source';
+      checkUpdate();
+      getReleases();
     }
-  }
-)
+  },
+);
 
 onMounted(() => {
-  checkUpdate()
-})
+  checkUpdate();
+});
 
 const dialogModel = computed({
   get: () => props.modelValue,
-  set: (val: boolean) => emit('update:modelValue', val)
-})
+  set: (val: boolean) => emit('update:modelValue', val),
+});
 </script>
 
 <template>
   <v-dialog
     v-model="dialogModel"
-    :width="isDialogFullscreen ? '100%' : ($vuetify.display.smAndDown ? '100%' : '1100')"
+    :width="
+      isDialogFullscreen ? '100%' : $vuetify.display.smAndDown ? '100%' : '1100'
+    "
     :fullscreen="isDialogFullscreen"
     :scrollable="isPhoneLayout"
     scroll-strategy="block"
@@ -259,8 +297,10 @@ const dialogModel = computed({
     <v-card
       class="update-dialog-card d-flex overflow-hidden"
       :class="[
-        isPhoneLayout ? 'flex-column update-dialog-card--phone-layout' : 'flex-row',
-        isDialogFullscreen ? 'update-dialog-card--fullscreen' : ''
+        isPhoneLayout
+          ? 'flex-column update-dialog-card--phone-layout'
+          : 'flex-row',
+        isDialogFullscreen ? 'update-dialog-card--fullscreen' : '',
       ]"
       :rounded="isDialogFullscreen ? 0 : undefined"
     >
@@ -272,34 +312,28 @@ const dialogModel = computed({
       >
         <div class="pa-6">
           <div class="d-flex align-center mb-6">
-            <v-avatar
-              color="primary"
-              rounded="md"
-              size="64"
-              class="mr-4"
-            >
-              <v-icon
-                size="42"
-                color="white"
-              >
-                mdi-autorenew
-              </v-icon>
+            <v-avatar color="primary" rounded="md" size="64" class="mr-4">
+              <v-icon size="42" color="white"> mdi-autorenew </v-icon>
             </v-avatar>
             <div>
-              <div class="text-subtitle-6 font-weight-bold text-uppercase text-medium-emphasis mb-1">
+              <div
+                class="text-subtitle-6 font-weight-bold text-uppercase text-medium-emphasis mb-1"
+              >
                 {{ t('core.header.updateDialog.title') }}
               </div>
               <div
                 class="text-body-2 text-medium-emphasis mb-1"
                 style="line-height: 1.2"
               >
-                {{ t('core.header.updateDialog.tabs.source') }}: {{ props.botCurrVersion }}
+                {{ t('core.header.updateDialog.tabs.source') }}:
+                {{ props.botCurrVersion }}
               </div>
               <div
                 class="text-body-2 text-medium-emphasis mb-1"
                 style="line-height: 1.2"
               >
-                {{ t('core.header.updateDialog.tabs.dashboard') }}: {{ props.dashboardCurrentVersion }}
+                {{ t('core.header.updateDialog.tabs.dashboard') }}:
+                {{ props.dashboardCurrentVersion }}
               </div>
             </div>
           </div>
@@ -334,7 +368,9 @@ const dialogModel = computed({
         <v-spacer />
 
         <div class="pa-6">
-          <div class="text-caption font-weight-bold text-medium-emphasis mb-2 text-uppercase">
+          <div
+            class="text-caption font-weight-bold text-medium-emphasis mb-2 text-uppercase"
+          >
             {{ t('core.header.updateDialog.channel.label') }}
           </div>
           <v-select
@@ -365,13 +401,10 @@ const dialogModel = computed({
           v-if="isPhoneLayout"
           class="pa-4 border-b d-flex align-center justify-space-between bg-surface"
         >
-          <span class="text-h5 font-weight-bold">{{ t('core.header.updateDialog.title') }}</span>
-          <v-btn
-            icon
-            size="small"
-            variant="text"
-            @click="dialogModel = false"
-          >
+          <span class="text-h5 font-weight-bold">{{
+            t('core.header.updateDialog.title')
+          }}</span>
+          <v-btn icon size="small" variant="text" @click="dialogModel = false">
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </div>
@@ -393,14 +426,8 @@ const dialogModel = computed({
         </v-tabs>
 
         <div class="update-dialog-main">
-          <v-window
-            v-model="updateTab"
-            class="update-dialog-window"
-          >
-            <v-window-item
-              value="source"
-              class="update-dialog-window-item"
-            >
+          <v-window v-model="updateTab" class="update-dialog-window">
+            <v-window-item value="source" class="update-dialog-window-item">
               <div class="update-pane">
                 <template v-if="sourceUpdateChannel === 'official'">
                   <div class="update-pane__head">
@@ -418,11 +445,11 @@ const dialogModel = computed({
                         rounded="lg"
                         class="pa-3 update-status-card"
                       >
-                        <div
-                          class="d-flex align-center"
-                          style="gap: 12px"
-                        >
-                          <span class="font-weight-bold text-medium-emphasis update-status-text">{{ displayUpdateStatus }}</span>
+                        <div class="d-flex align-center" style="gap: 12px">
+                          <span
+                            class="font-weight-bold text-medium-emphasis update-status-text"
+                            >{{ displayUpdateStatus }}</span
+                          >
                           <v-progress-circular
                             v-if="installLoading || updatingDashboardLoading"
                             indeterminate
@@ -435,7 +462,11 @@ const dialogModel = computed({
                             :color="activeHasNewVersion ? 'warning' : 'success'"
                             size="20"
                           >
-                            {{ activeHasNewVersion ? 'mdi-alert-circle' : 'mdi-check-circle' }}
+                            {{
+                              activeHasNewVersion
+                                ? 'mdi-alert-circle'
+                                : 'mdi-check-circle'
+                            }}
                           </v-icon>
                         </div>
                       </v-card>
@@ -457,7 +488,10 @@ const dialogModel = computed({
                           class="d-flex align-center"
                           style="gap: 12px; min-width: 0"
                         >
-                          <span class="font-weight-bold text-medium-emphasis update-status-text">{{ displayUpdateStatus }}</span>
+                          <span
+                            class="font-weight-bold text-medium-emphasis update-status-text"
+                            >{{ displayUpdateStatus }}</span
+                          >
                           <v-progress-circular
                             v-if="installLoading || updatingDashboardLoading"
                             indeterminate
@@ -470,7 +504,11 @@ const dialogModel = computed({
                             :color="activeHasNewVersion ? 'warning' : 'success'"
                             size="20"
                           >
-                            {{ activeHasNewVersion ? 'mdi-alert-circle' : 'mdi-check-circle' }}
+                            {{
+                              activeHasNewVersion
+                                ? 'mdi-alert-circle'
+                                : 'mdi-check-circle'
+                            }}
                           </v-icon>
                         </div>
                       </v-card>
@@ -515,19 +553,29 @@ const dialogModel = computed({
                   </v-alert>
 
                   <div class="mb-4">
-                    <small>{{ t('core.header.updateDialog.tip') }} {{ t('core.header.updateDialog.tipContinue') }}</small>
+                    <small
+                      >{{ t('core.header.updateDialog.tip') }}
+                      {{ t('core.header.updateDialog.tipContinue') }}</small
+                    >
                   </div>
 
                   <div class="mb-4">
                     <small>
                       {{ t('core.header.updateDialog.dockerTip') }}
-                      <a href="https://containrrr.dev/watchtower/usage-overview/">{{ t('core.header.updateDialog.dockerTipLink') }}</a>
+                      <a
+                        href="https://containrrr.dev/watchtower/usage-overview/"
+                        >{{ t('core.header.updateDialog.dockerTipLink') }}</a
+                      >
                       {{ t('core.header.updateDialog.dockerTipContinue') }}
                     </small>
                   </div>
 
                   <v-alert
-                    v-if="releases.some((item: any) => isPreRelease(item['tag_name']))"
+                    v-if="
+                      releases.some((item: any) =>
+                        isPreRelease(item['tag_name']),
+                      )
+                    "
                     type="warning"
                     variant="tonal"
                     border="start"
@@ -538,25 +586,30 @@ const dialogModel = computed({
                       <v-icon>mdi-alert-circle-outline</v-icon>
                     </template>
                     <div class="text-body-2 update-pre-release-body">
-                      <strong>{{ t('core.header.updateDialog.preReleaseWarning.title') }}</strong>
-                      <br>
-                      {{ t('core.header.updateDialog.preReleaseWarning.description') }}
+                      <strong>{{
+                        t('core.header.updateDialog.preReleaseWarning.title')
+                      }}</strong>
+                      <br />
+                      {{
+                        t(
+                          'core.header.updateDialog.preReleaseWarning.description',
+                        )
+                      }}
                       <a
                         href="https://github.com/AstrBotDevs/AstrBot/issues"
                         target="_blank"
                         class="text-decoration-none"
                       >
-                        {{ t('core.header.updateDialog.preReleaseWarning.issueLink') }}
+                        {{
+                          t(
+                            'core.header.updateDialog.preReleaseWarning.issueLink',
+                          )
+                        }}
                       </a>
                     </div>
                   </v-alert>
 
-                  <v-card
-                    border
-                    flat
-                    rounded="lg"
-                    class="releases-table-card"
-                  >
+                  <v-card border flat rounded="lg" class="releases-table-card">
                     <v-data-table
                       class="releases-table"
                       :headers="releasesHeader"
@@ -567,7 +620,9 @@ const dialogModel = computed({
                       :height="isPhoneLayout ? undefined : '100%'"
                     >
                       <template #item.tag_name="{ item }: { item: any }">
-                        <span class="font-weight-medium">{{ item.tag_name }}</span>
+                        <span class="font-weight-medium">{{
+                          item.tag_name
+                        }}</span>
                         <v-chip
                           v-if="isPreRelease(item.tag_name)"
                           size="x-small"
@@ -578,7 +633,13 @@ const dialogModel = computed({
                           {{ t('core.header.updateDialog.preRelease') }}
                         </v-chip>
                       </template>
-                      <template #item.zipball_url="{ item }: { item: { zipball_url?: string } }">
+                      <template
+                        #item.zipball_url="{
+                          item,
+                        }: {
+                          item: { zipball_url?: string };
+                        }"
+                      >
                         <v-btn
                           v-if="item.zipball_url"
                           :href="item.zipball_url"
@@ -591,22 +652,29 @@ const dialogModel = computed({
                         >
                           {{ t('core.header.updateDialog.table.view') }}
                         </v-btn>
-                        <span
-                          v-else
-                          class="text-medium-emphasis"
-                        >-</span>
+                        <span v-else class="text-medium-emphasis">-</span>
                       </template>
-                      <template #item.body="{ item }: { item: { body: string; tag_name: string } }">
+                      <template
+                        #item.body="{
+                          item,
+                        }: {
+                          item: { body: string; tag_name: string };
+                        }"
+                      >
                         <v-btn
                           variant="text"
                           size="small"
                           color="primary"
-                          @click="openReleaseNotesDialog(item.body, item.tag_name)"
+                          @click="
+                            openReleaseNotesDialog(item.body, item.tag_name)
+                          "
                         >
                           {{ t('core.header.updateDialog.table.view') }}
                         </v-btn>
                       </template>
-                      <template #item.switch="{ item }: { item: { tag_name: string } }">
+                      <template
+                        #item.switch="{ item }: { item: { tag_name: string } }"
+                      >
                         <v-btn
                           variant="flat"
                           size="small"
@@ -659,9 +727,7 @@ const dialogModel = computed({
                       size="64"
                       class="mr-6 mb-4 mb-sm-0"
                     >
-                      <v-icon size="32">
-                        mdi-git
-                      </v-icon>
+                      <v-icon size="32"> mdi-git </v-icon>
                     </v-avatar>
                     <div class="flex-grow-1 mr-4">
                       <div class="text-h4 font-weight-bold mb-1">
@@ -694,10 +760,7 @@ const dialogModel = computed({
               </div>
             </v-window-item>
 
-            <v-window-item
-              value="dashboard"
-              class="update-dialog-window-item"
-            >
+            <v-window-item value="dashboard" class="update-dialog-window-item">
               <div class="update-pane">
                 <div class="update-pane__head">
                   <div
@@ -727,15 +790,17 @@ const dialogModel = computed({
                   </div>
                 </div>
 
-                <v-card
-                  border
-                  flat
-                  class="pa-6 dashboard-update-card"
-                >
+                <v-card border flat class="pa-6 dashboard-update-card">
                   <div class="dashboard-update-top">
                     <div class="dashboard-update-label">
-                      <div class="text-body-4 text-medium-emphasis font-weight-bold mb-0">
-                        {{ t('core.header.updateDialog.dashboardUpdate.currentVersion') }}
+                      <div
+                        class="text-body-4 text-medium-emphasis font-weight-bold mb-0"
+                      >
+                        {{
+                          t(
+                            'core.header.updateDialog.dashboardUpdate.currentVersion',
+                          )
+                        }}
                       </div>
                       <v-chip
                         v-if="dashboardHasNewVersion"
@@ -745,7 +810,11 @@ const dialogModel = computed({
                         size="small"
                         class="dashboard-update-status-chip"
                       >
-                        {{ t('core.header.updateDialog.dashboardUpdate.hasNewVersion') }}
+                        {{
+                          t(
+                            'core.header.updateDialog.dashboardUpdate.hasNewVersion',
+                          )
+                        }}
                       </v-chip>
                       <v-chip
                         v-else
@@ -755,7 +824,9 @@ const dialogModel = computed({
                         size="small"
                         class="dashboard-update-status-chip"
                       >
-                        {{ t('core.header.updateDialog.dashboardUpdate.isLatest') }}
+                        {{
+                          t('core.header.updateDialog.dashboardUpdate.isLatest')
+                        }}
                       </v-chip>
                     </div>
 
@@ -768,7 +839,11 @@ const dialogModel = computed({
                       class="dashboard-update-btn"
                       @click="updateDashboard()"
                     >
-                      {{ t('core.header.updateDialog.dashboardUpdate.downloadAndUpdate') }}
+                      {{
+                        t(
+                          'core.header.updateDialog.dashboardUpdate.downloadAndUpdate',
+                        )
+                      }}
                     </v-btn>
                   </div>
                 </v-card>
@@ -794,14 +869,12 @@ const dialogModel = computed({
     </v-card>
   </v-dialog>
 
-  <v-dialog
-    v-model="releaseNotesDialog"
-    max-width="800"
-  >
+  <v-dialog v-model="releaseNotesDialog" max-width="800">
     <v-card>
       <v-card-title class="d-flex align-center justify-space-between px-6 py-4">
         <span class="text-h6 font-weight-medium">
-          {{ t('core.header.updateDialog.releaseNotes.title') }}: {{ releaseNotesTitle }}
+          {{ t('core.header.updateDialog.releaseNotes.title') }}:
+          {{ releaseNotesTitle }}
         </span>
         <v-btn
           icon="mdi-close"
@@ -812,7 +885,12 @@ const dialogModel = computed({
       <v-divider />
       <v-card-text
         class="pa-6"
-        style="font-size: 16px; max-height: 500px; overflow-y: auto; line-height: 1.6"
+        style="
+          font-size: 16px;
+          max-height: 500px;
+          overflow-y: auto;
+          line-height: 1.6;
+        "
       >
         <MarkdownRender
           :key="shikiWasmReady ? 'shiki' : 'pre'"
@@ -901,8 +979,8 @@ const dialogModel = computed({
 
 .update-status-card {
   width: fit-content;
-  max-width: 100%; 
-  white-space: nowrap; 
+  max-width: 100%;
+  white-space: nowrap;
 }
 
 .update-status-text {

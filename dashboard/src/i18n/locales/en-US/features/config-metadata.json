@@ -193,10 +193,7 @@
         },
         "context_limit_reached_strategy": {
           "description": "Handling When Model Context Window is Exceeded",
-          "labels": [
-            "Truncate by Turns",
-            "Compress by LLM"
-          ],
+          "labels": ["Truncate by Turns", "Compress by LLM"],
           "hint": "When 'Truncate by Turns' is selected, the oldest N conversation turns will be discarded based on the 'Dequeue Conversation Turns' setting above. When 'Compress by LLM' is selected, the specified model will be used for context compression."
         },
         "llm_compress_instruction": {
@@ -255,10 +252,7 @@
         "tool_schema_mode": {
           "description": "Tool Schema Mode",
           "hint": "Skills-like sends name/description first and re-queries for parameters; Full sends the complete schema in one step.",
-          "labels": [
-            "Skills-like (two-stage)",
-            "Full schema"
-          ]
+          "labels": ["Skills-like (two-stage)", "Full schema"]
         },
         "streaming_response": {
           "description": "Streaming Output"
@@ -266,10 +260,7 @@
         "unsupported_streaming_strategy": {
           "description": "Platforms Without Streaming Support",
           "hint": "Select the handling method for platforms that don't support streaming responses. Real-time segmented reply sends content immediately when the system detects segment points like punctuation during streaming reception",
-          "labels": [
-            "Real-time Segmented Reply",
-            "Disable Streaming Response"
-          ]
+          "labels": ["Real-time Segmented Reply", "Disable Streaming Response"]
         },
         "wake_prefix": {
           "description": "Additional LLM Chat Wake Prefix",
@@ -490,10 +481,7 @@
           "split_mode": {
             "description": "Split Mode",
             "hint": "Used to segment a message. By default, it will be separated by punctuation marks like period, question mark, etc. For example, filling `[。？！]` will remove all periods, question marks, and exclamation marks. re.findall(r'<regex>', text)",
-            "labels": [
-              "Regex",
-              "Words List"
-            ]
+            "labels": ["Regex", "Words List"]
           },
           "regex": {
             "description": "Segmentation Regular Expression",
@@ -554,10 +542,7 @@
         "channel": {
           "description": "WebUI Download Channel",
           "hint": "Used for automatically downloading/updating WebUI on startup. official is the official release; nebula is the Nebula version.",
-          "labels": [
-            "AstrBot Official Channel",
-            "Nebula Channel"
-          ]
+          "labels": ["AstrBot Official Channel", "Nebula Channel"]
         }
       },
       "t2i_strategy": {

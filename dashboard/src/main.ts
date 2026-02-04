@@ -9,7 +9,7 @@ import '@/scss/style.scss';
 import VueApexCharts from 'vue3-apexcharts';
 
 import print from 'vue3-print-nb';
-import { loader } from '@guolao/vue-monaco-editor'
+import { loader } from '@guolao/vue-monaco-editor';
 import axios from 'axios';
 import { initShikiWasm } from '@/composables/shikiWasm';
 import { MarkdownCodeBlockNode, setCustomComponents } from 'markstream-vue';
@@ -40,8 +40,10 @@ const mountApp = () => {
         if (!theme?.colors) return;
         if (storedPrimary) theme.colors.primary = storedPrimary;
         if (storedSecondary) theme.colors.secondary = storedSecondary;
-        if (storedPrimary && theme.colors.darkprimary) theme.colors.darkprimary = storedPrimary;
-        if (storedSecondary && theme.colors.darksecondary) theme.colors.darksecondary = storedSecondary;
+        if (storedPrimary && theme.colors.darkprimary)
+          theme.colors.darkprimary = storedPrimary;
+        if (storedSecondary && theme.colors.darksecondary)
+          theme.colors.darksecondary = storedSecondary;
       });
     }
   });
@@ -67,7 +69,6 @@ const bootstrap = async () => {
 
 void bootstrap();
 
-
 axios.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
 
@@ -77,7 +78,8 @@ axios.interceptors.request.use((config) => {
   if (token && urlStr) {
     const resolved = new URL(urlStr, window.location.origin);
     const isApiRequest =
-      resolved.origin === window.location.origin && resolved.pathname.startsWith('/api');
+      resolved.origin === window.location.origin &&
+      resolved.pathname.startsWith('/api');
     if (isApiRequest) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }
@@ -127,4 +129,4 @@ loader.config({
   },
   // Some CDNs don't ship all language packs; stick to English to avoid loader errors.
   'vs/nls': { availableLanguages: { '*': 'en' } },
-})
+});

@@ -4,10 +4,9 @@
       <h3 class="text-h5 font-weight-bold mb-0">
         {{ tm('models.configured') }}
       </h3>
-      <small
-        v-if="availableCount"
-        style="color: grey;"
-      >{{ tm('models.available') }} {{ availableCount }}</small>
+      <small v-if="availableCount" style="color: grey"
+        >{{ tm('models.available') }} {{ availableCount }}</small
+      >
       <v-text-field
         v-model="modelSearchProxy"
         density="compact"
@@ -16,7 +15,7 @@
         variant="solo-filled"
         flat
         class="ml-1"
-        style="max-width: 240px;"
+        style="max-width: 240px"
         :placeholder="tm('models.searchPlaceholder')"
       />
       <v-spacer />
@@ -28,7 +27,11 @@
         size="small"
         @click="emit('fetch-models')"
       >
-        {{ isSourceModified ? tm('providerSources.saveAndFetchModels') : tm('providerSources.fetchModels') }}
+        {{
+          isSourceModified
+            ? tm('providerSources.saveAndFetchModels')
+            : tm('providerSources.fetchModels')
+        }}
       </v-btn>
       <v-btn
         color="primary"
@@ -45,12 +48,31 @@
     <v-list
       density="compact"
       class="rounded-lg border"
-      style="max-height: 520px; overflow-y: auto; font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;"
+      style="
+        max-height: 520px;
+        overflow-y: auto;
+        font-family:
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          'Segoe UI',
+          Roboto,
+          Oxygen,
+          Ubuntu,
+          Cantarell,
+          'Open Sans',
+          'Helvetica Neue',
+          sans-serif;
+      "
     >
       <template v-if="entries.length > 0">
         <template
           v-for="entry in entries"
-          :key="entry.type === 'configured' ? `provider-${entry.provider.id}` : `model-${entry.model}`"
+          :key="
+            entry.type === 'configured'
+              ? `provider-${entry.provider.id}`
+              : `model-${entry.model}`
+          "
         >
           <v-tooltip
             v-if="entry.type === 'configured'"
@@ -68,7 +90,7 @@
                 </v-list-item-title>
                 <v-list-item-subtitle
                   class="text-caption text-grey d-flex align-center ga-1"
-                  style="font-family: monospace;"
+                  style="font-family: monospace"
                 >
                   <span>{{ entry.provider.model }}</span>
                   <v-icon
@@ -97,10 +119,7 @@
                   </span>
                 </v-list-item-subtitle>
                 <template #append>
-                  <div
-                    class="d-flex align-center ga-1"
-                    @click.stop
-                  >
+                  <div class="d-flex align-center ga-1" @click.stop>
                     <v-switch
                       v-model="entry.provider.enable"
                       density="compact"
@@ -108,12 +127,11 @@
                       hide-details
                       color="primary"
                       class="mr-1"
-                      @update:model-value="emit('toggle-provider-enable', entry.provider, $event)"
+                      @update:model-value="
+                        emit('toggle-provider-enable', entry.provider, $event)
+                      "
                     />
-                    <v-tooltip
-                      location="top"
-                      max-width="300"
-                    >
+                    <v-tooltip location="top" max-width="300">
                       {{ tm('availability.test') }}
                       <template #activator="{ props }">
                         <v-btn
@@ -128,10 +146,7 @@
                       </template>
                     </v-tooltip>
 
-                    <v-tooltip
-                      location="top"
-                      max-width="300"
-                    >
+                    <v-tooltip location="top" max-width="300">
                       {{ tm('models.configure') }}
                       <template #activator="{ props }">
                         <v-btn
@@ -139,7 +154,9 @@
                           size="small"
                           variant="text"
                           v-bind="props"
-                          @click.stop="emit('open-provider-edit', entry.provider)"
+                          @click.stop="
+                            emit('open-provider-edit', entry.provider)
+                          "
                         />
                       </template>
                     </v-tooltip>
@@ -156,16 +173,18 @@
               </v-list-item>
             </template>
             <div>
-              <div><strong>{{ tm('models.tooltips.providerId') }}:</strong> {{ entry.provider.id }}</div>
-              <div><strong>{{ tm('models.tooltips.modelId') }}:</strong> {{ entry.provider.model }}</div>
+              <div>
+                <strong>{{ tm('models.tooltips.providerId') }}:</strong>
+                {{ entry.provider.id }}
+              </div>
+              <div>
+                <strong>{{ tm('models.tooltips.modelId') }}:</strong>
+                {{ entry.provider.model }}
+              </div>
             </div>
           </v-tooltip>
 
-          <v-tooltip
-            v-else
-            location="top"
-            max-width="400"
-          >
+          <v-tooltip v-else location="top" max-width="400">
             <template #activator="{ props }">
               <v-list-item
                 v-bind="props"
@@ -173,7 +192,9 @@
                 @click="emit('add-model-provider', entry.model)"
               >
                 <v-list-item-title>{{ entry.model }}</v-list-item-title>
-                <v-list-item-subtitle class="text-caption text-grey d-flex align-center ga-1">
+                <v-list-item-subtitle
+                  class="text-caption text-grey d-flex align-center ga-1"
+                >
                   <span>{{ entry.model }}</span>
                   <v-icon
                     v-if="supportsImageInput(entry.metadata)"
@@ -211,17 +232,17 @@
               </v-list-item>
             </template>
             <div>
-              <div><strong>{{ tm('models.tooltips.modelId') }}:</strong> {{ entry.model }}</div>
+              <div>
+                <strong>{{ tm('models.tooltips.modelId') }}:</strong>
+                {{ entry.model }}
+              </div>
             </div>
           </v-tooltip>
         </template>
       </template>
       <template v-else>
         <div class="text-center pa-4 text-medium-emphasis">
-          <v-icon
-            size="48"
-            color="grey-lighten-1"
-          >
+          <v-icon size="48" color="grey-lighten-1">
             mdi-package-variant
           </v-icon>
           <p class="text-grey mt-2">
@@ -234,55 +255,55 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import type { PropType } from 'vue'
+import { computed } from 'vue';
+import type { PropType } from 'vue';
 
 const props = defineProps({
   entries: {
     type: Array as PropType<any[]>,
-    default: () => []
+    default: () => [],
   },
   availableCount: {
     type: Number,
-    default: 0
+    default: 0,
   },
   modelSearch: {
     type: String,
-    default: ''
+    default: '',
   },
   loadingModels: {
     type: Boolean,
-    default: false
+    default: false,
   },
   isSourceModified: {
     type: Boolean,
-    default: false
+    default: false,
   },
   supportsImageInput: {
     type: Function,
-    required: true
+    required: true,
   },
   supportsToolCall: {
     type: Function,
-    required: true
+    required: true,
   },
   supportsReasoning: {
     type: Function,
-    required: true
+    required: true,
   },
   formatContextLimit: {
     type: Function,
-    required: true
+    required: true,
   },
   testingProviders: {
     type: Array as PropType<any[]>,
-    default: () => []
+    default: () => [],
   },
   tm: {
     type: Function,
-    required: true
-  }
-})
+    required: true,
+  },
+});
 
 const emit = defineEmits([
   'update:modelSearch',
@@ -292,15 +313,16 @@ const emit = defineEmits([
   'toggle-provider-enable',
   'test-provider',
   'delete-provider',
-  'add-model-provider'
-])
+  'add-model-provider',
+]);
 
 const modelSearchProxy = computed({
   get: () => props.modelSearch,
-  set: (val) => emit('update:modelSearch', val)
-})
+  set: (val) => emit('update:modelSearch', val),
+});
 
-const isProviderTesting = (providerId: string) => props.testingProviders.includes(providerId)
+const isProviderTesting = (providerId: string) =>
+  props.testingProviders.includes(providerId);
 </script>
 
 <style scoped>

@@ -1,43 +1,33 @@
 <template>
-  <div style="margin-top: 16px;">
-    <v-btn 
-      color="primary" 
+  <div style="margin-top: 16px">
+    <v-btn
+      color="primary"
       variant="outlined"
       size="small"
-      style="margin-bottom: 8px;"
+      style="margin-bottom: 8px"
       @click="openDialog"
     >
       {{ t('features.settings.sidebar.customize.title') }}
     </v-btn>
 
-    <v-dialog
-      v-model="dialog"
-      max-width="700px"
-    >
+    <v-dialog v-model="dialog" max-width="700px">
       <v-card>
         <v-card-title class="d-flex justify-space-between align-center">
           <span>{{ t('features.settings.sidebar.customize.title') }}</span>
-          <v-btn
-            icon="mdi-close"
-            variant="text"
-            @click="dialog = false"
-          />
+          <v-btn icon="mdi-close" variant="text" @click="dialog = false" />
         </v-card-title>
-        
+
         <v-card-text>
           <p class="text-body-2 mb-4">
             {{ t('features.settings.sidebar.customize.subtitle') }}
           </p>
-          
+
           <v-row>
-            <v-col
-              cols="12"
-              md="6"
-            >
+            <v-col cols="12" md="6">
               <div class="mb-2 font-weight-medium">
                 {{ t('features.settings.sidebar.customize.mainItems') }}
               </div>
-              <v-list 
+              <v-list
                 density="compact"
                 class="custom-list"
                 @dragover.prevent
@@ -53,11 +43,7 @@
                   @drop.stop="handleDrop($event, 'main', index)"
                 >
                   <template #prepend>
-                    <v-icon
-                      :icon="item.icon"
-                      size="small"
-                      class="mr-2"
-                    />
+                    <v-icon :icon="item.icon" size="small" class="mr-2" />
                   </template>
                   <v-list-item-title>{{ t(item.title) }}</v-list-item-title>
                   <template #append>
@@ -71,15 +57,12 @@
                 </v-list-item>
               </v-list>
             </v-col>
-            
-            <v-col
-              cols="12"
-              md="6"
-            >
+
+            <v-col cols="12" md="6">
               <div class="mb-2 font-weight-medium">
                 {{ t('features.settings.sidebar.customize.moreItems') }}
               </div>
-              <v-list 
+              <v-list
                 density="compact"
                 class="custom-list"
                 @dragover.prevent
@@ -95,11 +78,7 @@
                   @drop.stop="handleDrop($event, 'more', index)"
                 >
                   <template #prepend>
-                    <v-icon
-                      :icon="item.icon"
-                      size="small"
-                      class="mr-2"
-                    />
+                    <v-icon :icon="item.icon" size="small" class="mr-2" />
                   </template>
                   <v-list-item-title>{{ t(item.title) }}</v-list-item-title>
                   <template #append>
@@ -115,20 +94,13 @@
             </v-col>
           </v-row>
         </v-card-text>
-        
+
         <v-card-actions>
-          <v-btn
-            color="error"
-            variant="text"
-            @click="resetToDefault"
-          >
+          <v-btn color="error" variant="text" @click="resetToDefault">
             {{ t('features.settings.sidebar.customize.reset') }}
           </v-btn>
           <v-spacer />
-          <v-btn
-            color="primary"
-            @click="saveCustomization"
-          >
+          <v-btn color="primary" @click="saveCustomization">
             {{ t('core.actions.save') }}
           </v-btn>
         </v-card-actions>
@@ -141,27 +113,27 @@
 import { ref, onMounted } from 'vue';
 import { useI18n } from '@/i18n/composables';
 import sidebarItems from '@/layouts/full/vertical-sidebar/sidebarItem';
-import { 
-  getSidebarCustomization, 
-  setSidebarCustomization, 
+import {
+  getSidebarCustomization,
+  setSidebarCustomization,
   clearSidebarCustomization,
   resolveSidebarItems,
-  type SidebarItem
+  type SidebarItem,
 } from '@/utils/sidebarCustomization';
 
 const { t } = useI18n();
 
 const dialog = ref(false);
 
-type SidebarListType = 'main' | 'more'
+type SidebarListType = 'main' | 'more';
 
-type SidebarItemWithTitle = SidebarItem & { title: string }
+type SidebarItemWithTitle = SidebarItem & { title: string };
 
 type DraggedSidebarItem = {
-  type: SidebarListType
-  index: number
-  item: SidebarItemWithTitle
-}
+  type: SidebarListType;
+  index: number;
+  item: SidebarItemWithTitle;
+};
 
 const mainItems = ref<SidebarItemWithTitle[]>([]);
 const moreItems = ref<SidebarItemWithTitle[]>([]);
@@ -169,14 +141,12 @@ const draggedItem = ref<DraggedSidebarItem | null>(null);
 
 function initializeItems() {
   const customization = getSidebarCustomization();
-  const { mainItems: resolvedMain, moreItems: resolvedMore } = resolveSidebarItems(
-    sidebarItems,
-    customization
-  );
+  const { mainItems: resolvedMain, moreItems: resolvedMore } =
+    resolveSidebarItems(sidebarItems, customization);
   const hasTitle = (item: SidebarItem): item is SidebarItemWithTitle =>
-    typeof item.title === 'string' && item.title.length > 0
-  mainItems.value = resolvedMain.filter(hasTitle)
-  moreItems.value = resolvedMore.filter(hasTitle)
+    typeof item.title === 'string' && item.title.length > 0;
+  mainItems.value = resolvedMain.filter(hasTitle);
+  moreItems.value = resolvedMore.filter(hasTitle);
 }
 
 function openDialog() {
@@ -184,64 +154,72 @@ function openDialog() {
   dialog.value = true;
 }
 
-function handleDragStart(event: DragEvent, listType: SidebarListType, index: number) {
+function handleDragStart(
+  event: DragEvent,
+  listType: SidebarListType,
+  index: number,
+) {
   draggedItem.value = {
     type: listType,
     index: index,
-    item: listType === 'main' ? mainItems.value[index] : moreItems.value[index]
+    item: listType === 'main' ? mainItems.value[index] : moreItems.value[index],
   };
   if (event.dataTransfer) event.dataTransfer.effectAllowed = 'move';
 }
 
-function handleDrop(event: DragEvent, targetListType: SidebarListType, targetIndex: number) {
+function handleDrop(
+  event: DragEvent,
+  targetListType: SidebarListType,
+  targetIndex: number,
+) {
   event.preventDefault();
-  
+
   if (!draggedItem.value) return;
-  
+
   const sourceListType = draggedItem.value.type;
   const sourceIndex = draggedItem.value.index;
   const item = draggedItem.value.item;
-  
+
   // Remove from source
   if (sourceListType === 'main') {
     mainItems.value.splice(sourceIndex, 1);
   } else {
     moreItems.value.splice(sourceIndex, 1);
   }
-  
+
   // Add to target
   if (targetListType === 'main') {
     mainItems.value.splice(targetIndex, 0, item);
   } else {
     moreItems.value.splice(targetIndex, 0, item);
   }
-  
+
   draggedItem.value = null;
 }
 
 function handleDropToList(event: DragEvent, targetListType: SidebarListType) {
   event.preventDefault();
-  
+
   if (!draggedItem.value) return;
-  
+
   const sourceListType = draggedItem.value.type;
   const sourceIndex = draggedItem.value.index;
   const item = draggedItem.value.item;
-  
+
   // Remove from source
   if (sourceListType === 'main') {
     mainItems.value.splice(sourceIndex, 1);
   } else {
     moreItems.value.splice(sourceIndex, 1);
   }
-  
+
   // Add to target list at the end
   if (targetListType === 'main') {
     mainItems.value.push(item);
   } else {
     moreItems.value.push(item);
   }
-  
+
   draggedItem.value = null;
 }
 
@@ -257,22 +235,22 @@ function moveToMain(index: number) {
 
 function saveCustomization() {
   const config = {
-    mainItems: mainItems.value.map(item => item.title),
-    moreItems: moreItems.value.map(item => item.title)
+    mainItems: mainItems.value.map((item) => item.title),
+    moreItems: moreItems.value.map((item) => item.title),
   };
-  
+
   setSidebarCustomization(config);
-  
+
   // Notify the sidebar to reload
   window.dispatchEvent(new CustomEvent('sidebar-customization-changed'));
-  
+
   dialog.value = false;
 }
 
 function resetToDefault() {
   clearSidebarCustomization();
   initializeItems();
-  
+
   // Notify the sidebar to reload
   window.dispatchEvent(new CustomEvent('sidebar-customization-changed'));
 }

@@ -37,7 +37,10 @@ const checkMigration = async () => {
     const response = await axios.get('/api/stat/version');
     if (response.data.status === 'ok' && response.data.data.need_migration) {
       // 需要迁移，显示迁移对话框
-      if (migrationDialog.value && typeof migrationDialog.value.open === 'function') {
+      if (
+        migrationDialog.value &&
+        typeof migrationDialog.value.open === 'function'
+      ) {
         const result = (await migrationDialog.value.open()) as any;
         if (result?.success) {
           // 迁移成功，可以显示成功消息
@@ -62,7 +65,11 @@ onMounted(() => {
   <v-locale-provider>
     <v-app
       :theme="useCustomizerStore().uiTheme"
-      :class="[customizer.fontTheme, customizer.mini_sidebar ? 'mini-sidebar' : '', customizer.inputBg ? 'inputWithbg' : '']"
+      :class="[
+        customizer.fontTheme,
+        customizer.mini_sidebar ? 'mini-sidebar' : '',
+        customizer.inputBg ? 'inputWithbg' : '',
+      ]"
     >
       <!-- 路由切换进度条 -->
       <v-progress-linear
@@ -72,30 +79,36 @@ onMounted(() => {
         height="2"
         fixed
         top
-        style="z-index: 9999; position: absolute; opacity: 0.3; "
+        style="z-index: 9999; position: absolute; opacity: 0.3"
       />
       <VerticalHeaderVue />
       <VerticalSidebarVue v-if="showSidebar" />
       <v-main
-        :style="{ 
+        :style="{
           height: showChatPage ? 'calc(100vh - 55px)' : undefined,
-          overflow: showChatPage ? 'hidden' : undefined
+          overflow: showChatPage ? 'hidden' : undefined,
         }"
       >
-        <v-container 
-          fluid 
-          class="page-wrapper" 
+        <v-container
+          fluid
+          class="page-wrapper"
           :class="{ 'chat-mode-container': showChatPage }"
-          :style="{ 
+          :style="{
             height: showChatPage ? '100%' : 'calc(100% - 8px)',
-            padding: (isChatPage || showChatPage) ? '0' : undefined,
-            minHeight: showChatPage ? 'unset' : undefined
+            padding: isChatPage || showChatPage ? '0' : undefined,
+            minHeight: showChatPage ? 'unset' : undefined,
           }"
         >
-          <div :style="{ height: '100%', width: '100%', overflow: showChatPage ? 'hidden' : undefined }">
+          <div
+            :style="{
+              height: '100%',
+              width: '100%',
+              overflow: showChatPage ? 'hidden' : undefined,
+            }"
+          >
             <div
               v-if="showChatPage"
-              style="height: 100%; width: 100%; overflow: hidden;"
+              style="height: 100%; width: 100%; overflow: hidden"
             >
               <Chat />
             </div>
@@ -103,7 +116,7 @@ onMounted(() => {
           </div>
         </v-container>
       </v-main>
-      
+
       <!-- Migration Dialog -->
       <MigrationDialog ref="migrationDialog" />
     </v-app>

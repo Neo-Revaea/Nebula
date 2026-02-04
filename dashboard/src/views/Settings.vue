@@ -1,5 +1,13 @@
 <template>
-  <div style="background-color: var(--v-theme-surface, #fff); padding: 8px; padding-left: 16px; border-radius: 8px; margin-bottom: 16px;">
+  <div
+    style="
+      background-color: var(--v-theme-surface, #fff);
+      padding: 8px;
+      padding-left: 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+    "
+  >
     <v-list lines="two">
       <v-list-subheader>{{ tm('network.title') }}</v-list-subheader>
 
@@ -22,14 +30,8 @@
         :subtitle="tm('theme.subtitle')"
         :title="tm('theme.customize.title')"
       >
-        <v-row
-          class="mt-2"
-          dense
-        >
-          <v-col
-            cols="4"
-            sm="2"
-          >
+        <v-row class="mt-2" dense>
+          <v-col cols="4" sm="2">
             <v-text-field
               v-model="primaryColor"
               type="color"
@@ -37,13 +39,10 @@
               hide-details
               variant="outlined"
               density="compact"
-              style="max-width: 220px;"
+              style="max-width: 220px"
             />
           </v-col>
-          <v-col
-            cols="4"
-            sm="2"
-          >
+          <v-col cols="4" sm="2">
             <v-text-field
               v-model="secondaryColor"
               type="color"
@@ -51,7 +50,7 @@
               hide-details
               variant="outlined"
               density="compact"
-              style="max-width: 220px;"
+              style="max-width: 220px"
             />
           </v-col>
           <v-col cols="12">
@@ -61,9 +60,7 @@
               color="primary"
               @click="resetThemeColors"
             >
-              <v-icon class="mr-2">
-                mdi-restore
-              </v-icon>
+              <v-icon class="mr-2"> mdi-restore </v-icon>
               {{ tm('theme.customize.reset') }}
             </v-btn>
           </v-col>
@@ -77,13 +74,11 @@
         :title="tm('system.backup.title')"
       >
         <v-btn
-          style="margin-top: 16px;"
+          style="margin-top: 16px"
           color="primary"
           @click="openBackupDialog"
         >
-          <v-icon class="mr-2">
-            mdi-backup-restore
-          </v-icon>
+          <v-icon class="mr-2"> mdi-backup-restore </v-icon>
           {{ tm('system.backup.button') }}
         </v-btn>
       </v-list-item>
@@ -92,11 +87,7 @@
         :subtitle="tm('system.restart.subtitle')"
         :title="tm('system.restart.title')"
       >
-        <v-btn
-          style="margin-top: 16px;"
-          color="error"
-          @click="restartAstrBot"
-        >
+        <v-btn style="margin-top: 16px" color="error" @click="restartAstrBot">
           {{ tm('system.restart.button') }}
         </v-btn>
       </v-list-item>
@@ -105,11 +96,7 @@
         :subtitle="tm('system.migration.subtitle')"
         :title="tm('system.migration.title')"
       >
-        <v-btn
-          style="margin-top: 16px;"
-          color="primary"
-          @click="startMigration"
-        >
+        <v-btn style="margin-top: 16px" color="primary" @click="startMigration">
           {{ tm('system.migration.button') }}
         </v-btn>
       </v-list-item>
@@ -137,7 +124,8 @@ const { tm } = useModuleI18n('features/settings');
 const theme = useTheme();
 
 const getStoredColor = (key: string, fallback: string): string => {
-  const stored = typeof window !== 'undefined' ? localStorage.getItem(key) : null;
+  const stored =
+    typeof window !== 'undefined' ? localStorage.getItem(key) : null;
   return stored || fallback;
 };
 
@@ -145,11 +133,14 @@ const defaultPrimaryColor = PurpleTheme.colors.primary ?? '#38bdf8';
 const defaultSecondaryColor = PurpleTheme.colors.secondary ?? '#0ea5e9';
 
 const primaryColor = ref(getStoredColor('themePrimary', defaultPrimaryColor));
-const secondaryColor = ref(getStoredColor('themeSecondary', defaultSecondaryColor));
+const secondaryColor = ref(
+  getStoredColor('themeSecondary', defaultSecondaryColor),
+);
 
 const resolveThemes = () => {
   if ((theme as any)?.themes?.value) return (theme as any).themes.value;
-  if ((theme as any)?.global?.themes?.value) return (theme as any).global.themes.value;
+  if ((theme as any)?.global?.themes?.value)
+    return (theme as any).global.themes.value;
   return null;
 };
 
@@ -161,8 +152,10 @@ const applyThemeColors = (primary?: string, secondary?: string) => {
     if (!themeDef?.colors) return;
     if (primary) themeDef.colors.primary = primary;
     if (secondary) themeDef.colors.secondary = secondary;
-    if (primary && themeDef.colors.darkprimary) themeDef.colors.darkprimary = primary;
-    if (secondary && themeDef.colors.darksecondary) themeDef.colors.darksecondary = secondary;
+    if (primary && themeDef.colors.darkprimary)
+      themeDef.colors.darkprimary = primary;
+    if (secondary && themeDef.colors.darksecondary)
+      themeDef.colors.darksecondary = secondary;
   });
 };
 
@@ -195,7 +188,10 @@ const startMigration = async () => {
   if (!dialog) return;
 
   try {
-    const result = await (dialog.open() as Promise<{ success?: boolean; message?: string }>);
+    const result = await (dialog.open() as Promise<{
+      success?: boolean;
+      message?: string;
+    }>);
     if (result.success) {
       console.log('Migration completed successfully:', result.message);
     }

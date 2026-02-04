@@ -13,13 +13,12 @@ import UpdateDialog from '@/components/header/UpdateDialog.vue';
 import AccountDialog from '@/components/header/AccountDialog.vue';
 import LanguageMenu from '@/components/header/LanguageMenu.vue';
 
-
 const customizer = useCustomizerStore();
 const theme = useTheme();
 const { t } = useI18n();
 const route = useRoute();
 let dialog = ref(false);
-let accountWarning = ref(false)
+let accountWarning = ref(false);
 let updateStatusDialog = ref(false);
 let aboutDialog = ref(false);
 let hasNewVersion = ref(false);
@@ -28,9 +27,10 @@ let dashboardHasNewVersion = ref(false);
 let dashboardCurrentVersion = ref('');
 
 function getVersion() {
-  axios.get('/api/stat/version')
+  axios
+    .get('/api/stat/version')
     .then((res) => {
-      botCurrVersion.value = "v" + res.data.data.version;
+      botCurrVersion.value = 'v' + res.data.data.version;
       dashboardCurrentVersion.value = res.data.data?.dashboard_version;
       let change_pwd_hint = res.data.data?.change_pwd_hint;
       if (change_pwd_hint) {
@@ -47,11 +47,14 @@ function getVersion() {
 }
 
 function openUpdateDialog() {
-  updateStatusDialog.value = true
+  updateStatusDialog.value = true;
 }
 
 function toggleDarkMode() {
-  const newTheme = customizer.uiTheme === 'PurpleThemeDark' ? 'PurpleTheme' : 'PurpleThemeDark';
+  const newTheme =
+    customizer.uiTheme === 'PurpleThemeDark'
+      ? 'PurpleTheme'
+      : 'PurpleThemeDark';
   customizer.SET_UI_THEME(newTheme);
   theme.global.name.value = newTheme;
 }
@@ -74,41 +77,44 @@ const viewMode = computed({
   get: () => customizer.viewMode,
   set: (value: 'bot' | 'chat') => {
     customizer.SET_VIEW_MODE(value);
-  }
+  },
 });
 
 function syncViewModeFromRoute(path: string) {
-  const routeMode: 'bot' | 'chat' = path.startsWith('/chat') ? 'chat' : 'bot'
+  const routeMode: 'bot' | 'chat' = path.startsWith('/chat') ? 'chat' : 'bot';
   if (customizer.viewMode !== routeMode) {
-    customizer.SET_VIEW_MODE(routeMode)
+    customizer.SET_VIEW_MODE(routeMode);
   }
 }
 
 onMounted(() => {
-  syncViewModeFromRoute(route.path)
-})
+  syncViewModeFromRoute(route.path);
+});
 
 watch(
   () => route.path,
   (newPath) => {
-    syncViewModeFromRoute(newPath)
-  }
-)
+    syncViewModeFromRoute(newPath);
+  },
+);
 
 // 监听 viewMode 变化，切换到 bot 模式时跳转到首页
-watch(() => customizer.viewMode, (newMode, oldMode) => {
-  if (newMode === 'bot' && oldMode === 'chat') {
-    // 从 chat 模式切换到 bot 模式时，跳转到首页
-    if (route.path !== '/') {
-      router.push('/');
+watch(
+  () => customizer.viewMode,
+  (newMode, oldMode) => {
+    if (newMode === 'bot' && oldMode === 'chat') {
+      // 从 chat 模式切换到 bot 模式时，跳转到首页
+      if (route.path !== '/') {
+        router.push('/');
+      }
+    } else if (newMode === 'chat' && oldMode === 'bot') {
+      // 从 bot 模式切换到 chat 模式时，跳转到 chat 页面
+      if (!route.path.startsWith('/chat')) {
+        router.push('/chat');
+      }
     }
-  } else if (newMode === 'chat' && oldMode === 'bot') {
-    // 从 bot 模式切换到 chat 模式时，跳转到 chat 页面
-    if (!route.path.startsWith('/chat')) {
-      router.push('/chat');
-    }
-  }
-});
+  },
+);
 
 // Merry Christmas! 🎄
 const isChristmas = computed(() => {
@@ -117,18 +123,16 @@ const isChristmas = computed(() => {
   const day = today.getDate();
   return month === 12 && day === 25;
 });
-
 </script>
 
 <template>
-  <v-app-bar
-    elevation="0"
-    height="55"
-    class="header-with-border"
-  >
+  <v-app-bar elevation="0" height="55" class="header-with-border">
     <v-btn
-      v-if="customizer.viewMode === 'bot' && useCustomizerStore().uiTheme === 'PurpleTheme'"
-      style="margin-left: 16px;"
+      v-if="
+        customizer.viewMode === 'bot' &&
+        useCustomizerStore().uiTheme === 'PurpleTheme'
+      "
+      style="margin-left: 16px"
       class="hidden-md-and-down"
       icon
       rounded="sm"
@@ -139,7 +143,7 @@ const isChristmas = computed(() => {
     </v-btn>
     <v-btn
       v-else-if="customizer.viewMode === 'bot'"
-      style="margin-left: 22px;"
+      style="margin-left: 22px"
       class="hidden-md-and-down"
       icon
       rounded="sm"
@@ -149,7 +153,10 @@ const isChristmas = computed(() => {
       <v-icon>mdi-menu</v-icon>
     </v-btn>
     <v-btn
-      v-if="customizer.viewMode === 'bot' && useCustomizerStore().uiTheme === 'PurpleTheme'"
+      v-if="
+        customizer.viewMode === 'bot' &&
+        useCustomizerStore().uiTheme === 'PurpleTheme'
+      "
       class="hidden-lg-and-up ms-3"
       icon
       rounded="sm"
@@ -171,26 +178,27 @@ const isChristmas = computed(() => {
 
     <div
       class="logo-container"
-      :class="{ 'mobile-logo': $vuetify.display.xs, 'chat-mode-logo': customizer.viewMode === 'chat' }"
+      :class="{
+        'mobile-logo': $vuetify.display.xs,
+        'chat-mode-logo': customizer.viewMode === 'chat',
+      }"
       @click="handleLogoClick"
     >
-      <span
-        class="logo-text Outfit"
-        style="position: relative;"
-      >
+      <span class="logo-text Outfit" style="position: relative">
         Nebula
         <img
           v-if="isChristmas"
           src="@/assets/images/xmas-hat.png"
           alt="Christmas hat"
           class="xmas-hat"
-        >
+        />
       </span>
       <span
         v-if="customizer.viewMode === 'chat'"
         class="logo-text logo-text-light Outfit"
-        style="color: grey;"
-      >ChatUI</span>
+        style="color: grey"
+        >ChatUI</span
+      >
       <span class="version-text hidden-xs">{{ botCurrVersion }}</span>
     </div>
 
@@ -204,7 +212,7 @@ const isChristmas = computed(() => {
         {{ t('core.header.version.dashboardHasNewVersion') }}
       </small>
     </div>
-    
+
     <v-btn-toggle
       v-model="viewMode"
       mandatory
@@ -213,31 +221,17 @@ const isChristmas = computed(() => {
       class="mr-4"
       color="primary"
     >
-      <v-btn
-        value="bot"
-        size="small"
-      >
-        <v-icon start>
-          mdi-robot
-        </v-icon>
+      <v-btn value="bot" size="small">
+        <v-icon start> mdi-robot </v-icon>
         Bot
       </v-btn>
-      <v-btn
-        value="chat"
-        size="small"
-      >
-        <v-icon start>
-          mdi-chat
-        </v-icon>
+      <v-btn value="chat" size="small">
+        <v-icon start> mdi-chat </v-icon>
         Chat
       </v-btn>
     </v-btn-toggle>
 
-
-    <StyledMenu
-      offset="12"
-      location="bottom end"
-    >
+    <StyledMenu offset="12" location="bottom end">
       <template #activator="{ props: activatorProps }">
         <v-btn
           v-bind="activatorProps"
@@ -261,11 +255,19 @@ const isChristmas = computed(() => {
       >
         <template #prepend>
           <v-icon>
-            {{ useCustomizerStore().uiTheme === 'PurpleThemeDark' ? 'mdi-weather-night' : 'mdi-white-balance-sunny' }}
+            {{
+              useCustomizerStore().uiTheme === 'PurpleThemeDark'
+                ? 'mdi-weather-night'
+                : 'mdi-white-balance-sunny'
+            }}
           </v-icon>
         </template>
         <v-list-item-title>
-          {{ useCustomizerStore().uiTheme === 'PurpleThemeDark' ? t('core.header.buttons.theme.light') : t('core.header.buttons.theme.dark') }}
+          {{
+            useCustomizerStore().uiTheme === 'PurpleThemeDark'
+              ? t('core.header.buttons.theme.light')
+              : t('core.header.buttons.theme.dark')
+          }}
         </v-list-item-title>
       </v-list-item>
 
@@ -277,31 +279,23 @@ const isChristmas = computed(() => {
         <template #prepend>
           <v-icon>mdi-arrow-up-circle</v-icon>
         </template>
-        <v-list-item-title>{{ t('core.header.updateDialog.title') }}</v-list-item-title>
-        <template
-          v-if="hasNewVersion || dashboardHasNewVersion"
-          #append
-        >
-          <v-chip
-            size="x-small"
-            color="primary"
-            variant="tonal"
-            class="ml-2"
-          >
+        <v-list-item-title>{{
+          t('core.header.updateDialog.title')
+        }}</v-list-item-title>
+        <template v-if="hasNewVersion || dashboardHasNewVersion" #append>
+          <v-chip size="x-small" color="primary" variant="tonal" class="ml-2">
             !
           </v-chip>
         </template>
       </v-list-item>
 
-      <v-list-item
-        class="styled-menu-item"
-        rounded="md"
-        @click="dialog = true"
-      >
+      <v-list-item class="styled-menu-item" rounded="md" @click="dialog = true">
         <template #prepend>
           <v-icon>mdi-account</v-icon>
         </template>
-        <v-list-item-title>{{ t('core.header.accountDialog.title') }}</v-list-item-title>
+        <v-list-item-title>{{
+          t('core.header.accountDialog.title')
+        }}</v-list-item-title>
       </v-list-item>
     </StyledMenu>
 
@@ -309,20 +303,19 @@ const isChristmas = computed(() => {
       v-model="updateStatusDialog"
       :bot-curr-version="botCurrVersion"
       :dashboard-current-version="dashboardCurrentVersion"
-      @update-flags="(v) => { hasNewVersion = v.hasNewVersion; dashboardHasNewVersion = v.dashboardHasNewVersion }"
+      @update-flags="
+        (v) => {
+          hasNewVersion = v.hasNewVersion;
+          dashboardHasNewVersion = v.dashboardHasNewVersion;
+        }
+      "
     />
 
-    <AccountDialog
-      v-model="dialog"
-      :warning="accountWarning"
-    />
+    <AccountDialog v-model="dialog" :warning="accountWarning" />
 
-    <v-dialog
-      v-model="aboutDialog"
-      width="600"
-    >
+    <v-dialog v-model="aboutDialog" width="600">
       <v-card>
-        <v-card-text style="overflow-y: auto;">
+        <v-card-text style="overflow-y: auto">
           <AboutPage />
         </v-card-text>
       </v-card>

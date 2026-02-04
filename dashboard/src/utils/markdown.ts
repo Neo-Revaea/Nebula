@@ -30,31 +30,43 @@ function chooseImgClass(url: string): 'md-badge' | 'md-counter' {
 }
 
 function stripCenterDivBlock(text: string): string {
-  const centerDivBlockRe = /\n?\s*<div\b[^>]*\balign=("|')center\1[^>]*>\s*([\s\S]*?)\s*<\/div>\s*\n?/gi;
+  const centerDivBlockRe =
+    /\n?\s*<div\b[^>]*\balign=("|')center\1[^>]*>\s*([\s\S]*?)\s*<\/div>\s*\n?/gi;
   if (!centerDivBlockRe.test(text)) return text;
-  return text.replace(centerDivBlockRe, (_m, _q, inner: string) => `\n${inner}\n`);
+  return text.replace(
+    centerDivBlockRe,
+    (_m, _q, inner: string) => `\n${inner}\n`,
+  );
 }
 
-export function proxyBadgeUrls<T extends string | null | undefined>(content: T): T {
+export function proxyBadgeUrls<T extends string | null | undefined>(
+  content: T,
+): T {
   if (!content || typeof content !== 'string') return content;
 
   const firstHeadingIndex = content.search(/^\s{0,3}#{1,6}\s/m);
-  const badgePart = firstHeadingIndex === -1 ? content : content.slice(0, firstHeadingIndex);
-  const restPart = firstHeadingIndex === -1 ? '' : content.slice(firstHeadingIndex);
+  const badgePart =
+    firstHeadingIndex === -1 ? content : content.slice(0, firstHeadingIndex);
+  const restPart =
+    firstHeadingIndex === -1 ? '' : content.slice(firstHeadingIndex);
 
   let out = stripCenterDivBlock(badgePart);
 
   const mdImageRe = /!\[([^\]]*)\]\((https?:\/\/[^\s)]+)(?:\s+"[^"]*")?\)/g;
-  const mdLinkedImageRe = /\[!\[([^\]]*)\]\((https?:\/\/[^\s)]+)(?:\s+"[^"]*")?\)\]\(([^)\s]+)\)/g;
+  const mdLinkedImageRe =
+    /\[!\[([^\]]*)\]\((https?:\/\/[^\s)]+)(?:\s+"[^"]*")?\)\]\(([^)\s]+)\)/g;
 
   out = out
-    .replace(mdLinkedImageRe, (_m, alt: string, imgUrl: string, href: string) => {
-      const safeAlt = escapeHtmlAttr(alt || 'badge');
-      const safeHref = escapeHtmlAttr(href);
-      const safeSrc = escapeHtmlAttr(imgUrl);
-      const imgClass = chooseImgClass(imgUrl);
-      return `<a class="md-badge-link" href="${safeHref}"><img class="${imgClass}" alt="${safeAlt}" src="${safeSrc}" /></a>`;
-    })
+    .replace(
+      mdLinkedImageRe,
+      (_m, alt: string, imgUrl: string, href: string) => {
+        const safeAlt = escapeHtmlAttr(alt || 'badge');
+        const safeHref = escapeHtmlAttr(href);
+        const safeSrc = escapeHtmlAttr(imgUrl);
+        const imgClass = chooseImgClass(imgUrl);
+        return `<a class="md-badge-link" href="${safeHref}"><img class="${imgClass}" alt="${safeAlt}" src="${safeSrc}" /></a>`;
+      },
+    )
     .replace(mdImageRe, (_m, alt: string, imgUrl: string) => {
       const safeAlt = escapeHtmlAttr(alt || 'badge');
       const safeSrc = escapeHtmlAttr(imgUrl);
@@ -62,13 +74,19 @@ export function proxyBadgeUrls<T extends string | null | undefined>(content: T):
       return `<img class="${imgClass}" alt="${safeAlt}" src="${safeSrc}" />`;
     });
 
-  out = out.replace(/<a\b([^>]*)>\s*(<img\b[^>]*>)\s*<\/a>/gi, (_m, aAttrs: string, imgTag: string) => {
-    const imgSrc = imgTag.match(/\bsrc=("([^"]*)"|'([^']*)')/i)?.[2] ?? imgTag.match(/\bsrc=("([^"]*)"|'([^']*)')/i)?.[3] ?? '';
-    const imgClass = chooseImgClass(imgSrc);
-    const newImg = addClassToTag(imgTag, imgClass);
-    const newA = addClassToTag(`<a${aAttrs}>`, 'md-badge-link');
-    return `${newA}${newImg}</a>`;
-  });
+  out = out.replace(
+    /<a\b([^>]*)>\s*(<img\b[^>]*>)\s*<\/a>/gi,
+    (_m, aAttrs: string, imgTag: string) => {
+      const imgSrc =
+        imgTag.match(/\bsrc=("([^"]*)"|'([^']*)')/i)?.[2] ??
+        imgTag.match(/\bsrc=("([^"]*)"|'([^']*)')/i)?.[3] ??
+        '';
+      const imgClass = chooseImgClass(imgSrc);
+      const newImg = addClassToTag(imgTag, imgClass);
+      const newA = addClassToTag(`<a${aAttrs}>`, 'md-badge-link');
+      return `${newA}${newImg}</a>`;
+    },
+  );
 
   out = out.replace(/<img\b[^>]*>/gi, (imgTag) => {
     const srcMatch = imgTag.match(/\bsrc=("([^"]*)"|'([^']*)')/i);

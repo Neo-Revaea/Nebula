@@ -22,7 +22,11 @@
         @update:model-value="emitUpdate"
       />
     </template>
-    <template v-else-if="getSpecialName(itemMeta?._special) === 'select_agent_runner_provider'">
+    <template
+      v-else-if="
+        getSpecialName(itemMeta?._special) === 'select_agent_runner_provider'
+      "
+    >
       <ProviderSelector
         :model-value="modelValueString"
         :provider-type="'agent_runner'"
@@ -91,7 +95,11 @@
     </template>
 
     <div
-      v-else-if="itemMeta?.type === 'list' && itemMeta?.options && itemMeta?.render_type === 'checkbox'"
+      v-else-if="
+        itemMeta?.type === 'list' &&
+        itemMeta?.options &&
+        itemMeta?.render_type === 'checkbox'
+      "
       class="d-flex flex-wrap gap-20"
     >
       <v-checkbox
@@ -133,14 +141,15 @@
       @update:model-value="emitUpdate"
     />
 
-    <div
-      v-else-if="itemMeta?.editor_mode"
-      class="editor-container"
-    >
+    <div v-else-if="itemMeta?.editor_mode" class="editor-container">
       <VueMonacoEditor
         :theme="itemMeta?.editor_theme || 'vs-light'"
         :language="itemMeta?.editor_language || 'json'"
-        style="min-height: 100px; flex-grow: 1; border: 1px solid rgba(0, 0, 0, 0.1);"
+        style="
+          min-height: 100px;
+          flex-grow: 1;
+          border: 1px solid rgba(0, 0, 0, 0.1);
+        "
         :value="modelValueString"
         @update:value="emitUpdate"
       />
@@ -182,7 +191,7 @@
         density="compact"
         hide-details
         style="flex: 1"
-        @update:model-value="val => emitUpdate(toNumber(val))"
+        @update:model-value="(val) => emitUpdate(toNumber(val))"
       />
       <v-text-field
         :model-value="modelValue"
@@ -192,7 +201,7 @@
         type="number"
         hide-details
         style="flex: 1"
-        @update:model-value="val => emitUpdate(toNumber(val))"
+        @update:model-value="(val) => emitUpdate(toNumber(val))"
       />
     </div>
 
@@ -254,120 +263,130 @@
 </template>
 
 <script setup lang="ts">
-import { VueMonacoEditor } from '@guolao/vue-monaco-editor'
-import { computed } from 'vue'
-import ListConfigItem from './ListConfigItem.vue'
-import FileConfigItem from './FileConfigItem.vue'
-import ObjectEditor from './ObjectEditor.vue'
-import ProviderSelector from './ProviderSelector.vue'
-import PersonaSelector from './PersonaSelector.vue'
-import KnowledgeBaseSelector from './KnowledgeBaseSelector.vue'
-import PluginSetSelector from './PluginSetSelector.vue'
-import T2ITemplateEditor from './T2ITemplateEditor.vue'
-import { useI18n, useModuleI18n } from '@/i18n/composables'
+import { VueMonacoEditor } from '@guolao/vue-monaco-editor';
+import { computed } from 'vue';
+import ListConfigItem from './ListConfigItem.vue';
+import FileConfigItem from './FileConfigItem.vue';
+import ObjectEditor from './ObjectEditor.vue';
+import ProviderSelector from './ProviderSelector.vue';
+import PersonaSelector from './PersonaSelector.vue';
+import KnowledgeBaseSelector from './KnowledgeBaseSelector.vue';
+import PluginSetSelector from './PluginSetSelector.vue';
+import T2ITemplateEditor from './T2ITemplateEditor.vue';
+import { useI18n, useModuleI18n } from '@/i18n/composables';
 
 const props = defineProps({
   modelValue: {
     type: [String, Number, Boolean, Array, Object],
-    default: null
+    default: null,
   },
   itemMeta: {
     type: Object,
-    default: null
+    default: null,
   },
   pluginName: {
     type: String,
-    default: ''
+    default: '',
   },
   configKey: {
     type: String,
-    default: ''
+    default: '',
   },
   loading: {
     type: Boolean,
-    default: false
+    default: false,
   },
   showFullscreenBtn: {
     type: Boolean,
-    default: false
-  }
-})
+    default: false,
+  },
+});
 
-const emit = defineEmits(['update:modelValue', 'get-embedding-dim', 'open-fullscreen'])
-const { t } = useI18n()
-const { getRaw } = useModuleI18n('features/config-metadata')
+const emit = defineEmits([
+  'update:modelValue',
+  'get-embedding-dim',
+  'open-fullscreen',
+]);
+const { t } = useI18n();
+const { getRaw } = useModuleI18n('features/config-metadata');
 
-const modelValueString = computed(() => (props.modelValue == null ? '' : String(props.modelValue)))
-const modelValueArray = computed(() => (Array.isArray(props.modelValue) ? props.modelValue : []))
-const modelValueAny = computed(() => props.modelValue as any)
+const modelValueString = computed(() =>
+  props.modelValue == null ? '' : String(props.modelValue),
+);
+const modelValueArray = computed(() =>
+  Array.isArray(props.modelValue) ? props.modelValue : [],
+);
+const modelValueAny = computed(() => props.modelValue as any);
 const modelValueObject = computed(() => {
-  const value = props.modelValue
-  if (value && typeof value === 'object' && !Array.isArray(value)) return value as Record<string, any>
-  return {} as Record<string, any>
-})
+  const value = props.modelValue;
+  if (value && typeof value === 'object' && !Array.isArray(value))
+    return value as Record<string, any>;
+  return {} as Record<string, any>;
+});
 
 function emitUpdate(val: unknown) {
-  emit('update:modelValue', val)
+  emit('update:modelValue', val);
 }
 
 function toNumber(val: unknown) {
-  const n = typeof val === 'number' ? val : parseFloat(String(val))
-  return Number.isFinite(n) ? n : 0
+  const n = typeof val === 'number' ? val : parseFloat(String(val));
+  return Number.isFinite(n) ? n : 0;
 }
 
 function getLabel(itemMeta: any, index: string | number, option: unknown) {
-  const labels = getTranslatedLabels(itemMeta)
+  const labels = getTranslatedLabels(itemMeta);
   if (labels) {
-    const numericIndex = typeof index === 'number' ? index : Number(index)
-    if (Number.isFinite(numericIndex)) return labels[numericIndex]
+    const numericIndex = typeof index === 'number' ? index : Number(index);
+    if (Number.isFinite(numericIndex)) return labels[numericIndex];
   }
-  if (typeof option === 'string') return option
-  if (typeof option === 'number' || typeof option === 'boolean') return String(option)
-  return undefined
+  if (typeof option === 'string') return option;
+  if (typeof option === 'number' || typeof option === 'boolean')
+    return String(option);
+  return undefined;
 }
 
 function getTranslatedLabels(itemMeta: any): string[] | null {
-  if (!itemMeta?.labels) return null
+  if (!itemMeta?.labels) return null;
   if (typeof itemMeta.labels === 'string') {
-    const translatedLabels = getRaw(itemMeta.labels)
+    const translatedLabels = getRaw(itemMeta.labels);
     if (Array.isArray(translatedLabels)) {
-      return translatedLabels
+      return translatedLabels;
     }
   }
   if (Array.isArray(itemMeta.labels)) {
-    return itemMeta.labels
+    return itemMeta.labels;
   }
-  return null
+  return null;
 }
 
 function getSelectItems(itemMeta: any) {
-  const labels = getTranslatedLabels(itemMeta)
+  const labels = getTranslatedLabels(itemMeta);
   if (labels && itemMeta.options) {
     return itemMeta.options.map((value: unknown, index: number) => ({
       title: labels[index] || value,
-      value
-    }))
+      value,
+    }));
   }
-  return itemMeta.options || []
+  return itemMeta.options || [];
 }
 
 function parseSpecialValue(value: unknown) {
   if (!value || typeof value !== 'string') {
-    return { name: '', subtype: '' }
+    return { name: '', subtype: '' };
   }
-  const [name, ...rest] = value.split(':')
+  const [name, ...rest] = value.split(':');
   return {
     name,
-    subtype: rest.join(':') || ''
-  }
+    subtype: rest.join(':') || '',
+  };
 }
 
 function getSpecialName(value: unknown) {
-  return parseSpecialValue(value).name
+  return parseSpecialValue(value).name;
 }
 
 function getSpecialSubtype(value: unknown) {
-  return parseSpecialValue(value).subtype
+  return parseSpecialValue(value).subtype;
 }
 </script>
 

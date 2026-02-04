@@ -1,29 +1,35 @@
-import { defineStore } from 'pinia'
-import { computed, ref } from 'vue'
+import { defineStore } from 'pinia';
+import { computed, ref } from 'vue';
 
-export type ToastColor = 'info' | 'success' | 'error' | 'primary' | 'warning' | (string & {})
+export type ToastColor =
+  | 'info'
+  | 'success'
+  | 'error'
+  | 'primary'
+  | 'warning'
+  | (string & {});
 
 export type ToastOptions = {
-  timeout?: number
-  closable?: boolean
-  multiLine?: boolean
-  location?: string
-}
+  timeout?: number;
+  closable?: boolean;
+  multiLine?: boolean;
+  location?: string;
+};
 
 export type ToastItem = {
-  message: string
-  color: ToastColor
-  timeout: number
-  closable: boolean
-  multiLine: boolean
-  location: string
-}
+  message: string;
+  color: ToastColor;
+  timeout: number;
+  closable: boolean;
+  multiLine: boolean;
+  location: string;
+};
 
-export type ToastInput = { message: string; color?: ToastColor } & ToastOptions
+export type ToastInput = { message: string; color?: ToastColor } & ToastOptions;
 
 export const useToastStore = defineStore('toast', () => {
-  const queue = ref<ToastItem[]>([])
-  const current = computed<ToastItem | undefined>(() => queue.value[0])
+  const queue = ref<ToastItem[]>([]);
+  const current = computed<ToastItem | undefined>(() => queue.value[0]);
 
   function add({
     message,
@@ -31,7 +37,7 @@ export const useToastStore = defineStore('toast', () => {
     timeout = 3000,
     closable = true,
     multiLine = false,
-    location = 'top center'
+    location = 'top center',
   }: ToastInput) {
     queue.value.push({
       message,
@@ -39,13 +45,13 @@ export const useToastStore = defineStore('toast', () => {
       timeout,
       closable,
       multiLine,
-      location
-    })
+      location,
+    });
   }
 
   function shift() {
-    queue.value.shift()
+    queue.value.shift();
   }
 
-  return { current, add, shift }
-})
+  return { current, add, shift };
+});

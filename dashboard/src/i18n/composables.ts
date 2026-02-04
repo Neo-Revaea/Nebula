@@ -44,7 +44,7 @@ export function useI18n() {
   const t = (key: string, params?: Record<string, string | number>): string => {
     const keys = key.split('.');
     let value: any = translations.value;
-    
+
     for (const k of keys) {
       if (value && typeof value === 'object' && k in value) {
         value = value[k];
@@ -53,23 +53,26 @@ export function useI18n() {
         return `[MISSING: ${key}]`;
       }
     }
-    
+
     if (typeof value !== 'string') {
       console.warn(`Translation value is not string: ${key}`, value);
       return `[INVALID: ${key}]`;
     }
-    
+
     let result: string = value;
-    
+
     if (params) {
-      result = result.replace(/\{(\w+)\}/g, (match: string, paramKey: string) => {
-        return params[paramKey]?.toString() || match;
-      });
+      result = result.replace(
+        /\{(\w+)\}/g,
+        (match: string, paramKey: string) => {
+          return params[paramKey]?.toString() || match;
+        },
+      );
     }
-    
+
     return result;
   };
-  
+
   const setLocale = async (newLocale: Locale) => {
     if (newLocale !== currentLocale.value) {
       currentLocale.value = newLocale;
@@ -77,17 +80,17 @@ export function useI18n() {
       localStorage.setItem('astrbot-locale', newLocale);
     }
   };
-  
+
   const locale = computed(() => currentLocale.value);
   const availableLocales: Locale[] = ['zh-CN', 'en-US'];
   const isLoaded = computed(() => Object.keys(translations.value).length > 0);
-  
+
   return {
     t,
     locale,
     setLocale,
     availableLocales,
-    isLoaded
+    isLoaded,
   };
 }
 
@@ -96,12 +99,15 @@ export function useI18n() {
  */
 export function useModuleI18n(moduleName: string) {
   const { t } = useI18n();
-  
-  const tm = (key: string, params?: Record<string, string | number>): string => {
+
+  const tm = (
+    key: string,
+    params?: Record<string, string | number>,
+  ): string => {
     const normalizedModuleName = moduleName.replace(/\//g, '.');
     return t(`${normalizedModuleName}.${key}`, params);
   };
-  
+
   const getRaw = (key: string): any => {
     const normalizedModuleName = moduleName.replace(/\//g, '.');
     const fullKey = `${normalizedModuleName}.${key}`;
@@ -115,10 +121,10 @@ export function useModuleI18n(moduleName: string) {
         return null;
       }
     }
-    
+
     return value;
   };
-  
+
   return { tm, getRaw };
 }
 
@@ -127,42 +133,43 @@ export function useModuleI18n(moduleName: string) {
  */
 export function useLanguageSwitcher() {
   const { locale, setLocale, availableLocales } = useI18n();
-  
+
   const languageOptions = computed(() => [
-    { 
-      value: 'zh-CN', 
-      label: '简体中文', 
-      flag: 'cn' 
-    }, 
-    { 
-      value: 'en-US', 
-      label: 'English', 
-      flag: 'us' 
-    }
+    {
+      value: 'zh-CN',
+      label: '简体中文',
+      flag: 'cn',
+    },
+    {
+      value: 'en-US',
+      label: 'English',
+      flag: 'us',
+    },
   ]);
-  
+
   const currentLanguage = computed(() => {
-    return languageOptions.value.find(lang => lang.value === locale.value);
+    return languageOptions.value.find((lang) => lang.value === locale.value);
   });
-  
+
   const switchLanguage = async (newLocale: Locale) => {
     await setLocale(newLocale);
   };
-  
+
   return {
     locale,
     languageOptions,
     currentLanguage,
     switchLanguage,
-    availableLocales
+    availableLocales,
   };
 }
 
 export async function setupI18n() {
   const savedLocale = localStorage.getItem('astrbot-locale') as Locale;
-  const initialLocale = savedLocale && ['zh-CN', 'en-US'].includes(savedLocale) 
-    ? savedLocale 
-    : 'zh-CN';
-  
+  const initialLocale =
+    savedLocale && ['zh-CN', 'en-US'].includes(savedLocale)
+      ? savedLocale
+      : 'zh-CN';
+
   await initI18n(initialLocale);
 }

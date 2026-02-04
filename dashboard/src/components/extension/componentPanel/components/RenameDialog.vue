@@ -38,7 +38,9 @@ const updateAlias = (index: number, value: string) => {
   emit('update:aliases', newAliases);
 };
 
-const hasAliases = computed(() => (props.aliases || []).some(a => (a ?? '').toString().trim()));
+const hasAliases = computed(() =>
+  (props.aliases || []).some((a) => (a ?? '').toString().trim()),
+);
 const showAliasEditor = ref(false);
 const aliasEditorEverOpened = ref(false);
 
@@ -77,11 +79,7 @@ watch(showAliasEditor, (open) => {
           @update:model-value="emit('update:newName', $event)"
         />
 
-        <v-card
-          variant="outlined"
-          class="mt-2"
-          elevation="0"
-        >
+        <v-card variant="outlined" class="mt-2" elevation="0">
           <div
             class="d-flex align-center justify-space-between px-4 py-3"
             role="button"
@@ -142,11 +140,7 @@ watch(showAliasEditor, (open) => {
       </v-card-text>
       <v-card-actions>
         <v-spacer />
-        <v-btn
-          color="grey"
-          variant="text"
-          @click="emit('update:show', false)"
-        >
+        <v-btn color="grey" variant="text" @click="emit('update:show', false)">
           {{ tm('dialogs.rename.cancel') }}
         </v-btn>
         <v-btn

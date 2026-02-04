@@ -1,49 +1,53 @@
 <template>
-  <v-menu
-    offset="12"
-    location="bottom center"
-  >
+  <v-menu offset="12" location="bottom center">
     <template #activator="{ props: activatorProps }">
       <v-btn
         v-bind="activatorProps"
-        :variant="(props.variant === 'header' || props.variant === 'chatbox') ? 'flat' : 'text'"
-        :color="(props.variant === 'header' || props.variant === 'chatbox') ? 'var(--v-theme-surface)' : undefined"
-        :rounded="(props.variant === 'header' || props.variant === 'chatbox') ? 'sm' : undefined"
+        :variant="
+          props.variant === 'header' || props.variant === 'chatbox'
+            ? 'flat'
+            : 'text'
+        "
+        :color="
+          props.variant === 'header' || props.variant === 'chatbox'
+            ? 'var(--v-theme-surface)'
+            : undefined
+        "
+        :rounded="
+          props.variant === 'header' || props.variant === 'chatbox'
+            ? 'sm'
+            : undefined
+        "
         icon
         size="small"
-        :class="['language-switcher', `language-switcher--${props.variant}`, (props.variant === 'header' || props.variant === 'chatbox') ? 'action-btn' : '']"
+        :class="[
+          'language-switcher',
+          `language-switcher--${props.variant}`,
+          props.variant === 'header' || props.variant === 'chatbox'
+            ? 'action-btn'
+            : '',
+        ]"
       >
-        <v-icon
-          size="18"
-          :color="iconColor"
-        >
-          mdi-translate
-        </v-icon>
+        <v-icon size="18" :color="iconColor"> mdi-translate </v-icon>
       </v-btn>
     </template>
-    
-    <v-card
-      class="language-dropdown"
-      elevation="8"
-      rounded="lg"
-    >
-      <v-list
-        density="compact"
-        class="pa-1"
-      >
+
+    <v-card class="language-dropdown" elevation="8" rounded="lg">
+      <v-list density="compact" class="pa-1">
         <v-list-item
           v-for="lang in languageOptions"
           :key="lang.value"
           :value="lang.value"
-          :class="{ 'v-list-item--active': currentLocale === lang.value, 'language-item-selected': currentLocale === lang.value }"
+          :class="{
+            'v-list-item--active': currentLocale === lang.value,
+            'language-item-selected': currentLocale === lang.value,
+          }"
           class="language-item"
           rounded="md"
           @click="changeLanguage(lang.value)"
         >
           <template #prepend>
-            <span 
-              :class="['fi', `fi-${lang.flag}`, 'language-flag-styled']"
-            />
+            <span :class="['fi', `fi-${lang.flag}`, 'language-flag-styled']" />
           </template>
           <v-list-item-title>{{ lang.label }}</v-list-item-title>
         </v-list-item>
@@ -53,26 +57,31 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useLanguageSwitcher } from '@/i18n/composables'
-import type { Locale } from '@/i18n/types'
+import { computed } from 'vue';
+import { useLanguageSwitcher } from '@/i18n/composables';
+import type { Locale } from '@/i18n/types';
 
-const props = withDefaults(defineProps<{
-  variant?: 'default' | 'header' | 'chatbox'
-  color?: string | undefined
-}>(), {
-  variant: 'default',
-  color: undefined
-})
+const props = withDefaults(
+  defineProps<{
+    variant?: 'default' | 'header' | 'chatbox';
+    color?: string | undefined;
+  }>(),
+  {
+    variant: 'default',
+    color: undefined,
+  },
+);
 
-const { languageOptions, switchLanguage, locale } = useLanguageSwitcher()
+const { languageOptions, switchLanguage, locale } = useLanguageSwitcher();
 
-const iconColor = computed(() => props.color ?? (props.variant === 'default' ? 'primary' : undefined))
-const currentLocale = computed(() => locale.value)
+const iconColor = computed(
+  () => props.color ?? (props.variant === 'default' ? 'primary' : undefined),
+);
+const currentLocale = computed(() => locale.value);
 
 const changeLanguage = async (langCode: string) => {
-  await switchLanguage(langCode as Locale)
-}
+  await switchLanguage(langCode as Locale);
+};
 </script>
 
 <style scoped>
@@ -99,7 +108,7 @@ const changeLanguage = async (langCode: string) => {
 .language-dropdown {
   min-width: 100px;
   width: fit-content;
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.15) !important; 
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.15) !important;
   background: rgb(var(--v-theme-surface)) !important;
   backdrop-filter: blur(10px);
 }

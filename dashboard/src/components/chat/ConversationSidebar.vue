@@ -1,31 +1,35 @@
 <template>
   <div
-    class="sidebar-panel" 
-    :class="{ 
+    class="sidebar-panel"
+    :class="{
       'sidebar-collapsed': sidebarCollapsed && !isMobile,
       'mobile-sidebar-open': isMobile && mobileMenuOpen,
-      'mobile-sidebar': isMobile
+      'mobile-sidebar': isMobile,
     }"
-    :style="{ 'background-color': isDark ? sidebarCollapsed ? '#1e1e1e' : '#2d2d2d' : sidebarCollapsed ? '#ffffff' : '#f1f4f9' }"
+    :style="{
+      'background-color': isDark
+        ? sidebarCollapsed
+          ? '#1e1e1e'
+          : '#2d2d2d'
+        : sidebarCollapsed
+          ? '#ffffff'
+          : '#f1f4f9',
+    }"
   >
-    <div
-      v-if="!isMobile"
-      class="sidebar-collapse-btn-container"
-    >
+    <div v-if="!isMobile" class="sidebar-collapse-btn-container">
       <v-btn
         icon
         class="sidebar-collapse-btn sidebar-action-btn"
         variant="text"
         @click="toggleSidebar"
       >
-        <v-icon>{{ sidebarCollapsed ? 'mdi-chevron-right' : 'mdi-chevron-left' }}</v-icon>
+        <v-icon>{{
+          sidebarCollapsed ? 'mdi-chevron-right' : 'mdi-chevron-left'
+        }}</v-icon>
       </v-btn>
     </div>
 
-    <div
-      v-if="isMobile"
-      class="sidebar-collapse-btn-container"
-    >
+    <div v-if="isMobile" class="sidebar-collapse-btn-container">
       <v-btn
         icon
         class="sidebar-collapse-btn sidebar-action-btn"
@@ -36,7 +40,7 @@
       </v-btn>
     </div>
 
-    <div style="padding: 8px; opacity: 0.6;">
+    <div style="padding: 8px; opacity: 0.6">
       <v-btn
         v-if="!sidebarCollapsed || isMobile"
         block
@@ -52,7 +56,7 @@
         v-if="sidebarCollapsed && !isMobile"
         icon="mdi-square-edit-outline"
         rounded="xl"
-        :disabled="!currSessionId && !selectedProjectId" 
+        :disabled="!currSessionId && !selectedProjectId"
         elevation="0"
         @click="$emit('newChat')"
       />
@@ -70,18 +74,18 @@
 
     <div
       v-if="!sidebarCollapsed || isMobile"
-      style="overflow-y: auto; flex-grow: 1;"
+      style="overflow-y: auto; flex-grow: 1"
     >
       <v-card
         v-if="sessions.length > 0"
         flat
-        style="background-color: transparent;"
+        style="background-color: transparent"
       >
         <v-list
           density="compact"
           nav
           class="conversation-list"
-          style="background-color: transparent;"
+          style="background-color: transparent"
           :selected="selectedSessions"
           @update:selected="$emit('selectConversation', $event)"
         >
@@ -100,17 +104,16 @@
             >
               {{ item.display_name || tm('conversation.newConversation') }}
             </v-list-item-title>
-            <template
-              v-if="!sidebarCollapsed || isMobile"
-              #append
-            >
+            <template v-if="!sidebarCollapsed || isMobile" #append>
               <div class="conversation-actions">
                 <v-btn
                   icon="mdi-pencil"
                   size="x-small"
                   variant="text"
                   class="edit-title-btn"
-                  @click.stop="$emit('editTitle', item.session_id, item.display_name ?? '')"
+                  @click.stop="
+                    $emit('editTitle', item.session_id, item.display_name ?? '')
+                  "
                 />
                 <v-btn
                   icon="mdi-delete"
@@ -127,10 +130,7 @@
       </v-card>
 
       <v-fade-transition>
-        <div
-          v-if="sessions.length === 0"
-          class="no-conversations"
-        >
+        <div v-if="sessions.length === 0" class="no-conversations">
           <v-icon
             icon="mdi-message-text-outline"
             size="large"
@@ -146,26 +146,21 @@
       </v-fade-transition>
     </div>
 
-    <div
-      v-if="sidebarCollapsed && !isMobile"
-      class="sidebar-spacer"
-    />
+    <div v-if="sidebarCollapsed && !isMobile" class="sidebar-spacer" />
 
     <div class="sidebar-footer">
-      <StyledMenu
-        location="end"
-        offset="20"
-        :close-on-content-click="false"
-      >
+      <StyledMenu location="end" offset="20" :close-on-content-click="false">
         <template #activator="{ props: menuProps }">
-          <v-btn 
+          <v-btn
             v-bind="menuProps"
             :icon="sidebarCollapsed && !isMobile"
             :block="!sidebarCollapsed || isMobile"
-            variant="text" 
+            variant="text"
             class="settings-btn"
             :class="{ 'settings-btn-collapsed': sidebarCollapsed && !isMobile }"
-            :prepend-icon="(!sidebarCollapsed || isMobile) ? 'mdi-cog-outline' : undefined"
+            :prepend-icon="
+              !sidebarCollapsed || isMobile ? 'mdi-cog-outline' : undefined
+            "
           >
             <v-icon v-if="sidebarCollapsed && !isMobile">
               mdi-cog-outline
@@ -175,84 +170,75 @@
             </template>
           </v-btn>
         </template>
-        
-        <v-menu 
+
+        <v-menu
           :open-on-hover="!$vuetify.display.mobile"
           :open-on-click="true"
           :location="$vuetify.display.mobile ? 'bottom center' : 'end center'"
-          offset="10" 
+          offset="10"
           :close-on-content-click="true"
           transition="scale-transition"
         >
           <template #activator="{ props: activatorProps }">
-            <v-list-item 
-              v-bind="activatorProps" 
-              class="styled-menu-item" 
+            <v-list-item
+              v-bind="activatorProps"
+              class="styled-menu-item"
               rounded="md"
             >
               <template #prepend>
                 <v-icon>mdi-translate</v-icon>
               </template>
-              <v-list-item-title>{{ t('core.header.buttons.language') || 'Language' }}</v-list-item-title>
+              <v-list-item-title>{{
+                t('core.header.buttons.language') || 'Language'
+              }}</v-list-item-title>
               <template #append>
-                <v-icon
-                  size="small"
-                  color="medium-emphasis"
-                >
-                  {{ $vuetify.display.mobile ? 'mdi-chevron-down' : 'mdi-chevron-right' }}
+                <v-icon size="small" color="medium-emphasis">
+                  {{
+                    $vuetify.display.mobile
+                      ? 'mdi-chevron-down'
+                      : 'mdi-chevron-right'
+                  }}
                 </v-icon>
               </template>
             </v-list-item>
           </template>
 
-          <v-card
-            class="styled-menu-card"
-            elevation="8"
-            rounded="lg"
-          >
-            <v-list
-              density="compact"
-              class="styled-menu-list pa-1"
-            >
+          <v-card class="styled-menu-card" elevation="8" rounded="lg">
+            <v-list density="compact" class="styled-menu-list pa-1">
               <v-list-item
                 v-for="lang in languageOptions"
                 :key="lang.value"
                 :value="lang.value"
-                :class="{ 'styled-menu-item-active': currentLocale === lang.value }"
+                :class="{
+                  'styled-menu-item-active': currentLocale === lang.value,
+                }"
                 class="styled-menu-item"
                 rounded="md"
                 @click="changeLanguage(lang.value)"
               >
                 <template #prepend>
-                  <span 
+                  <span
                     :class="['fi', `fi-${lang.flag}`, 'language-flag-styled']"
                   />
                 </template>
                 <v-list-item-title>{{ lang.label }}</v-list-item-title>
-                <template
-                  v-if="currentLocale === lang.value"
-                  #append
-                >
-                  <v-icon
-                    color="primary"
-                    size="small"
-                  >
-                    mdi-check
-                  </v-icon>
+                <template v-if="currentLocale === lang.value" #append>
+                  <v-icon color="primary" size="small"> mdi-check </v-icon>
                 </template>
               </v-list-item>
             </v-list>
           </v-card>
         </v-menu>
-        
-        <v-list-item
-          class="styled-menu-item"
-          @click="$emit('toggleTheme')"
-        >
+
+        <v-list-item class="styled-menu-item" @click="$emit('toggleTheme')">
           <template #prepend>
-            <v-icon>{{ isDark ? 'mdi-weather-night' : 'mdi-white-balance-sunny' }}</v-icon>
+            <v-icon>{{
+              isDark ? 'mdi-weather-night' : 'mdi-white-balance-sunny'
+            }}</v-icon>
           </template>
-          <v-list-item-title>{{ isDark ? tm('modes.lightMode') : tm('modes.darkMode') }}</v-list-item-title>
+          <v-list-item-title>{{
+            isDark ? tm('modes.lightMode') : tm('modes.darkMode')
+          }}</v-list-item-title>
         </v-list-item>
 
         <v-list-item
@@ -260,9 +246,15 @@
           @click="$emit('toggleFullscreen')"
         >
           <template #prepend>
-            <v-icon>{{ chatboxMode ? 'mdi-fullscreen-exit' : 'mdi-fullscreen' }}</v-icon>
+            <v-icon>{{
+              chatboxMode ? 'mdi-fullscreen-exit' : 'mdi-fullscreen'
+            }}</v-icon>
           </template>
-          <v-list-item-title>{{ chatboxMode ? tm('actions.exitFullscreen') : tm('actions.fullscreen') }}</v-list-item-title>
+          <v-list-item-title>{{
+            chatboxMode
+              ? tm('actions.exitFullscreen')
+              : tm('actions.fullscreen')
+          }}</v-list-item-title>
         </v-list-item>
 
         <v-list-item
@@ -272,7 +264,9 @@
           <template #prepend>
             <v-icon>mdi-creation</v-icon>
           </template>
-          <v-list-item-title>{{ tm('actions.providerConfig') }}</v-list-item-title>
+          <v-list-item-title>{{
+            tm('actions.providerConfig')
+          }}</v-list-item-title>
         </v-list-item>
       </StyledMenu>
     </div>
@@ -283,7 +277,11 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { useI18n, useModuleI18n, useLanguageSwitcher } from '@/i18n/composables';
+import {
+  useI18n,
+  useModuleI18n,
+  useLanguageSwitcher,
+} from '@/i18n/composables';
 import type { Session } from '@/composables/useSessions';
 import type { Locale } from '@/i18n/types';
 import StyledMenu from '@/components/shared/StyledMenu.vue';
@@ -304,7 +302,7 @@ interface Props {
 }
 
 withDefaults(defineProps<Props>(), {
-  projects: () => []
+  projects: () => [],
 });
 
 const emit = defineEmits<{
@@ -342,11 +340,15 @@ if (savedCollapsedState !== null) {
 
 function toggleSidebar() {
   sidebarCollapsed.value = !sidebarCollapsed.value;
-  localStorage.setItem('sidebarCollapsed', JSON.stringify(sidebarCollapsed.value));
+  localStorage.setItem(
+    'sidebarCollapsed',
+    JSON.stringify(sidebarCollapsed.value),
+  );
 }
 
 function handleDeleteConversation(session: Session) {
-  const sessionTitle = session.display_name || tm('conversation.newConversation');
+  const sessionTitle =
+    session.display_name || tm('conversation.newConversation');
   const message = tm('conversation.confirmDelete', { name: sessionTitle });
   if (window.confirm(message)) {
     emit('deleteConversation', session.session_id);
@@ -365,15 +367,22 @@ function handleDeleteConversation(session: Session) {
   height: 100%;
   max-height: 100%;
   position: relative;
-  transition: width 0.3s ease, min-width 0.3s ease, max-width 0.3s ease, transform 0.3s ease;
-  
+  transition:
+    width 0.3s ease,
+    min-width 0.3s ease,
+    max-width 0.3s ease,
+    transform 0.3s ease;
+
   overflow: hidden;
 }
 
 .sidebar-collapsed {
   max-width: 60px;
   min-width: 60px;
-  transition: width 0.3s ease, min-width 0.3s ease, max-width 0.3s ease;
+  transition:
+    width 0.3s ease,
+    min-width 0.3s ease,
+    max-width 0.3s ease;
 }
 
 .mobile-sidebar {
@@ -410,7 +419,7 @@ function handleDeleteConversation(session: Session) {
 }
 
 .sidebar-action-btn.v-btn--variant-text:hover {
-  background-color: rgba(var(--v-theme-secondaryText), 0.10);
+  background-color: rgba(var(--v-theme-secondaryText), 0.1);
 }
 
 .new-chat-btn {
@@ -526,7 +535,7 @@ function handleDeleteConversation(session: Session) {
 }
 
 :deep(.styled-menu-item:hover) {
-  background: rgba(var(--v-theme-primary), 0.10) !important;
+  background: rgba(var(--v-theme-primary), 0.1) !important;
 }
 
 :deep(.styled-menu-item-active) {

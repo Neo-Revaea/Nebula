@@ -1,18 +1,12 @@
 <template>
   <div class="stats-container">
-    <v-card
-      elevation="1"
-      class="stat-card uptime-card mb-4"
-    >
+    <v-card elevation="1" class="stat-card uptime-card mb-4">
       <v-card-text>
         <div class="d-flex align-center">
           <div class="icon-wrapper">
-            <v-icon
-              icon="mdi-clock-outline"
-              size="24"
-            />
+            <v-icon icon="mdi-clock-outline" size="24" />
           </div>
-          
+
           <div class="stat-content">
             <div class="stat-title">
               {{ tm('features.dashboard.status.uptime') }}
@@ -21,9 +15,9 @@
               {{ stat.running || tm('features.dashboard.status.loading') }}
             </h3>
           </div>
-          
+
           <v-spacer />
-          
+
           <div class="uptime-status">
             <v-icon
               icon="mdi-circle"
@@ -31,49 +25,45 @@
               color="success"
               class="blink-animation"
             />
-            <span class="status-text">{{ tm('features.dashboard.status.online') }}</span>
+            <span class="status-text">{{
+              tm('features.dashboard.status.online')
+            }}</span>
           </div>
         </div>
       </v-card-text>
     </v-card>
 
-    <v-card
-      elevation="1"
-      class="stat-card memory-card"
-    >
+    <v-card elevation="1" class="stat-card memory-card">
       <v-card-text>
         <div class="d-flex align-center">
           <div class="icon-wrapper">
-            <v-icon
-              icon="mdi-memory"
-              size="24"
-            />
+            <v-icon icon="mdi-memory" size="24" />
           </div>
-          
+
           <div class="stat-content">
             <div class="stat-title">
               {{ tm('features.dashboard.status.memoryUsage') }}
             </div>
             <div class="memory-values">
               <h3 class="memory-value">
-                {{ stat.memory?.process || 0 }} <span class="memory-unit">MiB</span>
+                {{ stat.memory?.process || 0 }}
+                <span class="memory-unit">MiB</span>
               </h3>
               <span class="memory-separator">/</span>
               <h4 class="memory-total">
-                {{ stat.memory?.system || 0 }} <span class="memory-unit">MiB</span>
+                {{ stat.memory?.system || 0 }}
+                <span class="memory-unit">MiB</span>
               </h4>
             </div>
-            
+
             <v-progress-linear
               :model-value="memoryPercentage"
               color="warning"
               height="4"
               class="mt-2"
             />
-            
-            <div class="memory-percentage">
-              {{ memoryPercentage }}%
-            </div>
+
+            <div class="memory-percentage">{{ memoryPercentage }}%</div>
           </div>
         </div>
       </v-card-text>
@@ -91,7 +81,7 @@ export default {
       type: Object,
       default: () => ({
         memory: { process: 0, system: 0 },
-        running: "",
+        running: '',
       }),
     },
   },
@@ -101,10 +91,17 @@ export default {
   },
   computed: {
     memoryPercentage() {
-      if (!this.stat.memory || !this.stat.memory.process || !this.stat.memory.system) return 0;
-      return Math.round((this.stat.memory.process / this.stat.memory.system) * 100);
-    }
-  }
+      if (
+        !this.stat.memory ||
+        !this.stat.memory.process ||
+        !this.stat.memory.system
+      )
+        return 0;
+      return Math.round(
+        (this.stat.memory.process / this.stat.memory.system) * 100,
+      );
+    },
+  },
 };
 </script>
 
@@ -117,7 +114,9 @@ export default {
 
 .stat-card {
   border-radius: 8px;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
   overflow: hidden;
 }
 
@@ -216,9 +215,15 @@ export default {
 }
 
 @keyframes blink {
-  0% { opacity: 0.5; }
-  50% { opacity: 1; }
-  100% { opacity: 0.5; }
+  0% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.5;
+  }
 }
 
 .blink-animation {
