@@ -1,5 +1,4 @@
-dist
-node_modules
+dist/
+node_modules/
 pnpm-lock.yaml
-public/favicon.svg
-public/favicon-astrbot.svg
+public/

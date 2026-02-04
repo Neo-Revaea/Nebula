@@ -6,9 +6,9 @@
   "author": "IGCrystal",
   "scripts": {
     "dev": "vite --host",
-    "build": "pnpm typecheck && pnpm lint:check && vite build",
-    "build-stage": "pnpm typecheck && pnpm lint:check && vite build --base=/vue/free/stage/",
-    "build-prod": "pnpm typecheck && pnpm lint:check && vite build --base=/vue/free/",
+    "build": "pnpm run check && vite build",
+    "build-stage": "pnpm run check && vite build --base=/vue/free/stage/",
+    "build-prod": "pnpm run check && vite build --base=/vue/free/",
     "preview": "vite preview --port 5050",
     "typecheck": "vue-tsc --noEmit",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-pattern dist",
