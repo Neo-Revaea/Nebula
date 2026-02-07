@@ -126,6 +126,10 @@ export default [
       'src/views/PlatformPage.vue',
       'src/views/ConfigPage.vue',
       'src/views/SessionManagementPage.vue',
+      'src/views/ConsolePage.vue',
+      'src/views/authentication/auth/LoginPage.vue',
+      'src/views/dashboards/default/DefaultDashboard.vue',
+      'src/views/dashboards/default/components/MessageStat.vue',
     ],
     plugins: {
       '@typescript-eslint': tseslint,
