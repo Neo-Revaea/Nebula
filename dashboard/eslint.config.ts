@@ -143,6 +143,7 @@ export default [
       'src/components/header/UpdateDialog.vue',
       'src/composables/useConversations.ts',
       'src/composables/useProviderSources.ts',
+      'src/composables/useSessions.ts',
     ],
     plugins: {
       '@typescript-eslint': tseslint,
