@@ -123,6 +123,7 @@ export default [
       'src/views/CronJobPage.vue',
       'src/views/Settings.vue',
       'src/views/ProviderPage.vue',
+      'src/views/PlatformPage.vue',
     ],
     plugins: {
       '@typescript-eslint': tseslint,
