@@ -203,7 +203,7 @@
 
         <!-- 知识库检索 -->
         <v-window-item value="retrieval">
-          <RetrievalTab :kb-id="kbId" :kb-name="kb.kb_name ?? ''" />
+          <RetrievalTab :kb-id="kbId" :kb-name="kb.kb_name" />
         </v-window-item>
 
         <!-- 设置 -->
@@ -230,7 +230,8 @@ import RetrievalTab from './components/RetrievalTab.vue';
 import SettingsTab from './components/SettingsTab.vue';
 
 type KnowledgeBase = {
-  kb_name?: string;
+  kb_id: string;
+  kb_name: string;
   description?: string;
   emoji?: string;
   created_at?: string;
@@ -247,7 +248,7 @@ const route = useRoute();
 const kbId = ref(route.params.kbId as string);
 const loading = ref(true);
 const activeTab = ref('overview');
-const kb = ref<KnowledgeBase>({});
+const kb = ref<KnowledgeBase>({ kb_id: '', kb_name: '' });
 
 const snackbar = ref({
   show: false,
