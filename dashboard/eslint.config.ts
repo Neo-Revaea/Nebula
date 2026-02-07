@@ -137,6 +137,7 @@ export default [
       'src/views/knowledge-base/KBList.vue',
       'src/views/knowledge-base/components/SettingsTab.vue',
       'src/views/knowledge-base/components/DocumentsTab.vue',
+      'src/views/ConversationPage.vue',
     ],
     plugins: {
       '@typescript-eslint': tseslint,
