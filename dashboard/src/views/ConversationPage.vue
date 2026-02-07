@@ -547,6 +547,33 @@ function isRecord(value: unknown): value is UnknownRecord {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
+type TextContentItem = { type: 'text'; text: string };
+
+function isTextContentItem(value: unknown): value is TextContentItem {
+  return (
+    isRecord(value) &&
+    value.type === 'text' &&
+    typeof value.text === 'string' &&
+    value.text.length > 0
+  );
+}
+
+type ImageUrlContentItem = { type: 'image_url'; image_url: { url: string } };
+
+function isImageUrlContentItem(value: unknown): value is ImageUrlContentItem {
+  if (!isRecord(value) || value.type !== 'image_url') return false;
+  const imageUrl = value.image_url;
+  return (
+    isRecord(imageUrl) &&
+    typeof imageUrl.url === 'string' &&
+    imageUrl.url.length > 0
+  );
+}
+
+type MessagePartPlain = { type: 'plain'; text: string };
+type MessagePartImage = { type: 'image'; embedded_url: string };
+type MessagePart = MessagePartPlain | MessagePartImage;
+
 type TableHeader = {
   title: string;
   key?: string;
@@ -1118,7 +1145,9 @@ export default {
 
     // 保存编辑后的对话
     async saveConversation() {
-      if (!(this.$refs.form as any)?.validate?.()) return;
+      const refs = this.$refs as unknown as { form?: unknown };
+      const form = refs.form as unknown as { validate?: () => unknown };
+      if (!form?.validate?.()) return;
 
       this.loading = true;
       try {
@@ -1392,7 +1421,7 @@ export default {
 
     // 将消息内容转换为 MessagePart[] 格式
     convertContentToMessageParts(content: unknown) {
-      const parts: any[] = [];
+      const parts: MessagePart[] = [];
 
       if (typeof content === 'string') {
         // 纯文本内容
@@ -1404,20 +1433,22 @@ export default {
         }
       } else if (Array.isArray(content)) {
         // 数组格式（OpenAI 格式）
-        content.forEach((item: any) => {
-          if (item.type === 'text' && item.text) {
+        content.forEach((item: unknown) => {
+          if (isTextContentItem(item)) {
             parts.push({
               type: 'plain',
               text: item.text,
             });
-          } else if (item.type === 'image_url' && item.image_url?.url) {
+            return;
+          }
+          if (isImageUrlContentItem(item)) {
             parts.push({
               type: 'image',
               embedded_url: item.image_url.url,
             });
           }
         });
-      } else if (typeof content === 'object' && content !== null) {
+      } else if (isRecord(content)) {
         // 对象格式，尝试提取文本和图片
         const textParts: string[] = [];
         for (const [_key, value] of Object.entries(content)) {
@@ -1450,11 +1481,11 @@ export default {
         return content;
       } else if (Array.isArray(content)) {
         return content
-          .filter((item: any) => item.type === 'text')
-          .map((item: any) => item.text)
+          .filter(isTextContentItem)
+          .map((item) => item.text)
           .join('\n');
-      } else if (typeof content === 'object') {
-        return Object.values(content as Record<string, unknown>)
+      } else if (isRecord(content)) {
+        return Object.values(content)
           .filter((val) => typeof val === 'string')
           .join('');
       }
@@ -1465,9 +1496,8 @@ export default {
     extractImagesFromContent(content: unknown) {
       if (Array.isArray(content)) {
         return content
-          .filter((item: any) => item.type === 'image_url')
-          .map((item: any) => item.image_url?.url)
-          .filter((url: any) => url);
+          .filter(isImageUrlContentItem)
+          .map((item) => item.image_url.url);
       }
       return [];
     },
