@@ -144,6 +144,7 @@ export default [
       'src/composables/useConversations.ts',
       'src/composables/useProviderSources.ts',
       'src/composables/useSessions.ts',
+      'src/components/provider/ProviderSourcesPanel.vue',
     ],
     plugins: {
       '@typescript-eslint': tseslint,
