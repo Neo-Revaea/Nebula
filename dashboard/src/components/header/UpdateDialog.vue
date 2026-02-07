@@ -747,7 +747,9 @@ const dialogModel = computed({
                         {{ lastCheckedAt.toLocaleString() }}
                       </div>
                     </div>
-                    <div class="mt-4 mt-sm-0 flex-shrink-0">
+                    <div
+                      class="mt-4 mt-sm-0 flex-shrink-0 w-100 w-sm-auto d-flex justify-end justify-sm-start"
+                    >
                       <v-btn
                         size="large"
                         color="primary"
@@ -836,11 +838,9 @@ const dialogModel = computed({
 
                     <v-btn
                       color="primary"
-                      min-width="120"
                       prepend-icon="mdi-update"
                       :loading="updatingDashboardLoading"
-                      :block="$vuetify.display.xs"
-                      class="dashboard-update-btn"
+                      class="dashboard-update-btn ml-auto"
                       @click="updateDashboard()"
                     >
                       {{
@@ -1067,7 +1067,7 @@ const dialogModel = computed({
   }
 
   .dashboard-update-btn {
-    width: 100%;
+    width: auto;
   }
   .update-mobile-actions {
     align-items: stretch;
@@ -1123,7 +1123,7 @@ const dialogModel = computed({
 }
 
 .update-dialog-card--phone-layout .dashboard-update-btn {
-  width: 100%;
+  width: auto;
 }
 
 /* Use neutral gray borders (avoid accent/theme-primary borders) */
