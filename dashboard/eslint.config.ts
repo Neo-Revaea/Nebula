@@ -147,6 +147,7 @@ export default [
       'src/components/provider/ProviderSourcesPanel.vue',
       'src/components/provider/ProviderModelsPanel.vue',
       'src/components/provider/AddNewProvider.vue',
+      'src/components/platform/AddNewPlatform.vue',
       'src/composables/useMessages.ts',
       'src/stores/common.ts',
     ],
