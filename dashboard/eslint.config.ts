@@ -116,6 +116,9 @@ export default [
       'src/components/shared/T2ITemplateEditor.vue',
       'src/components/shared/MigrationDialog.vue',
       'src/components/shared/ConfigItemRenderer.vue',
+      'src/components/shared/TemplateListEditor.vue',
+      'src/components/shared/BackupDialog.vue',
+      'src/components/shared/PersonaForm.vue',
     ],
     plugins: {
       '@typescript-eslint': tseslint,
