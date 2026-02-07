@@ -208,7 +208,11 @@
                 actions-align="start"
                 style="min-height: 200px"
                 :loading="isProviderTesting(provider.id)"
-                :bglogo="getProviderIcon(provider.provider)"
+                :bglogo="
+                  typeof provider.provider === 'string'
+                    ? getProviderIcon(provider.provider)
+                    : ''
+                "
                 :show-copy-button="true"
                 @toggle-enabled="
                   toggleProviderEnable(provider, !provider.enable)
@@ -573,6 +577,13 @@ const showManualModelDialog = ref(false);
 
 const savingProviders = ref<string[]>([]);
 
+function getProviderConfigTemplates(): UnknownRecord {
+  const provider = (configSchema.value as UnknownRecord).provider;
+  if (!isRecord(provider)) return {};
+  const templates = provider.config_template;
+  return isRecord(templates) ? templates : {};
+}
+
 function openProviderEdit(provider: ProviderBase) {
   providerEditData.value = JSON.parse(JSON.stringify(provider));
   providerEditOriginalId.value = provider.id;
@@ -623,8 +634,10 @@ function selectProviderTemplate(name: string) {
   newProviderOriginalId.value = '';
   showProviderCfg.value = true;
   updatingMode.value = false;
+  const templates = getProviderConfigTemplates();
+  const template = templates[name];
   newSelectedProviderConfig.value = JSON.parse(
-    JSON.stringify(configSchema.value.provider.config_template[name] || {}),
+    JSON.stringify(isRecord(template) ? template : {}),
   );
 }
 
@@ -634,11 +647,12 @@ function configExistingProvider(provider: ProviderBase) {
   newSelectedProviderConfig.value = {};
 
   // 比对默认配置模版，看看是否有更新
-  const templates = configSchema.value.provider.config_template || {};
-  let defaultConfig: Record<string, unknown> = {};
+  const templates = getProviderConfigTemplates();
+  let defaultConfig: UnknownRecord = {};
   for (const key in templates) {
-    if (templates[key]?.type === provider.type) {
-      defaultConfig = templates[key];
+    const value = templates[key];
+    if (isRecord(value) && value.type === provider.type) {
+      defaultConfig = value;
       break;
     }
   }

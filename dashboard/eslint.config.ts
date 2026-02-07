@@ -142,6 +142,7 @@ export default [
       'src/components/chat/MessageList.vue',
       'src/components/header/UpdateDialog.vue',
       'src/composables/useConversations.ts',
+      'src/composables/useProviderSources.ts',
     ],
     plugins: {
       '@typescript-eslint': tseslint,
