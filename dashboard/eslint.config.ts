@@ -145,6 +145,7 @@ export default [
       'src/composables/useProviderSources.ts',
       'src/composables/useSessions.ts',
       'src/components/provider/ProviderSourcesPanel.vue',
+      'src/components/provider/ProviderModelsPanel.vue',
     ],
     plugins: {
       '@typescript-eslint': tseslint,
