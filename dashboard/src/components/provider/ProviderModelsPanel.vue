@@ -1,12 +1,17 @@
 <template>
   <div class="mt-4">
-    <div class="d-flex align-center ga-2 mb-2">
-      <h3 class="text-h5 font-weight-bold mb-0">
-        {{ tm('models.configured') }}
-      </h3>
-      <small v-if="availableCount" style="color: grey"
-        >{{ tm('models.available') }} {{ availableCount }}</small
-      >
+    <div
+      class="models-toolbar d-flex flex-column flex-sm-row align-start align-sm-center ga-2 mb-2"
+    >
+      <div class="d-flex align-center ga-2 flex-wrap">
+        <h3 class="text-h5 font-weight-bold mb-0">
+          {{ tm('models.configured') }}
+        </h3>
+        <small v-if="availableCount" style="color: grey"
+          >{{ tm('models.available') }} {{ availableCount }}</small
+        >
+      </div>
+
       <v-text-field
         v-model="modelSearchProxy"
         density="compact"
@@ -14,35 +19,39 @@
         hide-details
         variant="solo-filled"
         flat
-        class="ml-1"
-        style="max-width: 240px"
+        class="models-search w-100 w-sm-auto"
         :placeholder="tm('models.searchPlaceholder')"
       />
-      <v-spacer />
-      <v-btn
-        color="primary"
-        prepend-icon="mdi-download"
-        :loading="loadingModels"
-        variant="tonal"
-        size="small"
-        @click="emit('fetch-models')"
+
+      <div
+        class="d-flex align-center ga-2 flex-wrap w-100 w-sm-auto ms-sm-auto"
       >
-        {{
-          isSourceModified
-            ? tm('providerSources.saveAndFetchModels')
-            : tm('providerSources.fetchModels')
-        }}
-      </v-btn>
-      <v-btn
-        color="primary"
-        prepend-icon="mdi-pencil-plus"
-        variant="text"
-        size="small"
-        class="ml-1"
-        @click="emit('open-manual-model')"
-      >
-        {{ tm('models.manualAddButton') }}
-      </v-btn>
+        <v-btn
+          color="primary"
+          prepend-icon="mdi-download"
+          :loading="loadingModels"
+          variant="tonal"
+          size="small"
+          class="flex-grow-1 flex-sm-grow-0"
+          @click="emit('fetch-models')"
+        >
+          {{
+            isSourceModified
+              ? tm('providerSources.saveAndFetchModels')
+              : tm('providerSources.fetchModels')
+          }}
+        </v-btn>
+        <v-btn
+          color="primary"
+          prepend-icon="mdi-pencil-plus"
+          variant="text"
+          size="small"
+          class="flex-grow-1 flex-sm-grow-0"
+          @click="emit('open-manual-model')"
+        >
+          {{ tm('models.manualAddButton') }}
+        </v-btn>
+      </div>
     </div>
 
     <v-list
@@ -324,6 +333,18 @@ const modelSearchProxy = computed({
 const isProviderTesting = (providerId: string) =>
   props.testingProviders.includes(providerId);
 </script>
+
+<style scoped>
+.models-search {
+  max-width: 240px;
+}
+
+@media (max-width: 600px) {
+  .models-search {
+    max-width: 100%;
+  }
+}
+</style>
 
 <style scoped>
 .border {
