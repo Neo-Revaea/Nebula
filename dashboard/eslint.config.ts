@@ -125,6 +125,7 @@ export default [
       'src/views/ProviderPage.vue',
       'src/views/PlatformPage.vue',
       'src/views/ConfigPage.vue',
+      'src/views/SessionManagementPage.vue',
     ],
     plugins: {
       '@typescript-eslint': tseslint,
