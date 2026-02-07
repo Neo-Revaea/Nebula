@@ -120,6 +120,7 @@ export default [
       'src/components/shared/BackupDialog.vue',
       'src/components/shared/PersonaForm.vue',
       'src/views/SubAgentPage.vue',
+      'src/views/CronJobPage.vue',
     ],
     plugins: {
       '@typescript-eslint': tseslint,
