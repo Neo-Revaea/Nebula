@@ -31,19 +31,20 @@ const mountApp = () => {
   import('./stores/customizer').then(({ useCustomizerStore }) => {
     const customizer = useCustomizerStore(pinia);
     vuetify.theme.global.name.value = customizer.uiTheme;
-    const storedPrimary = localStorage.getItem('themePrimary');
-    const storedSecondary = localStorage.getItem('themeSecondary');
-    if (storedPrimary || storedSecondary) {
+    const storedThemeColor =
+      localStorage.getItem('themePrimary') ||
+      localStorage.getItem('themeSecondary');
+    if (storedThemeColor) {
       const themes = vuetify.theme.themes.value;
       ['PurpleTheme', 'PurpleThemeDark'].forEach((name) => {
         const theme = themes[name];
         if (!theme?.colors) return;
-        if (storedPrimary) theme.colors.primary = storedPrimary;
-        if (storedSecondary) theme.colors.secondary = storedSecondary;
-        if (storedPrimary && theme.colors.darkprimary)
-          theme.colors.darkprimary = storedPrimary;
-        if (storedSecondary && theme.colors.darksecondary)
-          theme.colors.darksecondary = storedSecondary;
+        theme.colors.primary = storedThemeColor;
+        theme.colors.secondary = storedThemeColor;
+        if (theme.colors.darkprimary)
+          theme.colors.darkprimary = storedThemeColor;
+        if (theme.colors.darksecondary)
+          theme.colors.darksecondary = storedThemeColor;
       });
     }
   });

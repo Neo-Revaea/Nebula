@@ -42,17 +42,6 @@
               style="max-width: 220px"
             />
           </v-col>
-          <v-col cols="4" sm="2">
-            <v-text-field
-              v-model="secondaryColor"
-              type="color"
-              :label="tm('theme.customize.secondary')"
-              hide-details
-              variant="outlined"
-              density="compact"
-              style="max-width: 220px"
-            />
-          </v-col>
           <v-col cols="12">
             <v-btn
               size="small"
@@ -130,11 +119,12 @@ const getStoredColor = (key: string, fallback: string): string => {
 };
 
 const defaultPrimaryColor = PurpleTheme.colors.primary ?? '#38bdf8';
-const defaultSecondaryColor = PurpleTheme.colors.secondary ?? '#0ea5e9';
 
-const primaryColor = ref(getStoredColor('themePrimary', defaultPrimaryColor));
-const secondaryColor = ref(
-  getStoredColor('themeSecondary', defaultSecondaryColor),
+const primaryColor = ref(
+  getStoredColor(
+    'themePrimary',
+    getStoredColor('themeSecondary', defaultPrimaryColor),
+  ),
 );
 
 const resolveThemes = () => {
@@ -144,33 +134,29 @@ const resolveThemes = () => {
   return null;
 };
 
-const applyThemeColors = (primary?: string, secondary?: string) => {
+const applyThemeColors = (color?: string) => {
   const themes = resolveThemes();
   if (!themes) return;
   ['PurpleTheme', 'PurpleThemeDark'].forEach((name) => {
     const themeDef = themes[name];
     if (!themeDef?.colors) return;
-    if (primary) themeDef.colors.primary = primary;
-    if (secondary) themeDef.colors.secondary = secondary;
-    if (primary && themeDef.colors.darkprimary)
-      themeDef.colors.darkprimary = primary;
-    if (secondary && themeDef.colors.darksecondary)
-      themeDef.colors.darksecondary = secondary;
+    if (color) {
+      themeDef.colors.primary = color;
+      themeDef.colors.secondary = color;
+      if (themeDef.colors.darkprimary) themeDef.colors.darkprimary = color;
+      if (themeDef.colors.darksecondary) themeDef.colors.darksecondary = color;
+    }
   });
 };
 
-applyThemeColors(primaryColor.value, secondaryColor.value);
+applyThemeColors(primaryColor.value);
 
 watch(primaryColor, (value) => {
   if (!value) return;
   localStorage.setItem('themePrimary', value);
-  applyThemeColors(value, secondaryColor.value);
-});
-
-watch(secondaryColor, (value) => {
-  if (!value) return;
+  // Keep the legacy key in sync for backward compatibility.
   localStorage.setItem('themeSecondary', value);
-  applyThemeColors(primaryColor.value, value);
+  applyThemeColors(value);
 });
 
 const wfr = ref<InstanceType<typeof WaitingForRestart> | null>(null);
@@ -206,9 +192,8 @@ const openBackupDialog = () => {
 
 const resetThemeColors = () => {
   primaryColor.value = defaultPrimaryColor;
-  secondaryColor.value = defaultSecondaryColor;
   localStorage.removeItem('themePrimary');
   localStorage.removeItem('themeSecondary');
-  applyThemeColors(primaryColor.value, secondaryColor.value);
+  applyThemeColors(primaryColor.value);
 };
 </script>
