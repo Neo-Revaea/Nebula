@@ -240,7 +240,7 @@ class AstrBotDashboard:
 
             raise Exception(f"端口 {port} 已被占用")
 
-        parts = [f"\n ✨✨✨\n  AstrBot v{VERSION} WebUI 已启动，可访问\n\n"]
+        parts = [f"\n ✨✨✨\n  Nebula v{VERSION} WebUI 已启动，可访问\n\n"]
         parts.append(f"   ➜  本地: http://localhost:{port}\n")
         for ip in ip_addr:
             parts.append(f"   ➜  网络: http://{ip}:{port}\n")

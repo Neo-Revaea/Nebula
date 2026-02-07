@@ -67,7 +67,7 @@ async def check_dashboard_files(webui_dir: str | None = None):
                 logger.info("WebUI 版本已是最新。")
             else:
                 logger.warning(
-                    f"检测到 WebUI 版本 ({v}) 与当前 AstrBot 版本 (v{VERSION}) 不符。",
+                    f"检测到 WebUI 版本 ({v}) 与当前 Nebula 版本 (v{VERSION}) 不符。",
                 )
         return data_dist_path
 
