@@ -541,6 +541,21 @@ type DataTableOptions = {
   itemsPerPage?: number;
 };
 
+type UnknownRecord = Record<string, unknown>;
+
+function isRecord(value: unknown): value is UnknownRecord {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+type TableHeader = {
+  title: string;
+  key?: string;
+  sortable?: boolean;
+  width?: string;
+  align?: 'center' | 'start' | 'end';
+  children?: TableHeader[];
+};
+
 type ConversationItem = {
   user_id: string;
   cid: string;
@@ -555,6 +570,29 @@ type HistoryMessage = {
   role?: string;
   content?: unknown;
   [key: string]: unknown;
+};
+
+type ConversationPageThis = {
+  loading: boolean;
+  pagination: {
+    page: number;
+    page_size: number;
+    total: number;
+    total_pages: number;
+  };
+  platformFilter: unknown[];
+  messageTypeFilter: string[];
+  search: string;
+  currentFilters: {
+    platforms: string[];
+    messageTypes: string[];
+    search: string;
+  };
+  lastAppliedFilters: unknown;
+  conversations: ConversationItem[];
+  tm: (key: string) => string;
+  parseSessionId: (userId: string) => SessionInfo;
+  showErrorMessage: (message: string) => void;
 };
 
 export default {
@@ -639,7 +677,7 @@ export default {
 
   computed: {
     // 动态表头
-    tableHeaders() {
+    tableHeaders(): TableHeader[] {
       return [
         { title: this.tm('table.headers.title'), key: 'title', sortable: true },
         {
@@ -690,21 +728,24 @@ export default {
           sortable: false,
           align: 'center',
         },
-      ] as any;
+      ];
     },
 
     // 可用平台列表
     availablePlatforms() {
       const platforms = [];
       // 解析 tutorial_map
-      const tutorialMap = (this.commonStore as any).tutorial_map || {};
-      for (const platform in tutorialMap) {
-        if (tutorialMap.hasOwnProperty(platform)) {
-          platforms.push({
-            title: platform,
-            value: platform,
-          });
+      const tutorialMapValue = (
+        this.commonStore as unknown as {
+          tutorial_map?: unknown;
         }
+      ).tutorial_map;
+      const tutorialMap = isRecord(tutorialMapValue) ? tutorialMapValue : {};
+      for (const platform of Object.keys(tutorialMap)) {
+        platforms.push({
+          title: platform,
+          value: platform,
+        });
       }
       return platforms;
     },
@@ -836,24 +877,20 @@ export default {
 
     // 获取消息类型的显示文本
     getMessageTypeDisplay(messageType: string) {
-      const typeMap = {
+      const typeMap: Record<string, string> = {
         GroupMessage: this.tm('messageTypes.group'),
         FriendMessage: this.tm('messageTypes.friend'),
         default: this.tm('messageTypes.unknown'),
       };
 
-      return (
-        (messageType in typeMap
-          ? (typeMap as any)[messageType]
-          : typeMap.default) || typeMap.default
-      );
+      return typeMap[messageType] ?? typeMap.default;
     },
 
     // 获取对话列表
     fetchConversations: (() => {
       let controller = new AbortController();
 
-      return async function (this: any) {
+      return async function (this: ConversationPageThis) {
         // 新请求前停止之前的请求
         controller?.abort();
         controller = new AbortController();
@@ -861,16 +898,27 @@ export default {
         this.loading = true;
         try {
           // 准备请求参数，包含分页和筛选条件
-          const params: any = {
+          const params: Record<string, string | number> = {
             page: this.pagination.page,
             page_size: this.pagination.page_size,
           };
 
           // 添加筛选条件 - 处理combobox的混合数据格式
           if (this.platformFilter.length > 0) {
-            const platforms = (this.platformFilter as any[]).map((item: any) =>
-              typeof item === 'object' ? item.value : item,
-            );
+            const platforms = (this.platformFilter as unknown[])
+              .map((item) => {
+                if (typeof item === 'string') return item;
+                if (isRecord(item)) {
+                  const value = item.value;
+                  return typeof value === 'string'
+                    ? value
+                    : value == null
+                      ? ''
+                      : String(value);
+                }
+                return '';
+              })
+              .filter((value): value is string => Boolean(value));
             params.platforms = platforms.join(',');
           }
 
@@ -903,7 +951,12 @@ export default {
             }
 
             // 处理会话数据，解析sessionId
-            this.conversations = (data.conversations || []).map((conv: any) => {
+            const conversations: unknown[] = Array.isArray(data.conversations)
+              ? data.conversations
+              : [];
+
+            this.conversations = conversations.map((convUnknown: unknown) => {
+              const conv = isRecord(convUnknown) ? convUnknown : {};
               const userId = String(conv.user_id ?? '');
               const sessionInfo = this.parseSessionId(userId);
               return {
