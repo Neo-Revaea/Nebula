@@ -418,36 +418,20 @@ function isRecord(value: unknown): value is UnknownRecord {
 type NodeRaw = [string, Record<string, unknown>];
 type EdgeRaw = [string, string, Record<string, unknown>];
 
-type D3SelectionLike = {
-  remove: () => void;
-  append: (name: string) => D3SelectionLike;
-  attr: (name: string, value: unknown) => D3SelectionLike;
-  classed: (name: string, value: boolean) => D3SelectionLike;
-  call: (arg: unknown) => D3SelectionLike;
-  on: (name: string, listener: (...args: unknown[]) => void) => D3SelectionLike;
-  selectAll: (selector: string) => D3SelectionLike;
-  data: (data: unknown) => D3SelectionLike;
-  join: (name: string) => D3SelectionLike;
-  text: (value: unknown) => D3SelectionLike;
-  style: (name: string, value: unknown) => D3SelectionLike;
-} & UnknownRecord;
-
-type D3SimulationLike = {
-  stop: () => void;
-  nodes: (nodes: GraphNode[]) => D3SimulationLike;
-  on: (name: string, listener: () => void) => D3SimulationLike;
-  force: (name: string) => { links: (links: GraphLink[]) => void };
-  alpha: (alpha: number) => D3SimulationLike;
-  restart: () => D3SimulationLike;
-  alphaTarget: (alpha: number) => D3SimulationLike;
-} & UnknownRecord;
-
 type D3ZoomEventLike = { transform: unknown } & UnknownRecord;
 type D3DragEventLike = {
   active?: boolean;
   x?: number;
   y?: number;
 } & UnknownRecord;
+
+function isD3ZoomEventLike(value: unknown): value is D3ZoomEventLike {
+  return isRecord(value) && 'transform' in value;
+}
+
+function isD3DragEventLike(value: unknown): value is D3DragEventLike {
+  return isRecord(value);
+}
 
 function stopPropagation(event: unknown) {
   if (!isRecord(event)) return;
@@ -944,7 +928,8 @@ export default {
       const zoom = d3
         .zoom()
         .scaleExtent([0.1, 10])
-        .on('zoom', (event: D3ZoomEventLike) => {
+        .on('zoom', (event: unknown) => {
+          if (!isD3ZoomEventLike(event)) return;
           g.attr('transform', event.transform);
         });
 
@@ -1316,19 +1301,24 @@ export default {
     dragBehavior() {
       return d3
         .drag()
-        .on('start', (event: D3DragEventLike, d: GraphNode) => {
-          if (!event.active && this.simulation) {
+        .on('start', (event: unknown, d: unknown) => {
+          if (!isD3DragEventLike(event) || !isGraphNode(d)) return;
+          const active = event.active === true;
+          if (!active && this.simulation) {
             this.simulation.alphaTarget(0.3).restart();
           }
           d.fx = d.x;
           d.fy = d.y;
         })
-        .on('drag', (event: D3DragEventLike, d: GraphNode) => {
-          d.fx = event.x ?? d.fx;
-          d.fy = event.y ?? d.fy;
+        .on('drag', (event: unknown, d: unknown) => {
+          if (!isD3DragEventLike(event) || !isGraphNode(d)) return;
+          if (typeof event.x === 'number') d.fx = event.x;
+          if (typeof event.y === 'number') d.fy = event.y;
         })
-        .on('end', (event: D3DragEventLike, d: GraphNode) => {
-          if (!event.active && this.simulation) {
+        .on('end', (event: unknown, d: unknown) => {
+          if (!isD3DragEventLike(event) || !isGraphNode(d)) return;
+          const active = event.active === true;
+          if (!active && this.simulation) {
             this.simulation.alphaTarget(0);
           }
           d.fx = null;
