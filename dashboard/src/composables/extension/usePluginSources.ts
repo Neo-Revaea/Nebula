@@ -12,6 +12,31 @@ export type ToastFn = (
 type TmParams = Record<string, string | number>;
 export type Tm = (key: string, params?: TmParams) => string;
 
+type UnknownRecord = Record<string, unknown>;
+
+function isRecord(value: unknown): value is UnknownRecord {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function getErrorMessage(error: unknown): string {
+  if (axios.isAxiosError(error)) {
+    const data = error.response?.data;
+    if (isRecord(data) && typeof data.message === 'string' && data.message) {
+      return data.message;
+    }
+    if (typeof error.message === 'string' && error.message) {
+      return error.message;
+    }
+    return 'Request failed';
+  }
+
+  if (error instanceof Error && error.message) return error.message;
+  if (isRecord(error) && typeof error.message === 'string' && error.message) {
+    return error.message;
+  }
+  return String(error);
+}
+
 export function usePluginSources({
   tm,
   toast,
@@ -71,7 +96,7 @@ export function usePluginSources({
         toast(res.data.message, 'error');
       }
     } catch (e: unknown) {
-      toast(e, 'error');
+      toast(getErrorMessage(e), 'error');
     }
   };
 
